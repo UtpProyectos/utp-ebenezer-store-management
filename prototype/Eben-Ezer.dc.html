@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="./ee-data-global.js"></script>
+<title>Eben-Ezer · Store Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F5F5F5;color:#111111;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;color:inherit}
+a{color:#111111}a:hover{color:#111111}
+::selection{background:#ECECEC}
+@keyframes eeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes eePop{from{opacity:0;transform:scale(.96) translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes eeToast{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes eeFade{from{opacity:0}to{opacity:1}}
+@keyframes eeSpin{to{transform:rotate(360deg)}}
+@keyframes eeBump{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+@keyframes eeShake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes eeDrawer{from{transform:translateX(100%)}to{transform:none}}
+@keyframes eeDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:120ms!important;animation-iteration-count:1!important;transition-duration:120ms!important}}
+</style>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#DE6B4E"/><circle cx="50" cy="50" r="22" fill="#111111"/><text x="50" y="57" font-family="sans-serif" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">EE</text></svg></template>
+</helmet>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="zoom:{{ zoom }};min-height:{{ vh100 }};display:grid;grid-template-columns:{{ loginCols }};background:#F5F5F5">
+  <sc-if value="{{ wide }}">
+  <div style="position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px;background:#111111;color:#EFEFEF;overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:50%;background:#DE6B4E;color:#FFFFFF;display:grid;place-items:center;font:800 18px/1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em">EE</div>
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 18px/1.1 'Plus Jakarta Sans',sans-serif">Eben-Ezer</span><span style="font:500 14px/1 'Plus Jakarta Sans';color:#D0D0D0;white-space:nowrap">Bodega · Minimarket</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;max-width:460px">
+      <div style="aspect-ratio:4/3;border-radius:28px;border:1px solid rgba(255,255,255,.12);background:repeating-linear-gradient(135deg,rgba(255,255,255,.06) 0 10px,rgba(255,255,255,.12) 10px 20px);display:grid;place-items:center"><span style="font:500 14px ui-monospace,Menlo,monospace;color:#D0D0D0">foto de la bodega / fachada</span></div>
+      <h1 style="margin:0;font:700 40px/1.05 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;text-wrap:balance">Hasta aquí nos ha ayudado Dios. Sigamos atendiendo bien.</h1>
+      <p style="margin:0;font:400 17px/1.55 'Plus Jakarta Sans';color:#E6E6E6;text-wrap:pretty">Ventas, inventario y reposición de tu bodega en un solo lugar.</p>
+    </div>
+    <span style="font:500 14px 'Plus Jakarta Sans';color:#B3B3B3">Eben-Ezer Store Management · v1.0</span>
+  </div>
+  </sc-if>
+  <div style="display:flex;align-items:center;justify-content:center;padding:32px 20px">
+    <form onSubmit="{{ login }}" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-if value="{{ narrowLogin }}"><div style="width:44px;height:44px;border-radius:50%;background:#DE6B4E;color:#fff;display:grid;place-items:center;font:800 18px/1 'Plus Jakarta Sans',sans-serif;margin-bottom:8px">EE</div></sc-if>
+        <h2 style="margin:0;font:700 30px/1.1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em">¡Buen día!</h2>
+        <p style="margin:0;font:400 17px/1.5 'Plus Jakarta Sans';color:#6B6B6B">Ingresa para abrir la caja de hoy.</p>
+      </div>
+      <sc-if value="{{ loginError }}">
+        <div role="alert" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:#FDE7EA;color:#B31F2E;font:500 16px/1.4 'Plus Jakarta Sans';animation:eeShake 260ms cubic-bezier(.23,1,.32,1)">
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">error</span><span>{{ loginErrorMsg }}</span>
+        </div>
+      </sc-if>
+      <label style="display:flex;flex-direction:column;gap:6px">
+        <span style="font:600 15px 'Plus Jakarta Sans';color:#111111">Usuario o correo</span>
+        <div style="position:relative;display:flex;align-items:center">
+          <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B">person</span>
+          <input value="{{ user }}" onChange="{{ onUser }}" autocomplete="username" placeholder="tu.usuario" style="width:100%;height:52px;padding:0 14px 0 42px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:500 17px 'Plus Jakarta Sans';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input>
+        </div>
+      </label>
+      <label style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 15px 'Plus Jakarta Sans';color:#111111">Contraseña</span><a href="#" onClick="{{ forgot }}" style="font:500 15px 'Plus Jakarta Sans';text-decoration:none;white-space:nowrap;flex:none">¿La olvidaste?</a></div>
+        <div style="position:relative;display:flex;align-items:center">
+          <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B">lock</span>
+          <input type="{{ passType }}" value="{{ pass }}" onChange="{{ onPass }}" autocomplete="current-password" placeholder="••••••••" style="width:100%;height:52px;padding:0 46px 0 42px;border-radius:999px;border:1px solid {{ passBorder }};background:#fff;font:500 17px 'Plus Jakarta Sans';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input>
+          <button type="button" onClick="{{ togglePass }}" aria-label="Mostrar u ocultar contraseña" style="position:absolute;right:6px;width:34px;height:34px;border:none;border-radius:999px;background:transparent;cursor:pointer;display:grid;place-items:center;color:#6B6B6B;transition:background-color 150ms ease" style-hover="background:#EFEFEF"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ passIcon }}</span></button>
+        </div>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font:500 16px 'Plus Jakarta Sans';color:#111111">
+        <input type="checkbox" checked="{{ remember }}" onChange="{{ toggleRemember }}" style="width:18px;height:18px;accent-color:#DE6B4E;margin:0"></input>
+        Recordar sesión en esta caja
+      </label>
+      <button type="submit" disabled="{{ loginLoading }}" style="height:48px;border:none;border-radius:999px;background:#DE6B4E;color:#fff;font:600 17px 'Plus Jakarta Sans';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform 140ms cubic-bezier(.23,1,.32,1),background-color 150ms ease;white-space:nowrap" style-hover="background:#C85A3F" style-active="transform:scale(.97)">
+        <sc-if value="{{ loginLoading }}"><span style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:eeSpin 600ms linear infinite"></span></sc-if>
+        <span>{{ loginLabel }}</span>
+      </button>
+      <p style="margin:0;font:400 14px/1.5 'Plus Jakarta Sans';color:#6B6B6B;text-align:center">Demo: cualquier contraseña funciona. Escribe <b>error</b> para ver el estado de error.</p>
+    </form>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+<div style="zoom:{{ zoom }};display:flex;min-height:{{ vh100 }};background:#EFEFEF">
+  <sc-if value="{{ drawerOverlay }}"><div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;background:rgba(17,17,17,.45);z-index:40;animation:eeFade 200ms ease"></div></sc-if>
+  <aside style="position:{{ asidePos }};top:0;left:0;height:{{ vh100 }};width:{{ sideW }};flex:none;z-index:50;background:{{ asideBg }};color:#111111;display:flex;flex-direction:column;gap:12px;padding:14px 14px;box-sizing:border-box;overflow-y:auto;transform:{{ asideTf }};transition:width 240ms cubic-bezier(.23,1,.32,1),transform 300ms cubic-bezier(.32,.72,0,1);overflow-x:hidden">
+    <div style="display:flex;align-items:center;gap:12px;padding:0 {{ brandPad }};flex:none;height:64px">
+      <div style="width:56px;height:56px;flex:none;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font:800 18px/1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;box-shadow:0 0 0 5px #FFFFFF">EE</div>
+      <sc-if value="{{ showLabels }}"><div style="display:flex;flex-direction:column;gap:3px;white-space:nowrap;animation:eeFade 180ms ease"><span style="font:700 18px/1 'Plus Jakarta Sans',sans-serif;color:#111111">Eben-Ezer</span><span style="font:500 14px/1 'Plus Jakarta Sans';color:#6B6B6B;white-space:nowrap">Bodega · Minimarket</span></div></sc-if>
+    </div>
+    <nav style="flex:1 0 auto;overflow:visible;display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;gap:6px;padding:10px;background:#FFFFFF;border-radius:36px">
+          <sc-if value="{{ g.showLabel }}"><button onClick="{{ g.toggle }}" aria-expanded="{{ g.open }}" style="display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 10px 0 16px;border:none;border-radius:999px;background:transparent;font:600 15px 'Plus Jakarta Sans';color:#6B6B6B;cursor:pointer;white-space:nowrap;transition:background-color 150ms ease" style-hover="color:#111111;background:#F5F5F5">{{ g.title }}<span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;transform:{{ g.chev }};transition:transform 200ms cubic-bezier(.23,1,.32,1)">expand_more</span></button></sc-if>
+          <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+            <button onClick="{{ it.go }}" title="{{ it.label }}" aria-current="{{ it.aria }}" style="position:relative;display:flex;align-items:center;gap:12px;height:48px;padding:{{ it.pad }};justify-content:{{ it.justify }};border:none;border-radius:999px;background:{{ it.bg }};color:{{ it.fg }};font:{{ it.weight }} 17px 'Plus Jakarta Sans',sans-serif;cursor:pointer;text-align:left;white-space:nowrap;transition:background-color 160ms ease,color 160ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#F5F5F5;color:#111111" style-active="transform:scale(.97)">
+              <span style="width:48px;height:48px;flex:none;border-radius:50%;background:{{ it.circleBg }};color:{{ it.iconColor }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:23px;line-height:1;font-variation-settings:'FILL' 1;transition:background-color 180ms ease,color 180ms ease">{{ it.icon }}</span>
+              <sc-if value="{{ it.showLabel }}"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">{{ it.label }}</span></sc-if>
+              <sc-if value="{{ it.hasBadge }}"><span style="position:{{ it.badgePos }};top:-2px;right:-2px;min-width:24px;height:24px;padding:0 7px;margin-right:{{ it.badgeMr }};border-radius:999px;background:{{ it.badgeBg }};color:{{ it.badgeFg }};border:2px solid #FFFFFF;font:700 14px/20px 'Plus Jakarta Sans';text-align:center;font-variant-numeric:tabular-nums">{{ it.badge }}</span></sc-if>
+            </button>
+          </sc-for></sc-if>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="flex:none;margin-top:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:#FFFFFF;border-radius:36px">
+      <button onClick="{{ goSistema }}" title="Sistema de diseño" style="display:flex;align-items:center;gap:12px;height:48px;padding:{{ footPad }};justify-content:{{ footJustify }};border:none;border-radius:999px;background:transparent;color:#3A3A3A;font:500 16px 'Plus Jakarta Sans';cursor:pointer;white-space:nowrap;transition:background-color 150ms ease" style-hover="background:#F5F5F5">
+        <span style="width:48px;height:48px;flex:none;border-radius:50%;background:{{ sysBg }};color:{{ sysFg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;font-variation-settings:'FILL' 1">palette</span><sc-if value="{{ showLabels }}"><span>Sistema de diseño</span></sc-if>
+      </button>
+      <sc-if value="{{ desktop }}">
+      <button onClick="{{ toggleCollapse }}" title="{{ collapseLabel }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:{{ footPad }};justify-content:{{ footJustify }};border:none;border-radius:999px;background:transparent;color:#3A3A3A;font:500 16px 'Plus Jakarta Sans';cursor:pointer;white-space:nowrap;transition:background-color 150ms ease" style-hover="background:#F5F5F5">
+        <span style="width:48px;height:48px;flex:none;border-radius:50%;background:#F2F2F2;color:#DE6B4E;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ collapseIcon }}</span><sc-if value="{{ showLabels }}"><span>{{ collapseLabel }}</span></sc-if>
+      </button>
+      </sc-if>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="position:sticky;top:0;z-index:30;height:80px;flex:none;display:flex;align-items:center;gap:12px;padding:0 {{ mainPad }};background:rgba(239,239,239,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
+      <sc-if value="{{ mobile }}">
+        <button onClick="{{ openDrawer }}" aria-label="Abrir menú" style="width:40px;height:40px;border-radius:999px;border:1px solid #FFFFFF;background:#fff;display:grid;place-items:center;cursor:pointer;flex:none" style-active="transform:scale(.96)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">menu</span></button>
+      </sc-if>
+      <sc-if value="{{ hasBack }}">
+        <button onClick="{{ goBack }}" title="Volver" style="display:flex;align-items:center;gap:8px;height:48px;padding:0 16px 0 6px;flex:none;border-radius:999px;border:none;background:#FFFFFF;color:#111111;font:600 15px 'Plus Jakarta Sans';cursor:pointer;white-space:nowrap;transition:transform 140ms cubic-bezier(.23,1,.32,1),background-color 150ms ease;animation:eeFade 180ms ease" style-hover="background:#FAFAFA" style-active="transform:scale(.97)"><span style="width:36px;height:36px;border-radius:50%;background:#F2F2F2;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_back</span>{{ backLabel }}</button>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+        <h1 style="margin:0;font:700 24px/1.15 'Plus Jakarta Sans',sans-serif;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</h1>
+        <span style="font:500 17px/1.3 'Plus Jakarta Sans';color:#6B6B6B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ subtitle }}</span>
+      </div>
+      <sc-if value="{{ showSearch }}">
+        <div style="position:relative;display:flex;align-items:center;width:300px;flex:none">
+          <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B">search</span>
+          <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ onQ }}" onKeyDown="{{ onQKey }}" placeholder="Buscar producto, proveedor…" style="width:100%;height:48px;padding:0 52px 0 40px;border-radius:999px;border:1px solid #FFFFFF;background:#fff;font:500 16px 'Plus Jakarta Sans';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input>
+          <span style="position:absolute;right:10px;padding:2px 6px;border-radius:5px;border:1px solid #FFFFFF;font:600 13px 'Plus Jakarta Sans';color:#6B6B6B;background:#FAFAFA">Ctrl K</span>
+          <sc-if value="{{ hasResults }}">
+            <div style="position:absolute;top:46px;left:0;right:0;background:#fff;border:1px solid #FFFFFF;border-radius:18px;box-shadow:0 12px 32px -8px rgba(17,17,17,.18);padding:6px;transform-origin:top center;animation:eePop 160ms cubic-bezier(.23,1,.32,1)">
+              <sc-for list="{{ results }}" as="r">
+                <button onClick="{{ r.go }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;text-align:left;font:500 16px 'Plus Jakarta Sans'" style-hover="background:#F2F2F2">
+                  <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#6B6B6B">{{ r.icon }}</span><span style="flex:1">{{ r.name }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.meta }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ showCaja }}">
+        <div style="display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;border-radius:14px;border:1px solid #FFFFFF;background:#fff;font:600 15px 'Plus Jakarta Sans';white-space:nowrap;flex:none">
+          <span style="width:8px;height:8px;border-radius:50%;background:#2F8A57;box-shadow:0 0 0 3px #E4F3EA"></span>Caja 1 · Abierta
+        </div>
+      </sc-if>
+      <div style="position:relative;flex:none">
+        <button onClick="{{ toggleNotif }}" aria-label="Notificaciones" style="position:relative;width:40px;height:40px;border-radius:999px;border:1px solid #FFFFFF;background:{{ notifBg }};display:grid;place-items:center;cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#fff" style-active="transform:scale(.96)">
+          <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">notifications</span>
+          <span style="position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#D62839;color:#fff;border:2px solid #F5F5F5;font:700 12px/15px 'Plus Jakarta Sans';text-align:center">{{ alertCount }}</span>
+        </button>
+        <sc-if value="{{ notifOpen }}">
+          <div style="position:absolute;top:48px;right:0;width:340px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #FFFFFF;border-radius:24px;box-shadow:0 16px 40px -10px rgba(17,17,17,.22);transform-origin:top right;animation:eePop 170ms cubic-bezier(.23,1,.32,1);overflow:hidden">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #F2F2F2"><span style="font:700 17px 'Plus Jakarta Sans'">Alertas</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ alertCount }} pendientes</span></div>
+            <div style="max-height:320px;overflow:auto;padding:6px">
+              <sc-for list="{{ alerts }}" as="a">
+                <button onClick="{{ a.go }}" style="width:100%;display:flex;gap:12px;align-items:flex-start;padding:10px;border:none;border-radius:14px;background:transparent;cursor:pointer;text-align:left" style-hover="background:#F5F5F5">
+                  <span style="width:32px;height:32px;flex:none;border-radius:12px;background:{{ a.bg }};color:{{ a.fg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1">{{ a.icon }}</span>
+                  <span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 16px/1.3 'Plus Jakarta Sans'">{{ a.name }}</span><span style="font:500 14px/1.3 'Plus Jakarta Sans';color:#6B6B6B">{{ a.msg }}</span></span>
+                </button>
+              </sc-for>
+            </div>
+            <button onClick="{{ goLista }}" style="width:100%;height:44px;border:none;border-top:1px solid #F2F2F2;background:#FAFAFA;color:#111111;font:600 16px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#EFEFEF">Ver lista de compra</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative;flex:none">
+        <button onClick="{{ toggleUser }}" style="display:flex;align-items:center;gap:10px;height:48px;padding:0 {{ userPad }};border-radius:999px;border:1px solid #FFFFFF;background:{{ userBg }};cursor:pointer;transition:background-color 150ms ease" style-hover="background:#fff">
+          <span style="width:30px;height:30px;border-radius:50%;background:#DE6B4E;color:#FFFFFF;display:grid;place-items:center;font:700 14px 'Plus Jakarta Sans'">RQ</span>
+          <sc-if value="{{ showUserName }}"><span style="display:flex;flex-direction:column;align-items:flex-start;gap:1px"><span style="font:600 15px/1.1 'Plus Jakarta Sans';white-space:nowrap">Rosa Quispe</span><span style="font:500 13px/1.1 'Plus Jakarta Sans';color:#6B6B6B;white-space:nowrap">Administrador</span></span><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#6B6B6B">expand_more</span></sc-if>
+        </button>
+        <sc-if value="{{ userOpen }}">
+          <div style="position:absolute;top:48px;right:0;width:230px;background:#fff;border:1px solid #FFFFFF;border-radius:24px;box-shadow:0 16px 40px -10px rgba(17,17,17,.22);padding:6px;transform-origin:top right;animation:eePop 160ms cubic-bezier(.23,1,.32,1)">
+            <div style="padding:10px 10px 12px;border-bottom:1px solid #F2F2F2;margin-bottom:4px;display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'Plus Jakarta Sans'">Rosa Quispe</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">rosa.quispe · Administrador</span></div>
+            <button onClick="{{ goUsuarios }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';text-align:left" style-hover="background:#F2F2F2"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6B6B">manage_accounts</span>Mi perfil</button>
+            <button onClick="{{ goConfig }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';text-align:left" style-hover="background:#F2F2F2"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6B6B">settings</span>Configuración</button>
+            <button onClick="{{ logout }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';color:#B31F2E;text-align:left" style-hover="background:#FDE7EA"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Cerrar sesión</button>
+          </div>
+        </sc-if>
+      </div>
+    </header>
+
+    <main style="flex:1;padding:{{ mainPad }};padding-top:24px;padding-bottom:96px;min-width:0">
+      <sc-if value="{{ loading }}"><div style="display:grid;gap:16px"><div style="height:120px;border-radius:24px;background:#EDEDED"></div><div style="height:320px;border-radius:24px;background:#EDEDED"></div></div></sc-if>
+      <sc-if value="{{ is.dashboard }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEDashboard" sales="{{ sales }}" edit-sale="{{ editSale }}" delete-sale="{{ deleteSale }}" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.ventas }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEVentas" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,760px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.inventario }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEInventario" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.ingresos }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEIngresos" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.productos }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEProductos" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.categorias }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EECategorias" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.proveedores }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEProveedores" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.consumo }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEConsumo" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.lista }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EELista" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.asistente }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEAsistente" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,760px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.usuarios }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEUsuarios" d="{{ d }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,600px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.config }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEConfig" text-size="{{ textSize }}" set-text-size="{{ setTextSize }}" d="{{ d }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.histventas }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEHistVentas" sales="{{ sales }}" audit="{{ audit }}" create-sale="{{ createSale }}" edit-sale="{{ editSale }}" delete-sale="{{ deleteSale }}" d="{{ d }}" nav="{{ nav }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.admin }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEAdmin" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.historiales }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEHistoriales" sales="{{ sales }}" audit="{{ audit }}" d="{{ d }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.sistema }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="SistemaDeDiseno" embedded="{{ true }}" hint-size="100%,1400px"></dc-import></div></sc-if>
+    </main>
+  </div>
+
+  <sc-if value="{{ showFab }}">
+    <div style="position:fixed;right:{{ fabRight }};bottom:20px;z-index:35;display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+      <sc-if value="{{ fabOpen }}">
+        <div style="width:300px;max-width:calc(100vw - 32px);background:radial-gradient(120% 90% at 100% 0%,rgba(222,107,78,.16) 0%,rgba(222,107,78,0) 55%),radial-gradient(100% 80% at 0% 100%,rgba(167,139,250,.12) 0%,rgba(167,139,250,0) 60%),#FFFFFF;border:1px solid #FFFFFF;border-radius:26px;box-shadow:0 20px 48px -12px rgba(17,17,17,.3);padding:14px;display:flex;flex-direction:column;gap:8px;transform-origin:bottom right;animation:eePop 180ms cubic-bezier(.23,1,.32,1)">
+          <span style="font:700 18px 'Plus Jakarta Sans';padding:2px 4px 6px">Toca una pregunta</span>
+          <sc-for list="{{ quickQs }}" as="qq">
+            <button onClick="{{ qq.go }}" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid #FFFFFF;background:#FAFAFA;cursor:pointer;text-align:left;font:500 15px/1.3 'Plus Jakarta Sans';transition:background-color 150ms ease,border-color 150ms ease" style-hover="background:#EFEFEF;border-color:#D4D4D4">
+              <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#111111">north_east</span>{{ qq.q }}
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <button onClick="{{ toggleFab }}" style="display:flex;align-items:center;gap:8px;height:54px;padding:0 18px 0 14px;border:1px solid #FFFFFF;border-radius:999px;background:linear-gradient(135deg,#FFFFFF 0%,#FDF5F2 55%,#F1ECFF 100%);color:#111111;font:600 16px 'Plus Jakarta Sans';cursor:pointer;box-shadow:0 10px 28px -10px rgba(17,17,17,.25);transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.96)">
+        <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#DE6B4E;font-variation-settings:'FILL' 1">auto_awesome</span>Asistente
+      </button>
+    </div>
+  </sc-if>
+
+  <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none">
+    <sc-for list="{{ toasts }}" as="t">
+      <div role="status" style="display:flex;align-items:center;gap:10px;padding:12px 16px 12px 12px;border-radius:18px;background:#111111;color:#fff;font:500 16px 'Plus Jakarta Sans';box-shadow:0 12px 32px -8px rgba(17,17,17,.45);animation:eeToast 260ms cubic-bezier(.23,1,.32,1);opacity:{{ t.op }};transform:{{ t.tf }};transition:opacity 200ms ease,transform 200ms cubic-bezier(.23,1,.32,1)">
+        <span style="width:26px;height:26px;border-radius:12px;background:{{ t.iconBg }};color:#111111;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-variation-settings:'FILL' 1">{{ t.icon }}</span>{{ t.msg }}
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;dashboard&quot;,&quot;ventas&quot;,&quot;inventario&quot;,&quot;ingresos&quot;,&quot;productos&quot;,&quot;categorias&quot;,&quot;proveedores&quot;,&quot;consumo&quot;,&quot;lista&quot;,&quot;asistente&quot;,&quot;usuarios&quot;,&quot;config&quot;,&quot;admin&quot;,&quot;historiales&quot;,&quot;histventas&quot;,&quot;sistema&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;startCollapsed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;textSize&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Pequeño&quot;,&quot;Normal&quot;,&quot;Grande&quot;,&quot;Muy grande&quot;],&quot;default&quot;:&quot;Normal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showAiFab&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { sales: [
+    { id: 1038, time: '11:42', who: 'Luis Huamán', pay: 'Efectivo', total: 18.5, items: 'Gaseosa cola ×3, Pan francés ×10' },
+    { id: 1037, time: '10:31', who: 'Luis Huamán', pay: 'Yape / Plin', total: 6.8, items: 'Leche evaporada ×1, Galletas ×2' },
+    { id: 1036, time: '09:12', who: 'Rosa Quispe', pay: 'Efectivo', total: 32.4, items: 'Arroz extra 1 kg ×4, Aceite vegetal ×1' },
+    { id: 1035, time: '08:05', who: 'Rosa Quispe', pay: 'Tarjeta', total: 12.0, items: 'Huevos ×10, Pan francés ×6' },
+  ], audit: [], textSize: (() => { try { return localStorage.getItem('ee-textsize'); } catch (e) { return null; } })(), d: null, products: null, screen: this.props.startScreen ?? 'login', collapsed: !!this.props.startCollapsed, drawer: false, w: window.innerWidth, menu: null, toasts: [], ctx: {}, user: 'rosa.quispe', pass: '', showPass: false, remember: true, loginState: 'idle', fabOpen: false, q: '' };
+  searchRef = React.createRef();
+  componentDidMount() {
+    const load = m => this.setState({ d: m, products: m.products.map(p => ({ ...p })) });
+    if (window.EEData) load(window.EEData); else { let n = 0; const iv = setInterval(() => { if (window.EEData) { clearInterval(iv); load(window.EEData); } else if (++n > 40) { clearInterval(iv); import('./ee-data.js').then(load); } }, 50); }
+    this.onR = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this.onR);
+    this.onK = e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); this.searchRef.current && this.searchRef.current.focus(); }
+      if (e.key === 'Escape') this.setState({ menu: null, fabOpen: false, drawer: false, q: '' });
+    };
+    window.addEventListener('keydown', this.onK);
+  }
+  componentDidUpdate(pp) { if (pp.textSize !== this.props.textSize && this.props.textSize) this.setState({ textSize: this.props.textSize }); if (pp.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen }); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); window.removeEventListener('keydown', this.onK); }
+  nav = (s, ctx) => {
+    this.setState(st => ({ audit: s === 'histventas' ? st.audit.map(a => ({ ...a, seen: true })) : st.audit, screen: s, drawer: false, menu: null, fabOpen: false, q: '', ctx: ctx ? { ...st.ctx, ...ctx } : st.ctx }));
+    window.scrollTo(0, 0);
+  };
+  toast = (msg, type = 'success') => {
+    const id = Date.now() + Math.random();
+    this.setState(s => ({ toasts: [...s.toasts, { id, msg, type, leaving: false }].slice(-3) }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.map(t => t.id === id ? { ...t, leaving: true } : t) })), 2600);
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 2820);
+  };
+  stamp = () => { const n = new Date(); return 'Hoy ' + String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); };
+  editSale = (id, patch, reason) => {
+    const old = this.state.sales.find(x => x.id === id); if (!old) return;
+    const ch = [];
+    if (patch.pay !== old.pay) ch.push(`pago ${old.pay} → ${patch.pay}`);
+    if (+patch.total !== +old.total) ch.push(`total S/ ${(+old.total).toFixed(2)} → S/ ${(+patch.total).toFixed(2)}`);
+    this.setState(s => ({ sales: s.sales.map(x => x.id === id ? { ...x, ...patch } : x), audit: [{ date: this.stamp(), main: `Venta #${id} editada`, sub: `Rosa Quispe · ${ch.join(', ') || 'sin cambios'} · Motivo: ${reason}`, kind: 'edit', seen: s.screen === 'histventas' }, ...s.audit] }));
+    this.toast(`Venta #${id} actualizada. Quedó registrado en movimientos.`);
+  };
+  createSale = (sale, reason) => {
+    const id = Math.max(1038, ...this.state.sales.map(x => x.id)) + 1;
+    const n = new Date(), time = String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0');
+    this.setState(s => ({ sales: [{ id, time, who: 'Rosa Quispe', ...sale }, ...s.sales], audit: [{ date: this.stamp(), main: `Venta #${id} registrada a mano`, sub: `Rosa Quispe · S/ ${(+sale.total).toFixed(2)} · ${sale.pay}${reason ? ' · Motivo: ' + reason : ''}`, kind: 'create' }, ...s.audit] }));
+    this.toast(`Venta #${id} registrada`);
+  };
+  deleteSale = (id, reason) => {
+    const old = this.state.sales.find(x => x.id === id); if (!old) return;
+    this.setState(s => ({ sales: s.sales.filter(x => x.id !== id), audit: [{ date: this.stamp(), main: `Venta #${id} eliminada`, sub: `Rosa Quispe · S/ ${(+old.total).toFixed(2)} · Motivo: ${reason}`, kind: 'delete', seen: s.screen === 'histventas' }, ...s.audit] }));
+    this.toast(`Venta #${id} eliminada. Quedó registrado en movimientos.`, 'info');
+  };
+  setProducts = fn => this.setState(s => ({ products: fn(s.products) }));
+  setCtx = o => this.setState(s => ({ ctx: { ...s.ctx, ...o } }));
+  login = e => {
+    e && e.preventDefault();
+    if (this.state.loginState === 'loading') return;
+    this.setState({ loginState: 'loading' });
+    setTimeout(() => {
+      const p = this.state.pass.trim();
+      if (!p) this.setState({ loginState: 'error', loginMsg: 'Ingresa tu contraseña para continuar.' });
+      else if (p.toLowerCase() === 'error') this.setState({ loginState: 'error', loginMsg: 'Usuario o contraseña incorrectos. Revisa e intenta otra vez.' });
+      else { this.setState({ loginState: 'idle', screen: 'dashboard', pass: '' }); setTimeout(() => this.toast('Bienvenida, Rosa. Caja 1 abierta.'), 300); }
+    }, 900);
+  };
+  renderVals() {
+    const s = this.state, d = s.d, P = s.products || [];
+    const tsz = s.textSize || this.props.textSize || 'Normal';
+    const zoom = { 'Pequeño': 0.76, Normal: 0.86, Grande: 1, 'Muy grande': 1.12 }[tsz] || 0.86;
+    const W = s.w / zoom;
+    const mobile = W < 900, desktop = !mobile;
+    const collapsed = desktop && s.collapsed;
+    const showLabels = !collapsed;
+    const sideWpx = mobile ? 300 : (collapsed ? 96 : 300);
+    const contentW = W - (mobile ? 0 : sideWpx);
+    const narrow = contentW < 760;
+    const crit = d ? P.filter(p => d.status(p) === 'critico').length : 0;
+    const need = d ? P.filter(p => ['critico', 'bajo'].includes(d.status(p))).length : 0;
+    const alertsRaw = d ? P.filter(p => ['critico', 'vence', 'vencido'].includes(d.status(p))) : [];
+    const auditAlerts = s.audit.filter(a => a.kind !== 'create').map(a => ({ icon: a.kind === 'delete' ? 'delete' : 'edit', name: a.main, msg: a.sub, bg: a.kind === 'delete' ? '#FDE7EA' : '#FFF1D9', fg: a.kind === 'delete' ? '#B31F2E' : '#8A5200', go: () => this.nav('histventas') }));
+    const alerts = [...auditAlerts, ...alertsRaw.map(p => {
+      const st = d.status(p), dt = d.daysTo(p.exp);
+      const m = st === 'critico' ? { icon: 'trending_down', msg: `Por agotarse: quedan ${p.stock}` } : st === 'vencido' ? { icon: 'block', msg: `Ya venció. Retíralo del estante` } : { icon: 'schedule', msg: `Vence en ${dt} días` };
+      return { ...m, go: () => this.nav('inventario'), name: p.name, bg: d.STATUS[st].bg === '#B31F2E' ? '#FDE7EA' : d.STATUS[st].bg, fg: st === 'vencido' ? '#B31F2E' : d.STATUS[st].fg };
+    })];
+    const G = [
+      [null, [['dashboard', 'Inicio', 'home'], ['ventas', 'Ventas', 'point_of_sale'], ['inventario', 'Inventario', 'inventory_2', crit, 'd'], ['lista', 'Compras', 'checklist', (s.ctx.buyList || []).length || need, 'a'], ['histventas', 'Historial', 'receipt_long', s.audit.filter(a => a.kind !== 'create' && !a.seen).length, 'd'], ['asistente', 'Asistente', 'auto_awesome']]],
+      [null, [['admin', 'Administración', 'settings']]],
+    ];
+    const PARENT = { ingresos: 'inventario', consumo: 'ventas', productos: 'admin', categorias: 'admin', proveedores: 'admin', usuarios: 'admin', config: 'admin', historiales: 'admin' };
+    const PLABEL = { inventario: 'Inventario', ventas: 'Ventas', admin: 'Administración' };
+    const parent = PARENT[s.screen];
+    const moreOpen = true;
+    const groups = G.map(([title, items], gi) => ({
+      title, showLabel: showLabels && !!title, showDivider: !showLabels && gi > 0, open: !title || moreOpen, chev: moreOpen ? 'rotate(180deg)' : 'none', toggle: () => this.setState({ moreOpen: !moreOpen }),
+      items: items.map(([id, label, icon, badge, kind]) => {
+        const act = s.screen === id || parent === id;
+        return {
+          id, label, icon, go: () => this.nav(id), aria: act ? 'page' : undefined,
+          bg: act && !collapsed ? '#FDF5F2' : 'transparent', fg: act ? '#111111' : '#3A3A3A', weight: act ? 700 : 500,
+          iconColor: act ? '#FFFFFF' : '#DE6B4E', circleBg: act ? '#DE6B4E' : '#F2F2F2', fill: 1, badgeMr: collapsed ? '0' : '12px',
+          pad: collapsed ? '0' : '0', justify: collapsed ? 'center' : 'flex-start', showLabel: showLabels,
+          hasBadge: !!badge, badge, badgePos: collapsed ? 'absolute' : 'static',
+          badgeBg: kind === 'd' ? '#D62839' : '#DE6B4E', badgeFg: kind === 'd' ? '#fff' : '#111111',
+        };
+      }),
+    }));
+    const T = { histventas: ['Historial de ventas', 'Corrige, elimina o registra ventas. Todo queda anotado.'], admin: ['Administración', 'Datos de la tienda, usuarios y reportes'], historiales: ['Historiales', 'Lo que pasó en la tienda, día por día'], dashboard: ['Inicio', 'Resumen de hoy, martes 29 de septiembre'], ventas: ['Ventas', 'Toca los productos y luego presiona Cobrar'], inventario: ['Inventario', 'Cuánto tienes de cada producto'], ingresos: ['Ingreso de mercadería', 'Anota lo que llegó a la tienda en 3 pasos'], productos: ['Productos', 'Precios y datos de lo que vendes'], categorias: ['Categorías', 'Grupos para ordenar tus productos'], proveedores: ['Proveedores', 'A quién le compras'], consumo: ['Consumo interno', 'Productos que se usan en la tienda y no se venden'], lista: ['Lista de compra', 'Productos por agotarse que debes comprar'], asistente: ['Asistente', 'Pregunta lo que quieras sobre tu tienda'], usuarios: ['Usuarios', 'Quién puede entrar al sistema'], config: ['Configuración', 'Datos de la tienda y avisos'], sistema: ['Sistema de diseño', 'Referencia visual'] };
+    const [title, subtitle] = s.screen === 'dashboard' ? ['', ''] : (T[s.screen] || ['', '']);
+    const is = {}; Object.keys(T).forEach(k => is[k] = !!d && s.screen === k);
+    const qn = s.q.trim().toLowerCase();
+    const results = qn && d ? [
+      ...P.filter(p => p.name.toLowerCase().includes(qn) || p.code.includes(qn)).slice(0, 5).map(p => ({ name: p.name, meta: `${p.stock} en stock`, icon: 'shopping_basket', go: () => this.nav('inventario', { invQ: p.name }) })),
+      ...d.providers.filter(p => p.name.toLowerCase().includes(qn)).slice(0, 2).map(p => ({ name: p.name, meta: 'Proveedor', icon: 'handshake', go: () => this.nav('proveedores') })),
+    ] : [];
+    const quick = ['¿Qué productos debo comprar hoy?', '¿Qué productos tienen stock crítico?', '¿Qué se vendió más esta semana?', '¿Qué productos están próximos a vencer?'];
+    const lf = s.loginState;
+    return {
+      zoom, vh100: (100 / zoom) + 'vh', textSize: tsz, setTextSize: v => { try { localStorage.setItem('ee-textsize', v); } catch (e) {} this.setState({ textSize: v }); },
+      isLogin: s.screen === 'login', isApp: s.screen !== 'login', wide: W >= 900, narrowLogin: W < 900, loginCols: W >= 900 ? 'minmax(0,1.05fr) minmax(0,1fr)' : '1fr',
+      user: s.user, pass: s.pass, onUser: e => this.setState({ user: e.target.value }), onPass: e => this.setState({ pass: e.target.value, loginState: lf === 'error' ? 'idle' : lf }),
+      passType: s.showPass ? 'text' : 'password', passIcon: s.showPass ? 'visibility_off' : 'visibility', togglePass: () => this.setState({ showPass: !s.showPass }),
+      remember: s.remember, toggleRemember: () => this.setState({ remember: !s.remember }), forgot: e => { e.preventDefault(); this.setState({ loginState: 'error', loginMsg: 'Pide al administrador que restablezca tu contraseña desde Usuarios.' }); },
+      login: this.login, loginLoading: lf === 'loading', loginLabel: lf === 'loading' ? 'Ingresando…' : 'Iniciar sesión', loginError: lf === 'error', loginErrorMsg: s.loginMsg, passBorder: lf === 'error' ? '#D62839' : '#DADADA',
+      hasBack: !!parent, backLabel: parent ? PLABEL[parent] : '', goBack: () => parent && this.nav(parent),
+      mobile, desktop, drawerOverlay: mobile && s.drawer, closeDrawer: () => this.setState({ drawer: false }), openDrawer: () => this.setState({ drawer: true }),
+      asidePos: mobile ? 'fixed' : 'sticky', asideTf: mobile && !s.drawer ? 'translateX(-100%)' : 'none', sideW: sideWpx + 'px', brandPad: collapsed ? '8px' : '8px', asideBg: mobile ? '#EFEFEF' : 'transparent',
+      showLabels, groups, footPad: '0', footJustify: collapsed ? 'center' : 'flex-start', sysBg: s.screen === 'sistema' ? '#DE6B4E' : '#F2F2F2', sysFg: s.screen === 'sistema' ? '#FFFFFF' : '#DE6B4E',
+      goSistema: () => this.nav('sistema'), toggleCollapse: () => this.setState({ collapsed: !s.collapsed }), collapseIcon: collapsed ? 'left_panel_open' : 'left_panel_close', collapseLabel: collapsed ? 'Expandir menú' : 'Contraer menú',
+      mainPad: W < 600 ? '16px' : '28px', title, subtitle, showSearch: contentW >= 1080, showCaja: false, showUserName: contentW >= 900, userPad: contentW >= 900 ? '5px 10px 5px 5px' : '5px',
+      searchRef: this.searchRef, q: s.q, onQ: e => this.setState({ q: e.target.value }), onQKey: e => { if (e.key === 'Enter' && results[0]) results[0].go(); }, hasResults: results.length > 0, results,
+      alertCount: alerts.length, alerts, notifOpen: s.menu === 'notif', notifBg: s.menu === 'notif' ? '#fff' : 'transparent', toggleNotif: () => this.setState({ menu: s.menu === 'notif' ? null : 'notif' }),
+      goInv: () => this.nav('inventario'), goLista: () => this.nav('lista'), goUsuarios: () => this.nav('usuarios'), goConfig: () => this.nav('config'),
+      userOpen: s.menu === 'user', userBg: s.menu === 'user' ? '#fff' : 'transparent', toggleUser: () => this.setState({ menu: s.menu === 'user' ? null : 'user' }), logout: () => this.setState({ screen: 'login', menu: null }),
+      sales: s.sales, audit: s.audit, createSale: this.createSale, editSale: this.editSale, deleteSale: this.deleteSale, loading: !d, is, d, products: P, setProducts: this.setProducts, ctx: s.ctx, setCtx: this.setCtx, nav: this.nav, toast: this.toast, narrow,
+      showFab: (this.props.showAiFab ?? true) && !!d && !['asistente', 'ventas', 'sistema'].includes(s.screen), fabRight: '20px', fabOpen: s.fabOpen, toggleFab: () => this.setState({ fabOpen: !s.fabOpen }),
+      quickQs: quick.map(q => ({ q, go: () => this.nav('asistente', { aiQ: q, aiQid: Date.now() }) })),
+      toasts: s.toasts.map(t => ({ ...t, op: t.leaving ? 0 : 1, tf: t.leaving ? 'translateY(8px) scale(.98)' : 'none', icon: t.type === 'error' ? 'error' : t.type === 'info' ? 'info' : 'check', iconBg: t.type === 'error' ? '#F4A3AD' : t.type === 'info' ? '#DE6B4E' : '#8FD3A8' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

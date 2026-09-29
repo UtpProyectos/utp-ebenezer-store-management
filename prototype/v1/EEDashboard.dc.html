@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:20px;max-width:1320px;margin:0 auto">
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <h2 style="margin:0;font:700 28px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Buen día, Rosa</h2>
+      <p style="margin:0;font:400 15px/1.5 'Figtree';color:#6B6862">La caja abrió a las 06:00. Hay {{ attnCount }} cosas que revisar hoy.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button onClick="{{ goIngreso }}" style="display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:600 14px 'Figtree';cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#FBFAF8" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">local_shipping</span>Registrar ingreso</button>
+      <button onClick="{{ goVentas }}" style="display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:10px;border:none;background:#1C1B19;color:#fff;font:600 14px 'Figtree';cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#3A3833" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add_shopping_cart</span>Nueva venta</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));background:#fff;border:1px solid #E7E4DE;border-radius:16px;overflow:hidden">
+    <div style="padding:20px 22px;display:flex;flex-direction:column;gap:8px;border-right:1px solid #EFECE7">
+      <span style="font:600 13px 'Figtree';color:#6B6862">Ventas de hoy</span>
+      <span style="font:700 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ ventasHoy }}</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;font:600 13px 'Figtree';color:#1E6A40"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">arrow_upward</span>13% vs. ayer</span>
+    </div>
+    <div style="padding:20px 22px;display:flex;flex-direction:column;gap:8px;border-right:1px solid #EFECE7">
+      <span style="font:600 13px 'Figtree';color:#6B6862">Ingresos de mercadería</span>
+      <span style="font:700 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums">S/ 99.60</span>
+      <span style="font:500 13px 'Figtree';color:#6B6862">2 lotes registrados hoy</span>
+    </div>
+    <div style="padding:20px 22px;display:flex;flex-direction:column;gap:8px;border-right:1px solid #EFECE7">
+      <span style="font:600 13px 'Figtree';color:#6B6862">Productos vendidos</span>
+      <span style="font:700 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums">112</span>
+      <span style="font:500 13px 'Figtree';color:#6B6862">en 38 ventas · ticket prom. S/ 12.80</span>
+    </div>
+    <button onClick="{{ goInvCrit }}" style="padding:20px 22px;display:flex;flex-direction:column;gap:8px;border:none;background:#FDF6F4;text-align:left;cursor:pointer;transition:background-color 150ms ease" style-hover="background:#FCE8E5">
+      <span style="font:600 13px 'Figtree';color:#A3281C">Stock crítico</span>
+      <span style="font:700 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:#A3281C">{{ critCount }}</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;font:600 13px 'Figtree';color:#A3281C">Ver productos<span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">arrow_forward</span></span>
+    </button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:{{ colsA }};gap:20px">
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:3px"><h3 style="margin:0;font:700 17px 'Figtree'">Ventas de los últimos 7 días</h3><span style="font:500 13px 'Figtree';color:#6B6862">Total semana {{ weekTotal }} · mejor día sábado</span></div>
+        <span style="font:500 12px 'Figtree';color:#8A867F">Pasa el cursor sobre una barra</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:end;height:200px">
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="7">
+          <div style="height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px">
+            <span style="font:600 12px 'Figtree';color:{{ b.labelColor }};font-variant-numeric:tabular-nums">{{ b.v }}</span>
+            <div title="{{ b.v }}" style="width:100%;max-width:56px;height:{{ b.h }};border-radius:8px 8px 4px 4px;background:{{ b.bg }};transition:filter 150ms ease" style-hover="filter:brightness(.92)"></div>
+            <span style="font:{{ b.w }} 12px 'Figtree';color:#6B6862">{{ b.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:18px 20px 12px;display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;font:700 17px 'Figtree'">Requieren atención</h3><span style="padding:3px 9px;border-radius:999px;background:#FCE8E5;color:#A3281C;font:700 12px 'Figtree'">{{ attnCount }}</span></div>
+      <div style="display:flex;flex-direction:column;padding:0 8px;flex:1">
+        <sc-for list="{{ attn }}" as="a" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px">
+            <span style="width:8px;height:8px;border-radius:50%;background:{{ a.dot }};flex:none"></span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 14px/1.3 'Figtree';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</span><span style="font:500 12px 'Figtree';color:#6B6862">{{ a.msg }}</span></div>
+            <span style="padding:3px 8px;border-radius:6px;background:{{ a.bg }};color:{{ a.fg }};font:600 11px 'Figtree';white-space:nowrap">{{ a.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:8px;padding:14px 20px;border-top:1px solid #EFECE7;background:#FBFAF8">
+        <button onClick="{{ goInv }}" style="flex:1;height:38px;border-radius:9px;border:1px solid #DCD8D0;background:#fff;font:600 13px 'Figtree';cursor:pointer" style-hover="background:#F7F6F3" style-active="transform:scale(.97)">Ver inventario</button>
+        <button onClick="{{ goLista }}" style="flex:1;height:38px;border-radius:9px;border:none;background:#1C1B19;color:#fff;font:600 13px 'Figtree';cursor:pointer" style-hover="background:#3A3833" style-active="transform:scale(.97)">Generar lista</button>
+      </div>
+    </section>
+  </div>
+
+  <div style="display:grid;grid-template-columns:{{ colsB }};gap:20px">
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+      <h3 style="margin:0;font:700 17px 'Figtree'">Más vendidos esta semana</h3>
+      <sc-for list="{{ top }}" as="t" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center">
+          <span style="font:700 13px 'Bricolage Grotesque',sans-serif;color:#8A867F">{{ t.rank }}</span>
+          <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span style="font:600 14px 'Figtree';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.name }}</span><div style="height:6px;border-radius:3px;background:#F2F0EC;overflow:hidden"><div style="height:100%;width:{{ t.pct }};background:#1C1B19;border-radius:3px"></div></div></div>
+          <span style="font:600 13px 'Figtree';color:#6B6862;font-variant-numeric:tabular-nums">{{ t.sold }} u.</span>
+        </div>
+      </sc-for>
+    </section>
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:4px">
+      <h3 style="margin:0 0 8px;font:700 17px 'Figtree'">Actividad reciente</h3>
+      <sc-for list="{{ act }}" as="a" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:44px 30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #F2F0EC">
+          <span style="font:600 12px 'Figtree';color:#8A867F;font-variant-numeric:tabular-nums">{{ a.t }}</span>
+          <span style="width:30px;height:30px;border-radius:8px;background:#F3F1ED;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#6B6862">{{ a.icon }}</span>
+          <div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:500 13px/1.3 'Figtree';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.txt }}</span><span style="font:500 11px 'Figtree';color:#8A867F">{{ a.who }}</span></div>
+          <span style="font:600 13px 'Figtree';font-variant-numeric:tabular-nums">{{ a.amt }}</span>
+        </div>
+      </sc-for>
+    </section>
+    <section style="background:radial-gradient(120% 90% at 100% 0%,rgba(228,112,63,.16) 0%,rgba(228,112,63,0) 55%),radial-gradient(100% 80% at 0% 100%,rgba(139,123,234,.12) 0%,rgba(139,123,234,0) 60%),#FFFFFF;border:1px solid #E7E4DE;color:#1C1B19;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#E4703F,#8B7BEA);color:#FFFFFF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-variation-settings:'FILL' 1">auto_awesome</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 15px 'Figtree';color:#1C1B19">Asistente Eben-Ezer</span><span style="font:500 12px 'Figtree';color:#6B6862">Responde con los datos de tu tienda</span></div></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ aiQs }}" as="q" hint-placeholder-count="4">
+          <button onClick="{{ q.go }}" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;border-radius:10px;border:1px solid #E7E4DE;background:rgba(255,255,255,.72);color:#1C1B19;font:500 13px/1.3 'Figtree';text-align:left;cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#FFFFFF" style-active="transform:scale(.98)">{{ q.q }}<span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#E4703F">arrow_forward</span></button>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], nav = this.props.nav || (() => {});
+    if (!d) return {};
+    const narrow = this.props.narrow;
+    const crit = P.filter(p => d.status(p) === 'critico');
+    const order = { vencido: 0, critico: 1, vence: 2, bajo: 3 };
+    const attnList = P.filter(p => d.status(p) !== 'normal').sort((a, b) => order[d.status(a)] - order[d.status(b)]);
+    const max = Math.max(...d.sales7.map(x => x.v));
+    const top = [...P].sort((a, b) => b.sold - a.sold).slice(0, 5);
+    const topMax = top[0]?.sold || 1;
+    const qs = ['¿Qué productos debo comprar hoy?', '¿Qué productos tienen stock crítico?', '¿Qué se vendió más esta semana?', '¿Qué productos están próximos a vencer?'];
+    return {
+      ventasHoy: d.money(486.4), critCount: crit.length, attnCount: attnList.length,
+      colsA: narrow ? '1fr' : 'minmax(0,1.55fr) minmax(0,1fr)', colsB: narrow ? '1fr' : 'repeat(auto-fit,minmax(280px,1fr))',
+      weekTotal: d.money(d.sales7.reduce((a, b) => a + b.v, 0)),
+      bars: d.sales7.map((x, i) => { const today = i === d.sales7.length - 1; return { d: x.d, v: Math.round(x.v), h: Math.round(x.v / max * 150) + 'px', bg: today ? '#E4703F' : '#E3DFD8', w: today ? 700 : 500, labelColor: today ? '#1C1B19' : '#8A867F' }; }),
+      attn: attnList.slice(0, 6).map(p => { const st = d.status(p), m = d.STATUS[st], dt = d.daysTo(p.exp); return { name: p.name, label: m.label, bg: m.bg, fg: m.fg, dot: st === 'vencido' ? '#A3281C' : m.dot, msg: st === 'vencido' ? `Venció hace ${-dt} días` : st === 'vence' ? `Vence en ${dt} días` : `Quedan ${p.stock} · mínimo ${p.min}` }; }),
+      top: top.map((p, i) => ({ rank: i + 1, name: p.name, sold: p.sold, pct: Math.round(p.sold / topMax * 100) + '%' })),
+      act: d.activity,
+      aiQs: qs.map(q => ({ q, go: () => nav('asistente', { aiQ: q, aiQid: Date.now() }) })),
+      goVentas: () => nav('ventas'), goIngreso: () => nav('ingresos'), goInv: () => nav('inventario'), goInvCrit: () => nav('inventario', { invFilter: 'critico' }), goLista: () => nav('lista'),
+    };
+  }
+}
+</script>
+</body>
+</html>

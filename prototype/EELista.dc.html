@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:16px;max-width:1640px;margin:0 auto">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button onClick="{{ goInv }}" style="display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 6px;border-radius:999px;border:none;background:#FFFFFF;color:#111111;font:600 15px 'Plus Jakarta Sans';cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#FAFAFA" style-active="transform:scale(.97)"><span style="width:32px;height:32px;border-radius:50%;background:#F2F2F2;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_back</span>Inventario</button>
+    <span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Paso 2 de 3 · después registras el ingreso</span>
+  </div>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;padding:12px;background:#FFFFFF;border-radius:32px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-radius:24px;background:#DE6B4E;color:#FFFFFF">
+      <div style="display:flex;flex-direction:column;gap:6px"><span style="font:700 32px/1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ total }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#FFFFFF">Costo estimado</span></div>
+      <span style="width:44px;height:44px;flex:none;border-radius:50%;background:#FFFFFF;color:#DE6B4E;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">payments</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-radius:24px;background:#F5F5F5">
+      <div style="display:flex;flex-direction:column;gap:6px"><span style="font:700 32px/1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em">{{ nItems }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Productos en la lista</span></div>
+      <span style="width:44px;height:44px;flex:none;border-radius:50%;background:#FFFFFF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">inventory_2</span>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:10px;padding:18px 20px;border-radius:24px;background:#F5F5F5">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font:700 32px/1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em">{{ nBought }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Comprados</span></div>
+      <div style="height:10px;border-radius:999px;background:#FFFFFF;overflow:hidden"><div style="height:100%;width:{{ pct }};border-radius:999px;background:#111111;transition:width 260ms cubic-bezier(.23,1,.32,1)"></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;justify-content:center">
+      <button onClick="{{ goIngreso }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;padding:0 6px 0 20px;border-radius:999px;border:none;background:#111111;color:#FFFFFF;font:600 16px 'Plus Jakarta Sans';cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#333333" style-active="transform:scale(.97)">Registrar ingreso<span style="width:44px;height:44px;border-radius:50%;background:#DE6B4E;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">arrow_forward</span></button>
+      <button onClick="{{ print }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 16px;border-radius:999px;border:none;background:#F2F2F2;color:#111111;font:600 16px 'Plus Jakarta Sans';cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#E9E9E9" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">print</span>Imprimir lista</button>
+    </div>
+  </section>
+
+  <sc-if value="{{ empty }}">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:64px 20px;text-align:center;background:#FFFFFF;border-radius:32px">
+      <span style="width:64px;height:64px;border-radius:50%;background:#F2F2F2;color:#DE6B4E;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:30px;line-height:1">task_alt</span>
+      <span style="font:700 20px 'Plus Jakarta Sans'">Tu lista está vacía</span>
+      <span style="font:400 16px/1.5 'Plus Jakarta Sans';color:#6B6B6B;max-width:340px">Selecciona productos en Inventario o deja que el sistema sugiera los que están con stock bajo.</span>
+      <button onClick="{{ goInv }}" style="margin-top:4px;height:52px;padding:0 22px;border-radius:999px;border:none;background:#DE6B4E;color:#FFFFFF;font:600 16px 'Plus Jakarta Sans';cursor:pointer">Ir a inventario</button>
+    </div>
+  </sc-if>
+
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+    <section style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border-radius:32px">
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 10px 10px;flex-wrap:wrap">
+        <span style="width:44px;height:44px;flex:none;border-radius:50%;background:#F2F2F2;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#111111">storefront</span>
+        <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0"><span style="font:700 18px 'Plus Jakarta Sans'">{{ g.prov }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ g.meta }}</span></div>
+        <span style="padding:8px 14px;border-radius:999px;background:#F5F5F5;font:700 17px 'Plus Jakarta Sans';font-variant-numeric:tabular-nums">{{ g.total }}</span>
+      </div>
+      <sc-for list="{{ g.items }}" as="r">
+        <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:12px 14px;border-radius:24px;background:{{ r.rowBg }};opacity:{{ r.op }};transition:opacity 200ms ease,background-color 200ms ease">
+          <button onClick="{{ r.toggle }}" aria-label="Marcar como comprado" style="width:36px;height:36px;border-radius:50%;border:2px solid {{ r.chkBorder }};background:{{ r.chkBg }};color:#FFFFFF;display:grid;place-items:center;cursor:pointer;transition:background-color 150ms ease,border-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.9)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;opacity:{{ r.checkOp }};transition:opacity 150ms ease">check</span></button>
+          <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 17px 'Plus Jakarta Sans';text-decoration:{{ r.deco }}">{{ r.name }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">Quedan {{ r.stock }} · sugerido {{ r.sug }}</span></div>
+          <span style="justify-self:start;padding:5px 12px;border-radius:999px;background:{{ r.pbg }};color:{{ r.pfg }};font:600 14px 'Plus Jakarta Sans'">{{ r.prio }}</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;height:44px;width:132px;padding:0 4px;border-radius:999px;background:#FFFFFF">
+            <button onClick="{{ r.dec }}" aria-label="Menos" style="width:36px;height:36px;border-radius:50%;border:none;background:#F2F2F2;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;display:grid;place-items:center" style-hover="background:#E6E6E6" style-active="transform:scale(.92)">remove</button>
+            <input value="{{ r.qty }}" onChange="{{ r.set }}" inputmode="numeric" aria-label="Cantidad a comprar" style="width:44px;height:100%;border:none;background:transparent;text-align:center;font:700 17px 'Plus Jakarta Sans';outline:none;font-variant-numeric:tabular-nums"></input>
+            <button onClick="{{ r.inc }}" aria-label="Más" style="width:36px;height:36px;border-radius:50%;border:none;background:#111111;color:#FFFFFF;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;display:grid;place-items:center" style-hover="background:#333333" style-active="transform:scale(.92)">add</button>
+          </div>
+          <span style="font:700 17px 'Plus Jakarta Sans';text-align:right;font-variant-numeric:tabular-nums">{{ r.cost }}</span>
+          <sc-if value="{{ r.showActions }}"><button onClick="{{ r.remove }}" title="Quitar de la lista" aria-label="Quitar de la lista" style="width:40px;height:40px;border-radius:50%;border:none;background:#FFFFFF;cursor:pointer;color:#6B6B6B;display:grid;place-items:center;transition:background-color 150ms ease,color 150ms ease" style-hover="background:#FDE7EA;color:#B31F2E"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">close</span></button></sc-if>
+        </div>
+      </sc-for>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ids: null, qty: {}, bought: [] };
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], nav = this.props.nav || (() => {}), toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, ctx = this.props.ctx || {};
+    const ids = s.ids || (ctx.buyList && ctx.buyList.length ? ctx.buyList : P.filter(p => ['critico', 'bajo'].includes(d.status(p))).map(p => p.id));
+    const items = ids.map(i => P.find(p => p.id === i)).filter(Boolean);
+    const q = p => s.qty[p.id] ?? Math.max(1, d.suggested(p));
+    const setQ = (p, n) => this.setState(x => ({ qty: { ...x.qty, [p.id]: Math.max(0, n) } }));
+    const byProv = {};
+    items.forEach(p => (byProv[p.prov] = byProv[p.prov] || []).push(p));
+    const narrow = this.props.narrow;
+    const prio = p => { const k = d.status(p); return k === 'critico' ? ['Alta', '#FDE7EA', '#B31F2E'] : k === 'bajo' ? ['Media', '#FFF1D9', '#8A5200'] : ['Baja', '#EFEFEF', '#6B6B6B']; };
+    const total = items.filter(p => !s.bought.includes(p.id)).reduce((a, p) => a + q(p) * p.cost, 0);
+    return {
+      nItems: items.length, total: d.money(total), nBought: `${s.bought.length}/${items.length}`, pct: items.length ? Math.round(s.bought.length / items.length * 100) + '%' : '0%', empty: items.length === 0,
+      cols: narrow ? '36px minmax(0,1fr) auto' : '36px minmax(0,2fr) 76px 132px 96px 40px',
+      groups: Object.entries(byProv).map(([prov, arr]) => {
+        const pv = d.providers.find(x => x.name === prov);
+        return {
+          prov, meta: pv ? `${pv.type} · ${pv.phone} · última compra ${pv.last}` : '', total: d.money(arr.reduce((a, p) => a + q(p) * p.cost, 0)),
+          items: arr.map(p => {
+            const b = s.bought.includes(p.id), [pr, pbg, pfg] = prio(p);
+            return {
+              name: p.name, stock: p.stock, min: p.min, sug: d.suggested(p), qty: q(p), cost: d.money(q(p) * p.cost), prio: pr, pbg, pfg,
+              op: b ? 0.55 : 1, deco: b ? 'line-through' : 'none', chkBg: b ? '#DE6B4E' : '#FFFFFF', chkBorder: b ? '#DE6B4E' : '#D0D0D0', rowBg: b ? '#FAFAFA' : '#F5F5F5', checkOp: b ? 1 : 0, showActions: !narrow,
+              toggle: () => { this.setState(x => ({ bought: b ? x.bought.filter(i => i !== p.id) : [...x.bought, p.id] })); if (!b) toast(`${p.name} marcado como comprado`); },
+              dec: () => setQ(p, q(p) - 1), inc: () => setQ(p, q(p) + 1), set: e => setQ(p, parseInt(e.target.value) || 0),
+              remove: () => this.setState({ ids: ids.filter(i => i !== p.id) }),
+            };
+          }),
+        };
+      }),
+      goInv: () => nav('inventario'),
+      goIngreso: () => nav('ingresos', { prefillId: (items.find(p => s.bought.includes(p.id)) || items[0] || {}).id, fromList: true }),
+      print: () => toast('Preparando lista para imprimir…', 'info'),
+    };
+  }
+}
+</script>
+</body>
+</html>

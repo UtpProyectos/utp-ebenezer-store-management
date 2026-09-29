@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:16px;max-width:1180px;margin:0 auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="position:relative;display:flex;align-items:center;flex:1 1 260px;max-width:420px">
+      <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">search</span>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar proveedor o contacto" style="width:100%;height:50px;padding:0 12px 0 40px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input>
+    </div>
+    <button onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 18px;border-radius:10px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#A8431A" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Nuevo proveedor</button>
+  </div>
+  <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;overflow:hidden">
+    <sc-for list="{{ provs }}" as="p" hint-placeholder-count="6">
+      <div style="border-bottom:1px solid #F2F0EC;opacity:{{ p.op }}">
+        <button onClick="{{ p.toggle }}" aria-expanded="{{ p.open }}" style="width:100%;display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:14px 16px;border:none;background:{{ p.bg }};text-align:left;cursor:pointer;transition:background-color 120ms ease" style-hover="background:#FBFAF8">
+          <div style="display:flex;align-items:center;gap:12px;min-width:0">
+            <span style="width:40px;height:40px;flex:none;border-radius:11px;background:#F3F1ED;display:grid;place-items:center;font:700 16px 'Bricolage Grotesque',sans-serif;color:#45423D">{{ p.ini }}</span>
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 17px 'Figtree';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</span><span style="font:500 15px 'Figtree';color:#6B6862">{{ p.contact }} · {{ p.phone }}</span></div>
+          </div>
+          <sc-if value="{{ wide }}"><span style="justify-self:start;padding:3px 10px;border-radius:999px;background:#F2F0EC;font:600 14px 'Figtree';color:#45423D">{{ p.type }}</span></sc-if>
+          <sc-if value="{{ wide }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Figtree';color:#6B6862">Última compra</span><span style="font:600 16px 'Figtree'">{{ p.last }}</span></div></sc-if>
+          <sc-if value="{{ wide }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Figtree';color:#6B6862">Compras</span><span style="font:600 16px 'Figtree'">{{ p.count }}</span></div></sc-if>
+          <sc-if value="{{ wide }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Figtree';color:#6B6862">Productos</span><span style="font:600 16px 'Figtree'">{{ p.nProd }}</span></div></sc-if>
+          <span style="justify-self:end;display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:999px;background:{{ p.stBg }};color:{{ p.stFg }};font:600 14px 'Figtree'">{{ p.stLabel }}</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862;transform:{{ p.chev }};transition:transform 200ms cubic-bezier(.23,1,.32,1)">expand_more</span></span>
+        </button>
+        <sc-if value="{{ p.open }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding:4px 16px 18px 68px;background:#FBFAF8;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+            <div style="display:flex;flex-direction:column;gap:10px;font:500 15px/1.45 'Figtree'">
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="color:#6B6862">Dirección</span><span>{{ p.addressL }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="color:#6B6862">Observaciones</span><span>{{ p.noteL }}</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 15px 'Figtree';color:#6B6862">Productos asociados</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ p.prods }}" as="x"><span style="padding:4px 10px;border-radius:999px;background:#fff;border:1px solid #E7E4DE;font:500 14px 'Figtree'">{{ x }}</span></sc-for></div></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">
+              <button onClick="{{ p.call }}" style="height:46px;padding:0 12px;border-radius:9px;border:1px solid #DCD8D0;background:#fff;font:600 15px 'Figtree';cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#F7F6F3"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">call</span>Llamar</button>
+              <button onClick="{{ p.buy }}" style="height:46px;padding:0 12px;border-radius:9px;border:none;background:#C4501F;color:#fff;font:600 15px 'Figtree';cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#A8431A"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">local_shipping</span>Registrar compra</button>
+              <button onClick="{{ p.toggleActive }}" style="height:46px;padding:0 12px;border-radius:9px;border:none;background:transparent;color:{{ p.actFg }};font:600 15px 'Figtree';cursor:pointer" style-hover="background:#F2F0EC">{{ p.actLabel }}</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ modal }}">
+    <div onClick="{{ close }}" style="position:fixed;inset:0;z-index:70;background:rgba(28,27,25,.45);display:grid;place-items:center;padding:16px;animation:eeFade 180ms ease">
+      <div onClick="{{ stop }}" role="dialog" aria-modal="true" style="width:100%;max-width:480px;background:#fff;border-radius:20px;box-shadow:0 30px 60px -20px rgba(28,27,25,.45);animation:eePop 220ms cubic-bezier(.23,1,.32,1);overflow:hidden">
+        <div style="padding:20px 22px 4px"><h3 style="margin:0;font:700 20px 'Bricolage Grotesque',sans-serif">Nuevo proveedor</h3></div>
+        <div style="padding:14px 22px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Nombre</span><input value="{{ fName }}" onChange="{{ onName }}" placeholder="Ej. Distribuidora Los Andes" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 17px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Contacto</span><input placeholder="Nombre" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 17px 'Figtree';outline:none;min-width:0" style-focus="border-color:#C4501F"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Teléfono</span><input placeholder="9__ ___ ___" inputmode="tel" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 17px 'Figtree';outline:none;min-width:0" style-focus="border-color:#C4501F"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Tipo</span><select style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree'"><option>Mayorista</option><option>Distribuidor</option><option>Mercado</option><option>Autoservicio</option><option>Local</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Dirección <span style="font-weight:500;color:#6B6862">(opcional)</span></span><input style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 17px 'Figtree';outline:none;min-width:0" style-focus="border-color:#C4501F"></input></label>
+          <label style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Observaciones</span><textarea rows="2" placeholder="Días de visita, pedido mínimo…" style="padding:10px 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 16px/1.5 'Figtree';outline:none;resize:vertical" style-focus="border-color:#C4501F"></textarea></label>
+        </div>
+        <div style="display:flex;gap:10px;padding:14px 22px;background:#FBFAF8;border-top:1px solid #EFECE7">
+          <button onClick="{{ close }}" style="flex:1;height:44px;border-radius:11px;border:1px solid #DCD8D0;background:#fff;font:600 16px 'Figtree';cursor:pointer">Cancelar</button>
+          <button onClick="{{ save }}" style="flex:1;height:44px;border-radius:11px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-active="transform:scale(.97)">Guardar proveedor</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', open: 0, provs: null, modal: false, fName: '' };
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], toast = this.props.toast || (() => {}), nav = this.props.nav || (() => {});
+    if (!d) return {};
+    const s = this.state, provs = s.provs || d.providers, wide = !this.props.narrow;
+    const q = s.q.toLowerCase();
+    return {
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), wide, cols: wide ? 'minmax(240px,2fr) 110px 110px 80px 80px auto' : 'minmax(0,1fr) auto',
+      provs: provs.map((p, i) => ({ p, i })).filter(({ p }) => !q || p.name.toLowerCase().includes(q) || p.contact.toLowerCase().includes(q)).map(({ p, i }) => {
+        const prods = P.filter(x => x.prov === p.name).map(x => x.name), open = s.open === i;
+        return { ...p, ini: p.name.split(' ').map(w => w[0]).slice(0, 2).join(''), nProd: prods.length, prods: prods.length ? prods : ['Sin productos asociados'], open, bg: open ? '#FBFAF8' : '#fff', chev: open ? 'rotate(180deg)' : 'none', op: p.active ? 1 : 0.6,
+          stLabel: p.active ? 'Activo' : 'Inactivo', stBg: p.active ? '#E4F3EA' : '#F2F0EC', stFg: p.active ? '#1E6A40' : '#6B6862',
+          addressL: p.address || 'No registrada', noteL: p.note || 'Sin observaciones',
+          toggle: () => this.setState({ open: open ? null : i }), call: () => toast(`Llamando a ${p.contact} · ${p.phone}`, 'info'), buy: () => nav('ingresos'),
+          actLabel: p.active ? 'Desactivar' : 'Activar', actFg: p.active ? '#A3281C' : '#1C1B19',
+          toggleActive: () => { this.setState({ provs: provs.map((x, j) => j === i ? { ...x, active: !x.active } : x) }); toast(`${p.name} ${p.active ? 'desactivado' : 'activado'}`, 'info'); } };
+      }),
+      openNew: () => this.setState({ modal: true, fName: '' }), modal: s.modal, close: () => this.setState({ modal: false }), stop: e => e.stopPropagation(),
+      fName: s.fName, onName: e => this.setState({ fName: e.target.value }),
+      save: () => { if (!s.fName.trim()) { toast('Escribe el nombre del proveedor', 'error'); return; } this.setState({ modal: false, provs: [{ name: s.fName.trim(), type: 'Mayorista', contact: '—', phone: '—', address: '', last: '—', count: 0, active: true, note: '' }, ...provs], open: 0 }); toast('Proveedor guardado'); },
+    };
+  }
+}
+</script>
+</body>
+</html>

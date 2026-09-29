@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:16px;max-width:1320px;margin:0 auto">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;flex:1 1 260px">
+      <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">search</span>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar producto o código" style="width:100%;height:50px;padding:0 12px 0 40px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input>
+    </div>
+    <select value="{{ cat }}" onChange="{{ onCat }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none;cursor:pointer"><sc-for list="{{ catOpts }}" as="c"><option value="{{ c }}">{{ c }}</option></sc-for></select>
+    <div style="display:flex;padding:3px;border-radius:10px;background:#EEEBE6">
+      <sc-for list="{{ stOpts }}" as="o"><button onClick="{{ o.go }}" style="height:44px;padding:0 12px;border-radius:8px;border:none;background:{{ o.bg }};box-shadow:{{ o.sh }};font:600 15px 'Figtree';color:{{ o.fg }};cursor:pointer;transition:background-color 150ms ease">{{ o.label }}</button></sc-for>
+    </div>
+    <button onClick="{{ openNew }}" style="margin-left:auto;display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 18px;border-radius:10px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#A8431A" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Nuevo producto</button>
+  </div>
+
+  <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;overflow:hidden">
+    <div style="overflow-x:auto">
+      <div style="min-width:{{ minW }}">
+        <sc-if value="{{ wideTable }}">
+        <div style="display:grid;grid-template-columns:minmax(240px,2fr) 110px 100px 170px 120px;gap:14px;padding:14px 18px;background:#FBFAF8;border-bottom:1px solid #EFECE7;font:600 15px 'Figtree';color:#45423D">
+          <span>Producto</span><span style="text-align:right">Precio</span><span style="text-align:right">Cantidad</span><span>¿Se vende?</span><span></span>
+        </div>
+        </sc-if>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+          <div style="display:grid;grid-template-columns:{{ rowCols }};gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid #F2F0EC;opacity:{{ r.op }};transition:opacity 200ms ease,background-color 120ms ease" style-hover="background:#FBFAF8">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="width:34px;height:34px;flex:none;border-radius:9px;background:#F3F1ED;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#6B6862">{{ r.icon }}</span><div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:600 17px/1.3 'Figtree'">{{ r.name }}</span><span style="font:500 15px 'Figtree';color:#6B6862">{{ r.sub }}</span></div></div>
+                        <span style="font:700 17px 'Figtree';text-align:right;font-variant-numeric:tabular-nums">{{ r.priceL }}</span>
+                        <sc-if value="{{ wideTable }}"><span style="font:600 16px 'Figtree';text-align:right;font-variant-numeric:tabular-nums;color:{{ r.stockFg }}">{{ r.stock }}</span></sc-if>
+            <button onClick="{{ r.toggle }}" role="switch" aria-checked="{{ r.active }}" style="display:flex;align-items:center;gap:8px;border:none;background:transparent;cursor:pointer;padding:0;font:600 15px 'Figtree';color:{{ r.stFg }}">
+              <span style="position:relative;width:48px;height:28px;border-radius:999px;background:{{ r.trackBg }};transition:background-color 180ms ease;flex:none"><span style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transform:{{ r.knobTf }};transition:transform 180ms cubic-bezier(.23,1,.32,1)"></span></span>
+              <sc-if value="{{ wideTable }}">{{ r.stLabel }}</sc-if>
+            </button>
+            <div style="display:flex;justify-content:flex-end;gap:2px">
+              <button onClick="{{ r.edit }}" style="height:46px;padding:0 16px;border-radius:12px;border:1.5px solid #DCD8D0;background:#fff;cursor:pointer;font:600 15px 'Figtree';display:flex;align-items:center;gap:6px" style-hover="background:#F7F6F3" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">edit</span>Editar</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="padding:12px 16px;font:500 15px 'Figtree';color:#6B6862;background:#FBFAF8">{{ countLabel }}</div>
+  </div>
+
+  <sc-if value="{{ drawer }}">
+    <div onClick="{{ close }}" style="position:fixed;inset:0;z-index:70;background:rgba(28,27,25,.4);animation:eeFade 200ms ease"></div>
+    <aside role="dialog" aria-modal="true" style="position:fixed;top:0;right:0;bottom:0;z-index:71;width:min(460px,100vw);background:#fff;box-shadow:-20px 0 50px -20px rgba(28,27,25,.35);display:flex;flex-direction:column;animation:eeDrawer 320ms cubic-bezier(.32,.72,0,1)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #EFECE7">
+        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Figtree';color:#6B6862">{{ drawerKicker }}</span><h3 style="margin:0;font:700 20px 'Bricolage Grotesque',sans-serif">{{ drawerTitle }}</h3></div>
+        <button onClick="{{ close }}" aria-label="Cerrar" style="width:38px;height:38px;border-radius:10px;border:none;background:#F3F1ED;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px" style-hover="background:#EAE7E1">close</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:16px">
+        <sc-if value="{{ isEdit }}">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <div style="padding:12px;border-radius:12px;background:#F7F6F3;display:flex;flex-direction:column;gap:3px"><span style="font:500 14px 'Figtree';color:#6B6862">Stock</span><span style="font:700 18px 'Figtree'">{{ f.stock }}</span></div>
+            <div style="padding:12px;border-radius:12px;background:#F7F6F3;display:flex;flex-direction:column;gap:3px"><span style="font:500 14px 'Figtree';color:#6B6862">Vendidos (7 d)</span><span style="font:700 18px 'Figtree'">{{ f.sold }}</span></div>
+            <div style="padding:12px;border-radius:12px;background:#F7F6F3;display:flex;flex-direction:column;gap:3px"><span style="font:500 14px 'Figtree';color:#6B6862">Margen</span><span style="font:700 18px 'Figtree'">{{ fMargin }}</span></div>
+          </div>
+        </sc-if>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Nombre <span style="color:#C23B2E">*</span></span><input value="{{ f.name }}" onChange="{{ on.name }}" placeholder="Ej. Galletas de vainilla 6 unid." style="height:50px;padding:0 12px;border-radius:10px;border:1px solid {{ nameBorder }};font:500 17px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input><sc-if value="{{ nameErr }}"><span style="font:500 14px 'Figtree';color:#A3281C">El nombre es obligatorio.</span></sc-if></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Categoría</span><select value="{{ f.cat }}" onChange="{{ on.cat }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none"><sc-for list="{{ catNames }}" as="c"><option value="{{ c }}">{{ c }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Unidad de medida</span><select value="{{ f.unit }}" onChange="{{ on.unit }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none"><sc-for list="{{ units }}" as="u"><option value="{{ u }}">{{ u }}</option></sc-for></select></label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Descripción</span><textarea value="{{ f.desc }}" onChange="{{ on.desc }}" rows="2" placeholder="Opcional" style="padding:10px 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 16px/1.5 'Figtree';outline:none;resize:vertical" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></textarea></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Código de barras <span style="font-weight:500;color:#6B6862">(opcional)</span></span><div style="position:relative;display:flex;align-items:center"><span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">barcode</span><input value="{{ f.code }}" onChange="{{ on.code }}" placeholder="Escanea o escribe" style="width:100%;height:50px;padding:0 12px 0 40px;border-radius:10px;border:1px solid #DCD8D0;font:500 16px ui-monospace,Menlo,monospace;outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input></div></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Stock mínimo</span><input value="{{ f.min }}" onChange="{{ on.min }}" inputmode="numeric" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:600 17px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Precio de venta (S/) <span style="color:#C23B2E">*</span></span><input value="{{ f.price }}" onChange="{{ on.price }}" inputmode="decimal" placeholder="0.00" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid {{ priceBorder }};font:600 17px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:12px;border:1px solid #E7E4DE">
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'Figtree'">Producto activo</span><span style="font:500 14px 'Figtree';color:#6B6862">Los inactivos no aparecen en Ventas.</span></div>
+          <button onClick="{{ on.active }}" role="switch" aria-checked="{{ f.active }}" style="position:relative;width:44px;height:26px;border-radius:999px;border:none;background:{{ fTrack }};cursor:pointer;transition:background-color 180ms ease"><span style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transform:{{ fKnob }};transition:transform 180ms cubic-bezier(.23,1,.32,1)"></span></button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;padding:16px 22px;border-top:1px solid #EFECE7;background:#FBFAF8">
+        <button onClick="{{ close }}" style="flex:1;height:46px;border-radius:12px;border:1px solid #DCD8D0;background:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#F7F6F3">Cancelar</button>
+        <button onClick="{{ save }}" style="flex:2;height:46px;border-radius:12px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#A8431A" style-active="transform:scale(.97)">{{ saveLabel }}</button>
+      </div>
+    </aside>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', cat: 'Todas', st: 'Todos', drawer: null, f: {}, tried: false };
+  open = (p) => this.setState({ drawer: p ? 'edit' : 'new', tried: false, f: p ? { ...p, price: p.price.toFixed(2), min: String(p.min), desc: p.desc || '' } : { name: '', cat: 'Abarrotes', unit: 'unid.', desc: '', code: '', min: '10', price: '', active: true } });
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, f = s.f, narrow = this.props.narrow;
+    const icons = Object.fromEntries(d.categories.map(c => [c.name, c.icon]));
+    const q = s.q.trim().toLowerCase();
+    const list = P.filter(p => (!q || p.name.toLowerCase().includes(q) || p.code.includes(q)) && (s.cat === 'Todas' || p.cat === s.cat) && (s.st === 'Todos' || (s.st === 'Activos') === p.active));
+    const upd = k => e => this.setState(x => ({ f: { ...x.f, [k]: e.target.value } }));
+    const fp = parseFloat(f.price) || 0;
+    const save = () => {
+      if (!f.name || !fp) { this.setState({ tried: true }); return; }
+      const clean = { ...f, price: fp, min: parseInt(f.min) || 0 };
+      if (s.drawer === 'new') this.props.setProducts(ps => [{ ...clean, id: Date.now(), stock: 0, cost: 0, exp: null, prov: '—', sold: 0 }, ...ps]);
+      else this.props.setProducts(ps => ps.map(p => p.id === f.id ? { ...p, ...clean } : p));
+      toast(s.drawer === 'new' ? `Producto “${f.name}” creado` : 'Cambios guardados');
+      this.setState({ drawer: null });
+    };
+    const wide = !narrow;
+    return {
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), cat: s.cat, onCat: e => this.setState({ cat: e.target.value }), catOpts: ['Todas', ...d.categories.map(c => c.name)],
+      stOpts: ['Todos', 'Activos', 'Inactivos'].map(l => { const on = s.st === l; return { label: l, go: () => this.setState({ st: l }), bg: on ? '#fff' : 'transparent', sh: on ? '0 1px 2px rgba(28,33,29,.12)' : 'none', fg: on ? '#1C1B19' : '#6B6862' }; }),
+      openNew: () => this.open(null), wideTable: wide, minW: wide ? '760px' : '0',
+      rowCols: wide ? 'minmax(240px,2fr) 110px 100px 170px 120px' : 'minmax(0,1fr) auto auto auto',
+      rows: list.map(p => { const m = p.cost ? (p.price - p.cost) / p.price : null; return {
+        name: p.name, sub: p.cat, icon: icons[p.cat] || 'shopping_basket', cat: p.cat,
+        priceL: d.money(p.price), costL: p.cost ? d.money(p.cost) : '—', margin: m === null ? '—' : Math.round(m * 100) + '%', mFg: m !== null && m < 0.2 ? '#8A5200' : '#1E6A40',
+        stock: p.stock, stockFg: d.status(p) === 'critico' ? '#A3281C' : '#1C1B19', active: p.active, op: p.active ? 1 : 0.55,
+        stLabel: p.active ? 'Sí, activo' : 'No, pausado', stFg: p.active ? '#1E6A40' : '#8A867F', trackBg: p.active ? '#C4501F' : '#D2CEC6', knobTf: p.active ? 'translateX(20px)' : 'none',
+        toggle: () => { this.props.setProducts(ps => ps.map(x => x.id === p.id ? { ...x, active: !x.active } : x)); toast(`${p.name} ${p.active ? 'desactivado' : 'activado'}`, 'info'); },
+        edit: () => this.open(p), view: () => this.open(p),
+      }; }),
+      countLabel: `Mostrando ${list.length} de ${P.length} productos`,
+      drawer: !!s.drawer, isEdit: s.drawer === 'edit', drawerKicker: s.drawer === 'edit' ? 'Editar producto' : 'Catálogo', drawerTitle: s.drawer === 'edit' ? f.name : 'Nuevo producto',
+      f, fMargin: f.cost && fp ? Math.round((fp - f.cost) / fp * 100) + '%' : '—',
+      on: { name: upd('name'), cat: upd('cat'), unit: upd('unit'), desc: upd('desc'), code: upd('code'), min: upd('min'), price: upd('price'), active: () => this.setState(x => ({ f: { ...x.f, active: !x.f.active } })) },
+      catNames: d.categories.map(c => c.name), units: ['unid.', 'caja', 'paquete', 'bolsa', 'botella', 'lata', 'kg', 'litro'],
+      nameErr: s.tried && !f.name, nameBorder: s.tried && !f.name ? '#C23B2E' : '#DCD8D0', priceBorder: s.tried && !fp ? '#C23B2E' : '#DCD8D0',
+      fTrack: f.active ? '#C4501F' : '#D2CEC6', fKnob: f.active ? 'translateX(18px)' : 'none',
+      close: () => this.setState({ drawer: null }), save, saveLabel: s.drawer === 'edit' ? 'Guardar cambios' : 'Crear producto',
+    };
+  }
+}
+</script>
+</body>
+</html>

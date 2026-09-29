@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:20px;max-width:1640px;margin:0 auto">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+    <div style="padding:16px 18px;border-radius:26px;background:#DE6B4E;color:#EFEFEF;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#DE6B4E">shield_person</span><span style="font:700 18px 'Plus Jakarta Sans';color:#fff">Administrador</span></div>
+      <span style="font:500 15px/1.5 'Plus Jakarta Sans';color:#C8C8C8">Acceso total: ventas, inventario, compras, precios, reportes, usuarios y configuración.</span>
+    </div>
+    <div style="padding:16px 18px;border-radius:26px;background:#fff;border:1px solid #FFFFFF;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#111111">point_of_sale</span><span style="font:700 18px 'Plus Jakarta Sans'">Cajero</span></div>
+      <span style="font:500 15px/1.5 'Plus Jakarta Sans';color:#6B6B6B">Registra ventas y consumo interno, consulta stock. No cambia precios ni ve costos.</span>
+    </div>
+  </div>
+  <div style="background:#fff;border:1px solid #FFFFFF;border-radius:26px;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #F2F2F2;gap:10px;flex-wrap:wrap">
+      <h3 style="margin:0;font:700 18px 'Plus Jakarta Sans'">{{ countL }}</h3>
+      <button onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 16px;border-radius:999px;border:none;background:#DE6B4E;color:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#C85A3F" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">person_add</span>Nuevo usuario</button>
+    </div>
+    <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:12px 16px;border-bottom:1px solid #F2F2F2;opacity:{{ u.op }}">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0"><span style="width:38px;height:38px;flex:none;border-radius:50%;background:{{ u.avBg }};color:{{ u.avFg }};display:grid;place-items:center;font:700 15px 'Plus Jakarta Sans'">{{ u.ini }}</span><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 16px 'Plus Jakarta Sans'">{{ u.name }}</span><span style="font:500 14px ui-monospace,Menlo,monospace;color:#6B6B6B">{{ u.user }}</span></div></div>
+        <select value="{{ u.role }}" onChange="{{ u.setRole }}" disabled="{{ u.isMe }}" style="height:44px;padding:0 10px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:600 15px 'Plus Jakarta Sans';cursor:pointer;justify-self:start"><option value="Administrador">Administrador</option><option value="Cajero">Cajero</option></select>
+        <sc-if value="{{ wide }}"><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">{{ u.last }}</span></sc-if>
+        <sc-if value="{{ wide }}"><span style="justify-self:start;display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:{{ u.stBg }};color:{{ u.stFg }};font:600 14px 'Plus Jakarta Sans'"><span style="width:6px;height:6px;border-radius:50%;background:{{ u.dot }}"></span>{{ u.stLabel }}</span></sc-if>
+        <div style="display:flex;justify-content:flex-end;gap:4px">
+          <sc-if value="{{ u.canToggle }}"><button onClick="{{ u.toggle }}" style="height:42px;padding:0 10px;border-radius:999px;border:none;background:transparent;color:{{ u.actFg }};font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#EFEFEF">{{ u.actLabel }}</button></sc-if>
+          <sc-if value="{{ u.isMe }}"><span style="padding:0 10px;font:600 14px 'Plus Jakarta Sans';color:#6B6B6B">Tú</span></sc-if>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ modal }}">
+    <div onClick="{{ close }}" style="position:fixed;inset:0;z-index:70;background:rgba(17,17,17,.45);display:grid;place-items:center;padding:16px;animation:eeFade 180ms ease">
+      <div onClick="{{ stop }}" role="dialog" aria-modal="true" style="width:100%;max-width:440px;background:#fff;border-radius:28px;box-shadow:0 30px 60px -20px rgba(17,17,17,.45);animation:eePop 220ms cubic-bezier(.23,1,.32,1);overflow:hidden">
+        <div style="padding:20px 22px 4px"><h3 style="margin:0;font:700 20px 'Plus Jakarta Sans',sans-serif">Nuevo usuario</h3></div>
+        <div style="padding:14px 22px 20px;display:flex;flex-direction:column;gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Nombre completo</span><input value="{{ fName }}" onChange="{{ onName }}" placeholder="Ej. Carlos Mendoza" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Usuario</span><input value="{{ fUser }}" readonly="{{ true }}" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #FFFFFF;background:#F5F5F5;font:500 16px ui-monospace,Menlo,monospace;outline:none;color:#6B6B6B"></input></label>
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="font:600 15px 'Plus Jakarta Sans'">Rol</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <sc-for list="{{ roles }}" as="r"><label style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;border:1.5px solid {{ r.border }};background:{{ r.bg }};cursor:pointer;font:600 16px 'Plus Jakarta Sans';transition:border-color 150ms ease,background-color 150ms ease"><input type="radio" name="rol" checked="{{ r.on }}" onChange="{{ r.go }}" style="accent-color:#DE6B4E;width:18px;height:18px;margin:0"></input>{{ r.label }}</label></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;padding:12px;border-radius:14px;background:#F5F5F5;font:500 15px/1.45 'Plus Jakarta Sans';color:#3A3A3A"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1.1;color:#6B6B6B">key</span>Se generará una contraseña temporal. El usuario la cambiará al primer ingreso.</div>
+        </div>
+        <div style="display:flex;gap:10px;padding:14px 22px;background:#FAFAFA;border-top:1px solid #F2F2F2">
+          <button onClick="{{ close }}" style="flex:1;height:44px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer">Cancelar</button>
+          <button onClick="{{ save }}" style="flex:1;height:44px;border-radius:999px;border:none;background:#DE6B4E;color:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer" style-active="transform:scale(.97)">Crear usuario</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { users: null, modal: false, fName: '', fRole: 'Cajero' };
+  renderVals() {
+    const d = this.props.d, toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, users = s.users || d.users, wide = !this.props.narrow;
+    const set = (i, patch) => this.setState({ users: users.map((u, j) => j === i ? { ...u, ...patch } : u) });
+    const slug = s.fName.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/).filter(Boolean);
+    const fUser = slug.length ? (slug[0] + (slug[1] ? '.' + slug[1][0] : '')) : 'se genera automáticamente';
+    return {
+      countL: `${users.filter(u => u.active).length} usuarios activos`, wide, cols: wide ? 'minmax(220px,1.6fr) 160px 1fr 110px 120px' : 'minmax(0,1fr) auto auto',
+      users: users.map((u, i) => ({ ...u, isMe: i === 0, canToggle: i !== 0, op: u.active ? 1 : 0.6,
+        avBg: u.role === 'Administrador' ? '#DE6B4E' : '#EFEFEF', avFg: u.role === 'Administrador' ? '#111111' : '#111111',
+        stLabel: u.active ? 'Activo' : 'Inactivo', stBg: u.active ? '#E4F3EA' : '#EFEFEF', stFg: u.active ? '#1E6A40' : '#6B6B6B', dot: u.active ? '#2F8A57' : '#A6A6A6',
+        actLabel: u.active ? 'Desactivar' : 'Activar', actFg: u.active ? '#B31F2E' : '#111111',
+        toggle: () => { set(i, { active: !u.active }); toast(`${u.name} ${u.active ? 'desactivado' : 'activado'}`, 'info'); },
+        setRole: e => { set(i, { role: e.target.value }); toast(`${u.name} ahora es ${e.target.value}`); } })),
+      openNew: () => this.setState({ modal: true, fName: '', fRole: 'Cajero' }), modal: s.modal, close: () => this.setState({ modal: false }), stop: e => e.stopPropagation(),
+      fName: s.fName, onName: e => this.setState({ fName: e.target.value }), fUser,
+      roles: ['Cajero', 'Administrador'].map(r => { const on = s.fRole === r; return { label: r, on, go: () => this.setState({ fRole: r }), border: on ? '#DE6B4E' : '#E6E6E6', bg: on ? '#FDF5F2' : '#fff' }; }),
+      save: () => { if (!slug.length) { toast('Escribe el nombre del usuario', 'error'); return; } this.setState({ modal: false, users: [...users, { name: s.fName.trim(), user: fUser, role: s.fRole, active: true, last: 'Nunca', ini: slug.map(w => w[0].toUpperCase()).slice(0, 2).join('') }] }); toast(`Usuario ${fUser} creado`); },
+    };
+  }
+}
+</script>
+</body>
+</html>

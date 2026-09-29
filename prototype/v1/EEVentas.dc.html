@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:grid;grid-template-columns:{{ cols }};gap:20px;align-items:start;max-width:1400px;margin:0 auto">
+  <section style="display:flex;flex-direction:column;gap:14px;min-width:0">
+    <div style="position:relative;display:flex;align-items:center">
+      <span style="position:absolute;left:14px;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6862">barcode_scanner</span>
+      <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ onQ }}" onKeyDown="{{ onKey }}" placeholder="Escanea o escribe nombre / código y presiona Enter" style="width:100%;height:52px;padding:0 14px 0 48px;border-radius:12px;border:1.5px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#1C1B19;box-shadow:0 0 0 4px rgba(28,27,25,.10)"></input>
+    </div>
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="7">
+        <button onClick="{{ c.go }}" style="flex:none;height:36px;padding:0 14px;border-radius:999px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }};font:600 13px 'Figtree';cursor:pointer;white-space:nowrap;transition:background-color 150ms ease,color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.96)">{{ c.label }}</button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ showFreq }}">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font:600 12px 'Figtree';color:#6B6862;letter-spacing:.06em;text-transform:uppercase">Frecuentes</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ freq }}" as="f">
+            <button onClick="{{ f.add }}" style="display:flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 10px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;font:600 13px 'Figtree';cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#F7F5F1" style-active="transform:scale(.96)"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#1C1B19">add_circle</span>{{ f.name }}<span style="color:#6B6862;font-weight:500">{{ f.price }}</span></button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px">
+      <sc-for list="{{ items }}" as="p" hint-placeholder-count="12">
+        <button onClick="{{ p.add }}" disabled="{{ p.out }}" style="position:relative;display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;border:1.5px solid {{ p.border }};background:{{ p.bg }};text-align:left;cursor:{{ p.cursor }};opacity:{{ p.op }};transition:border-color 150ms ease,background-color 200ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="border-color:#D6D2CA" style-active="transform:scale(.97)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+            <span style="width:36px;height:36px;border-radius:10px;background:#F3F1ED;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">{{ p.icon }}</span>
+            <sc-if value="{{ p.inCart }}"><span style="min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#1C1B19;color:#fff;font:700 12px/24px 'Figtree';text-align:center;animation:eeBump 240ms cubic-bezier(.23,1,.32,1)">{{ p.qty }}</span></sc-if>
+          </div>
+          <span style="font:600 14px/1.3 'Figtree';min-height:36px;color:#1C1B19">{{ p.name }}</span>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px">
+            <span style="font:700 17px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums;color:#1C1B19">{{ p.priceL }}</span>
+            <span style="font:600 12px 'Figtree';color:{{ p.stockFg }}">{{ p.stockL }}</span>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ noItems }}"><div style="padding:40px;text-align:center;font:500 14px 'Figtree';color:#6B6862;background:#fff;border:1px dashed #DCD8D0;border-radius:14px">No hay productos que coincidan con “{{ q }}”.</div></sc-if>
+  </section>
+
+  <aside style="position:{{ cartPos }};top:92px;display:flex;flex-direction:column;background:#fff;border:1px solid #E7E4DE;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(28,33,29,.04)">
+    <div style="padding:14px;border-bottom:1px solid #EFECE7;display:flex;flex-direction:column;gap:10px">
+      <div role="tablist" style="display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:#F2F0EC;position:relative">
+        <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:9px;background:#fff;box-shadow:0 1px 3px rgba(28,33,29,.12);transform:{{ modeTf }};transition:transform 220ms cubic-bezier(.23,1,.32,1)"></div>
+        <button onClick="{{ setVenta }}" role="tab" style="position:relative;height:36px;border:none;background:transparent;font:600 14px 'Figtree';color:{{ ventaFg }};cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">point_of_sale</span>Venta</button>
+        <button onClick="{{ setConsumo }}" role="tab" style="position:relative;height:36px;border:none;background:transparent;font:600 14px 'Figtree';color:{{ consumoFg }};cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">output</span>Consumo interno</button>
+      </div>
+      <sc-if value="{{ isConsumo }}">
+        <div style="display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:#FFF1D9;color:#6B4000;font:500 13px/1.45 'Figtree';animation:eeIn 200ms cubic-bezier(.23,1,.32,1)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1.1">info</span><span><b>Descuenta stock, pero no genera ingreso en caja.</b> Úsalo para productos que consume el personal, mermas o uso del local.</span></div>
+      </sc-if>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 4px"><span style="font:700 15px 'Figtree'">{{ cartTitle }}</span><span style="font:500 13px 'Figtree';color:#6B6862">{{ cartCount }}</span></div>
+    <div style="max-height:{{ listMax }};overflow-y:auto;padding:4px 8px">
+      <sc-if value="{{ cartEmpty }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:36px 16px;text-align:center">
+          <span style="width:48px;height:48px;border-radius:14px;background:#F3F1ED;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#8A867F">shopping_basket</span>
+          <span style="font:600 14px 'Figtree'">Carrito vacío</span><span style="font:400 13px/1.45 'Figtree';color:#6B6862">Toca un producto o escanea su código.</span>
+        </div>
+      </sc-if>
+      <sc-for list="{{ lines }}" as="l">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding:10px 8px;border-radius:10px;background:{{ l.bg }};transition:background-color 500ms ease;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+          <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 14px/1.3 'Figtree'">{{ l.name }}</span><span style="font:500 12px 'Figtree';color:#6B6862;font-variant-numeric:tabular-nums">{{ l.unitL }} c/u</span></div>
+          <span style="font:700 15px 'Figtree';font-variant-numeric:tabular-nums;text-align:right">{{ l.subL }}</span>
+          <div style="display:flex;align-items:center;border:1px solid #DCD8D0;border-radius:9px;overflow:hidden;height:32px;width:108px">
+            <button onClick="{{ l.dec }}" aria-label="Menos" style="width:32px;height:100%;border:none;background:#FBFAF8;cursor:pointer;font-family:'Material Symbols Rounded';font-size:17px" style-hover="background:#F2F0EC">remove</button>
+            <input value="{{ l.qty }}" onChange="{{ l.set }}" inputmode="numeric" style="width:44px;height:100%;border:none;text-align:center;font:700 14px 'Figtree';outline:none;font-variant-numeric:tabular-nums"></input>
+            <button onClick="{{ l.inc }}" aria-label="Más" style="width:32px;height:100%;border:none;background:#FBFAF8;cursor:pointer;font-family:'Material Symbols Rounded';font-size:17px" style-hover="background:#F2F0EC">add</button>
+          </div>
+          <button onClick="{{ l.del }}" aria-label="Eliminar" style="justify-self:end;height:32px;padding:0 8px;border:none;border-radius:8px;background:transparent;color:#8A867F;font:600 12px 'Figtree';cursor:pointer;display:flex;align-items:center;gap:4px" style-hover="background:#FCE8E5;color:#A3281C"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">delete</span>Quitar</button>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:14px 16px 16px;border-top:1px solid #EFECE7;display:flex;flex-direction:column;gap:10px;background:#FBFAF8">
+      <div style="display:flex;justify-content:space-between;font:500 14px 'Figtree';color:#6B6862"><span>Subtotal</span><span style="font-variant-numeric:tabular-nums">{{ subL }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 16px 'Figtree'">{{ totalLabel }}</span><span style="font:800 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:{{ totalFg }}">{{ totalL }}</span></div>
+      <button onClick="{{ charge }}" disabled="{{ cartEmpty }}" style="height:54px;border-radius:14px;border:none;background:{{ chargeBg }};color:{{ chargeFg }};font:700 16px 'Figtree';cursor:{{ chargeCursor }};display:flex;align-items:center;justify-content:center;gap:8px;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.98)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ chargeIcon }}</span>{{ chargeLabel }}</button>
+      <button onClick="{{ cancel }}" disabled="{{ cartEmpty }}" style="height:40px;border-radius:10px;border:none;background:transparent;color:{{ cancelFg }};font:600 14px 'Figtree';cursor:pointer" style-hover="background:#FCE8E5">Cancelar venta</button>
+    </div>
+  </aside>
+
+  <sc-if value="{{ modal }}">
+    <div style="position:fixed;inset:0;z-index:70;background:rgba(28,27,25,.5);display:grid;place-items:center;padding:16px;animation:eeFade 180ms ease" onClick="{{ closeModal }}">
+      <div onClick="{{ stop }}" role="dialog" aria-modal="true" style="width:100%;max-width:420px;background:#fff;border-radius:20px;box-shadow:0 30px 60px -20px rgba(28,27,25,.45);overflow:hidden;animation:eePop 220ms cubic-bezier(.23,1,.32,1)">
+        <sc-if value="{{ payStep }}">
+          <div style="padding:20px 22px 8px;display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;font:700 20px 'Bricolage Grotesque',sans-serif">Cobrar venta</h3><button onClick="{{ closeModal }}" aria-label="Cerrar" style="width:36px;height:36px;border-radius:10px;border:none;background:#F3F1ED;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px">close</button></div>
+          <div style="padding:8px 22px 22px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px;border-radius:12px;background:#F7F5F1"><span style="font:600 14px 'Figtree';color:#1C1B19">Total a cobrar</span><span style="font:800 30px 'Bricolage Grotesque',sans-serif;color:#1C1B19;font-variant-numeric:tabular-nums">{{ totalL }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <sc-for list="{{ methods }}" as="m">
+                <button onClick="{{ m.go }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:12px;border:1.5px solid {{ m.border }};background:{{ m.bg }};font:600 13px 'Figtree';cursor:pointer;transition:border-color 150ms ease,background-color 150ms ease" style-active="transform:scale(.96)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:{{ m.ic }}">{{ m.icon }}</span>{{ m.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ isCash }}">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Recibido (S/)</span><input value="{{ received }}" onChange="{{ onReceived }}" inputmode="decimal" placeholder="0.00" style="height:46px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:700 16px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+                <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree';color:#6B6862">Vuelto</span><div style="height:46px;padding:0 12px;border-radius:10px;background:#F7F6F3;display:flex;align-items:center;font:700 16px 'Figtree';color:{{ changeFg }};font-variant-numeric:tabular-nums">{{ change }}</div></div>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ quickCash }}" as="c"><button onClick="{{ c.go }}" style="height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCD8D0;background:#fff;font:600 13px 'Figtree';cursor:pointer" style-hover="background:#F7F6F3">{{ c.label }}</button></sc-for></div>
+            </sc-if>
+            <button onClick="{{ confirm }}" disabled="{{ paying }}" style="height:52px;border-radius:14px;border:none;background:#1C1B19;color:#fff;font:700 16px 'Figtree';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:#3A3833" style-active="transform:scale(.98)">
+              <sc-if value="{{ paying }}"><span style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:eeSpin 600ms linear infinite"></span></sc-if>{{ confirmLabel }}
+            </button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ doneStep }}">
+          <div style="padding:36px 24px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+            <span style="width:68px;height:68px;border-radius:50%;background:#E4F3EA;color:#1E6A40;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:40px;line-height:1;font-variation-settings:'FILL' 1;animation:eePop 280ms cubic-bezier(.23,1,.32,1)">check_circle</span>
+            <h3 style="margin:0;font:700 22px 'Bricolage Grotesque',sans-serif">{{ doneTitle }}</h3>
+            <p style="margin:0;font:500 14px/1.5 'Figtree';color:#6B6862">{{ doneMsg }}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:8px">
+              <button onClick="{{ printTicket }}" style="height:46px;border-radius:12px;border:1px solid #DCD8D0;background:#fff;font:600 14px 'Figtree';cursor:pointer" style-hover="background:#F7F6F3">Imprimir ticket</button>
+              <button onClick="{{ newSale }}" style="height:46px;border-radius:12px;border:none;background:#1C1B19;color:#fff;font:600 14px 'Figtree';cursor:pointer" style-hover="background:#3A3833">Nueva venta</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ mobileBar }}">
+    <div style="position:fixed;left:12px;right:12px;bottom:12px;z-index:36;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 16px;border-radius:16px;background:#1C1B19;color:#fff;box-shadow:0 16px 36px -10px rgba(28,27,25,.55);animation:eeToast 220ms cubic-bezier(.23,1,.32,1)">
+      <div style="display:flex;flex-direction:column;gap:2px;flex:1"><span style="font:500 12px 'Figtree';color:#A8A49C">{{ cartCount }}</span><span style="font:800 20px 'Bricolage Grotesque',sans-serif">{{ totalL }}</span></div>
+      <button onClick="{{ charge }}" style="height:44px;padding:0 18px;border-radius:12px;border:none;background:#1C1B19;color:#FFFFFF;font:700 15px 'Figtree';cursor:pointer" style-active="transform:scale(.97)">{{ chargeLabel }}</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', cat: 'Todos', cart: [], mode: 'venta', flash: null, modal: null, method: 'Efectivo', received: '' };
+  searchRef = React.createRef();
+  componentDidMount() { setTimeout(() => this.searchRef.current && this.searchRef.current.focus(), 250); }
+  add = p => {
+    const inCart = (this.state.cart.find(l => l.id === p.id) || {}).qty || 0;
+    if (inCart >= p.stock) { this.props.toast && this.props.toast(`Solo quedan ${p.stock} de ${p.name}`, 'error'); return; }
+    this.setState(s => ({ cart: s.cart.some(l => l.id === p.id) ? s.cart.map(l => l.id === p.id ? { ...l, qty: l.qty + 1 } : l) : [...s.cart, { id: p.id, qty: 1 }], flash: p.id }));
+    clearTimeout(this.ft); this.ft = setTimeout(() => this.setState({ flash: null }), 450);
+  };
+  setQty = (id, n, max) => this.setState(s => ({ cart: n <= 0 ? s.cart.filter(l => l.id !== id) : s.cart.map(l => l.id === id ? { ...l, qty: Math.min(n, max) } : l) }));
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, narrow = this.props.narrow;
+    const icons = Object.fromEntries(d.categories.map(c => [c.name, c.icon]));
+    const q = s.q.trim().toLowerCase();
+    const list = P.filter(p => p.active && (s.cat === 'Todos' || p.cat === s.cat) && (!q || p.name.toLowerCase().includes(q) || (p.code && p.code.includes(q))));
+    const lines = s.cart.map(l => ({ ...l, p: P.find(p => p.id === l.id) })).filter(l => l.p);
+    const sub = lines.reduce((a, l) => a + l.qty * l.p.price, 0);
+    const costTotal = lines.reduce((a, l) => a + l.qty * l.p.cost, 0);
+    const units = lines.reduce((a, l) => a + l.qty, 0);
+    const consumo = s.mode === 'consumo';
+    const total = consumo ? 0 : sub;
+    const rec = parseFloat(s.received) || 0;
+    const finish = () => {
+      this.props.setProducts && this.props.setProducts(ps => ps.map(p => { const l = s.cart.find(x => x.id === p.id); return l ? { ...p, stock: p.stock - l.qty, sold: p.sold + (consumo ? 0 : l.qty) } : p; }));
+    };
+    const confirm = () => {
+      if (consumo) { finish(); this.setState({ modal: 'done', doneUnits: units }); toast(`Consumo interno registrado · ${units} unid.`, 'info'); return; }
+      this.setState({ paying: true });
+      setTimeout(() => { finish(); this.setState({ paying: false, modal: 'done', doneUnits: units, doneTotal: sub, doneChange: rec > sub ? rec - sub : 0 }); toast(`Venta #1039 cobrada · ${d.money(sub)}`); }, 700);
+    };
+    const charge = () => { if (!lines.length) return; if (consumo) confirm(); else this.setState({ modal: 'pay', received: '' }); };
+    const catList = ['Todos', ...d.categories.filter(c => c.active).map(c => c.name)];
+    const freq = [...P].sort((a, b) => b.sold - a.sold).slice(0, 5);
+    return {
+      cols: narrow ? '1fr' : 'minmax(0,1fr) 380px', cartPos: narrow ? 'static' : 'sticky', listMax: narrow ? 'none' : 'calc(100vh - 470px)',
+      searchRef: this.searchRef, q: s.q, onQ: e => this.setState({ q: e.target.value }),
+      onKey: e => { if (e.key === 'Enter' && list[0]) { this.add(list[0]); this.setState({ q: '' }); } },
+      cats: catList.map(c => { const on = s.cat === c; return { label: c, go: () => this.setState({ cat: c }), bg: on ? '#1C1B19' : '#fff', fg: on ? '#fff' : '#45423D', border: on ? '#1C1B19' : '#E7E4DE' }; }),
+      showFreq: !q && s.cat === 'Todos', freq: freq.map(p => ({ name: p.name.split(' ').slice(0, 2).join(' '), price: d.money(p.price), add: () => this.add(p) })),
+      items: list.map(p => {
+        const inC = (s.cart.find(l => l.id === p.id) || {}).qty || 0, out = p.stock <= 0, low = p.stock <= p.min * 0.5;
+        return { name: p.name, icon: icons[p.cat] || 'shopping_basket', priceL: d.money(p.price), stockL: out ? 'Sin stock' : `${p.stock} disp.`, stockFg: out || low ? '#A3281C' : '#6B6862', out, op: out ? 0.5 : 1, cursor: out ? 'not-allowed' : 'pointer', inCart: inC > 0, qty: inC, bg: s.flash === p.id ? '#F2F0EC' : '#fff', border: inC ? '#1C1B19' : '#E7E4DE', add: () => this.add(p) };
+      }),
+      noItems: list.length === 0,
+      modeTf: consumo ? 'translateX(100%)' : 'none', ventaFg: consumo ? '#6B6862' : '#1C1B19', consumoFg: consumo ? '#8A5200' : '#6B6862',
+      setVenta: () => this.setState({ mode: 'venta' }), setConsumo: () => this.setState({ mode: 'consumo' }), isConsumo: consumo,
+      cartTitle: consumo ? 'Productos a consumir' : 'Carrito', cartCount: `${units} producto${units === 1 ? '' : 's'}`, cartEmpty: lines.length === 0,
+      lines: lines.map(l => ({ name: l.p.name, qty: l.qty, unitL: d.money(l.p.price), subL: d.money(l.qty * l.p.price), bg: s.flash === l.id ? '#F2F0EC' : 'transparent', dec: () => this.setQty(l.id, l.qty - 1, l.p.stock), inc: () => { if (l.qty >= l.p.stock) toast(`Solo quedan ${l.p.stock} de ${l.p.name}`, 'error'); this.setQty(l.id, l.qty + 1, l.p.stock); }, set: e => this.setQty(l.id, parseInt(e.target.value) || 0, l.p.stock), del: () => this.setQty(l.id, 0) })),
+      subL: d.money(sub), totalL: d.money(total), totalLabel: consumo ? 'Total en caja' : 'Total', totalFg: consumo ? '#8A5200' : '#1C1B19',
+      chargeBg: lines.length ? (consumo ? '#E4703F' : '#1C1B19') : '#E7E4DE', chargeFg: lines.length ? (consumo ? '#1C1B19' : '#fff') : '#9A968F', chargeCursor: lines.length ? 'pointer' : 'not-allowed',
+      chargeIcon: consumo ? 'output' : 'payments', chargeLabel: consumo ? 'Registrar consumo' : 'Cobrar ' + d.money(total), charge,
+      cancel: () => { this.setState({ cart: [] }); toast('Venta cancelada', 'info'); }, cancelFg: lines.length ? '#A3281C' : '#C2BEB6',
+      modal: !!s.modal, payStep: s.modal === 'pay', doneStep: s.modal === 'done', closeModal: () => this.setState({ modal: s.modal === 'done' ? null : null, ...(s.modal === 'done' ? { cart: [] } : {}) }), stop: e => e.stopPropagation(),
+      methods: [['Efectivo', 'payments'], ['Yape / Plin', 'qr_code_2'], ['Tarjeta', 'credit_card']].map(([label, icon]) => { const on = s.method === label; return { label, icon, go: () => this.setState({ method: label }), border: on ? '#1C1B19' : '#E7E4DE', bg: on ? '#F7F5F1' : '#fff', ic: on ? '#1C1B19' : '#6B6862' }; }),
+      isCash: s.method === 'Efectivo', received: s.received, onReceived: e => this.setState({ received: e.target.value.replace(/[^0-9.]/g, '') }),
+      change: rec ? d.money(Math.max(0, rec - sub)) : '—', changeFg: rec && rec < sub ? '#A3281C' : '#1C1B19',
+      quickCash: [10, 20, 50, 100].filter(v => v >= sub).slice(0, 3).map(v => ({ label: 'S/ ' + v, go: () => this.setState({ received: String(v) }) })).concat([{ label: 'Monto exacto', go: () => this.setState({ received: sub.toFixed(2) }) }]),
+      confirm, paying: !!s.paying, confirmLabel: s.paying ? 'Procesando…' : 'Confirmar cobro',
+      doneTitle: consumo ? 'Consumo registrado' : '¡Venta cobrada!',
+      doneMsg: consumo ? `Se descontaron ${s.doneUnits} unidades del stock. No se registró ingreso en caja (costo ${d.money(costTotal)}).` : `Venta #1039 por ${d.money(s.doneTotal)}${s.doneChange ? ' · vuelto ' + d.money(s.doneChange) : ''}. El stock ya se actualizó.`,
+      printTicket: () => toast('Enviando ticket a la impresora…', 'info'), newSale: () => { this.setState({ modal: null, cart: [], mode: 'venta' }); this.searchRef.current && this.searchRef.current.focus(); },
+      mobileBar: narrow && lines.length > 0 && !s.modal,
+    };
+  }
+}
+</script>
+</body>
+</html>
