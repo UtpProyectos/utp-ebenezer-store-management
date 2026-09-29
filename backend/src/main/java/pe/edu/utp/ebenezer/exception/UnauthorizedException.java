@@ -1,0 +1,8 @@
+package pe.edu.utp.ebenezer.exception;
+
+public class UnauthorizedException extends RuntimeException {
+
+    public UnauthorizedException(String message) {
+        super(message);
+    }
+}
