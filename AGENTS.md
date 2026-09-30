@@ -10,10 +10,11 @@ Es intencionalmente agnóstico al agente: no se usan archivos específicos como 
 |---|---|
 | [`AGENTS/backend.md`](AGENTS/backend.md) | Cualquier cambio dentro de `backend/` |
 | [`AGENTS/frontend.md`](AGENTS/frontend.md) | Cualquier cambio dentro de `frontend/` |
+| [`AGENTS/database.md`](AGENTS/database.md) | Cualquier cambio de la base de datos |
 
 Antes de modificar un área, **leer este archivo y el archivo específico del área**.
 
-Si en el futuro se necesitan reglas específicas nuevas (por ejemplo `AGENTS/database.md`, `AGENTS/testing.md`), agregarlas dentro de `AGENTS/` y enlazarlas en la tabla anterior.
+Si en el futuro se necesitan reglas específicas nuevas (  `AGENTS/testing.md`), agregarlas dentro de `AGENTS/` y enlazarlas en la tabla anterior.
 
 ---
 

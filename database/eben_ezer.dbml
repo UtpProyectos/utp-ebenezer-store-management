@@ -1,0 +1,383 @@
+Project eben_ezer {
+  database_type: 'PostgreSQL'
+  Note: 'Modelo ER - Bodega / Minimarket Eben-Ezer'
+}
+
+Table role {
+  role_id bigint [pk, increment]
+  // ADMIN, CASHIER
+  name varchar(50) [not null, unique]
+  description varchar(200)
+}
+
+// "user" is a reserved word in PostgreSQL.
+Table users {
+  user_id bigint [pk, increment]
+  role_id bigint [not null]
+
+  name varchar(120) [not null]
+  username varchar(80) [not null, unique]
+  email varchar(150) [unique]
+  password_hash varchar(255) [not null]
+
+  active boolean [not null, default: true]
+  last_login_at timestamp
+  created_at timestamp [not null]
+}
+
+Table category {
+  category_id bigint [pk, increment]
+
+  name varchar(100) [not null, unique]
+  description varchar(200)
+  active boolean [not null, default: true]
+}
+
+Table unit_of_measure {
+  unit_of_measure_id bigint [pk, increment]
+
+  name varchar(50) [not null]
+  abbreviation varchar(10) [not null, unique]
+
+  // WEIGHT, VOLUME, UNIT
+  type varchar(30) [not null]
+
+  // Canonical:
+  // KG = 1, G = 0.001
+  // L = 1, ML = 0.001
+  // UND = 1
+  conversion_factor decimal(15,6) [not null]
+}
+
+Table product {
+  product_id bigint [pk, increment]
+  category_id bigint [not null]
+  base_unit_id bigint [not null]
+
+  name varchar(150) [not null]
+  description varchar(300)
+  barcode varchar(100) [unique]
+
+  sale_price decimal(12,2) [not null]
+  min_stock decimal(15,3) [not null, default: 0]
+
+  active boolean [not null, default: true]
+  created_at timestamp [not null]
+
+  indexes {
+    name
+  }
+}
+
+Table promotion {
+  promotion_id bigint [pk, increment]
+  product_id bigint [not null]
+  unit_of_measure_id bigint [not null]
+
+  name varchar(150)
+
+  // Quantity expressed in the selected unit.
+  // Examples: 3 UND, 500 G, 1 KG.
+  promotion_quantity decimal(15,3) [not null]
+
+  // Example: S/ 1.00
+  promotional_price decimal(12,2) [not null]
+
+  // true: the promotion can be applied proportionally.
+  // Example: 3 UND = S/1, 6 UND = S/2, 9 UND = S/3.
+  repeatable boolean [not null, default: true]
+
+  start_date timestamp
+  end_date timestamp
+  active boolean [not null, default: true]
+}
+
+Table supplier {
+  supplier_id bigint [pk, increment]
+
+  name varchar(150) [not null]
+  document_number varchar(20)
+  phone varchar(30)
+
+  // WHOLESALER, DISTRIBUTOR, SELF_SERVICE, MARKET, LOCAL, OTHER
+  type varchar(30)
+
+  contact_name varchar(150)
+  address varchar(250)
+  notes varchar(500)
+
+  active boolean [not null, default: true]
+}
+
+Table purchase {
+  purchase_id bigint [pk, increment]
+
+  // May be null for occasional purchases without a formal supplier.
+  supplier_id bigint
+  user_id bigint [not null]
+
+  purchase_date timestamp [not null]
+
+  subtotal decimal(12,2) [not null]
+  total decimal(12,2) [not null]
+
+  // REGISTERED, CANCELLED
+  status varchar(30) [not null]
+  notes varchar(500)
+}
+
+Table purchase_detail {
+  purchase_detail_id bigint [pk, increment]
+
+  purchase_id bigint [not null]
+  product_id bigint [not null]
+  unit_of_measure_id bigint [not null]
+
+  // Quantity entered by the user.
+  quantity decimal(15,3) [not null]
+
+  // Quantity converted to the product base unit.
+  base_quantity decimal(15,3) [not null]
+
+  unit_cost decimal(12,4) [not null]
+  subtotal decimal(12,2) [not null]
+}
+
+Table lot {
+  lot_id bigint [pk, increment]
+
+  product_id bigint [not null]
+  purchase_detail_id bigint [not null]
+
+  lot_code varchar(100)
+  entry_date timestamp [not null]
+  expiration_date date
+
+  // Do NOT store current stock.
+  // Lot stock is calculated from inventory_movement.
+
+  indexes {
+    (product_id, expiration_date)
+  }
+}
+
+Table sale {
+  sale_id bigint [pk, increment]
+
+  user_id bigint [not null]
+
+  sale_date timestamp [not null]
+
+  subtotal decimal(12,2) [not null]
+  discount decimal(12,2) [not null, default: 0]
+  total decimal(12,2) [not null]
+
+  // CASH, YAPE_PLIN, CARD, OTHER
+  payment_method varchar(30)
+
+  // CONFIRMED, EDITED, CANCELLED
+  status varchar(30) [not null]
+
+  cancellation_reason varchar(500)
+
+  created_at timestamp [not null]
+  updated_at timestamp
+}
+
+Table sale_detail {
+  sale_detail_id bigint [pk, increment]
+
+  sale_id bigint [not null]
+  product_id bigint [not null]
+  unit_of_measure_id bigint [not null]
+
+  // Example: 500 G
+  quantity decimal(15,3) [not null]
+
+  // Example: 0.500 KG
+  base_quantity decimal(15,3) [not null]
+
+  unit_price decimal(12,4) [not null]
+  discount decimal(12,2) [not null, default: 0]
+  subtotal decimal(12,2) [not null]
+}
+
+Table internal_consumption {
+  internal_consumption_id bigint [pk, increment]
+
+  user_id bigint [not null]
+
+  consumption_date timestamp [not null]
+  reason varchar(300)
+  notes varchar(500)
+}
+
+Table internal_consumption_detail {
+  internal_consumption_detail_id bigint [pk, increment]
+
+  internal_consumption_id bigint [not null]
+  product_id bigint [not null]
+  unit_of_measure_id bigint [not null]
+
+  quantity decimal(15,3) [not null]
+  base_quantity decimal(15,3) [not null]
+}
+
+Table inventory_movement {
+  inventory_movement_id bigint [pk, increment]
+
+  product_id bigint [not null]
+  lot_id bigint
+  user_id bigint [not null]
+
+  // PURCHASE, SALE, INTERNAL_CONSUMPTION, WASTE,
+  // ADJUSTMENT_IN, ADJUSTMENT_OUT, RETURN, REVERSAL
+  movement_type varchar(40) [not null]
+
+  // Always expressed in the base unit and signed.
+  // Example: purchase +10, sale -2, consumption -0.5
+  base_quantity decimal(15,3) [not null]
+
+  // Origin reference. Normally only one has a value.
+  purchase_detail_id bigint
+  sale_detail_id bigint
+  internal_consumption_detail_id bigint
+
+  movement_date timestamp [not null]
+
+  // For waste/adjustments: EXPIRED, DAMAGED, LOST, BROKEN, etc.
+  reason varchar(150)
+  notes varchar(500)
+
+  indexes {
+    (product_id, movement_date)
+    (lot_id, movement_date)
+    movement_type
+  }
+}
+
+Table sale_history {
+  sale_history_id bigint [pk, increment]
+
+  sale_id bigint [not null]
+  user_id bigint [not null]
+
+  // CREATED, EDITED, CANCELLED, REACTIVATED
+  action varchar(30) [not null]
+
+  previous_data json
+  new_data json
+
+  reason varchar(500)
+  created_at timestamp [not null]
+}
+
+Table shopping_list {
+  shopping_list_id bigint [pk, increment]
+
+  user_id bigint [not null]
+
+  created_at timestamp [not null]
+
+  // MANUAL, AI, SYSTEM
+  source varchar(30) [not null]
+
+  // PENDING, PARTIAL, COMPLETED, CANCELLED
+  status varchar(30) [not null]
+
+  estimated_cost decimal(12,2) [not null, default: 0]
+}
+
+Table shopping_list_detail {
+  shopping_list_detail_id bigint [pk, increment]
+
+  shopping_list_id bigint [not null]
+  product_id bigint [not null]
+
+  // Suggested/optional supplier.
+  supplier_id bigint
+
+  unit_of_measure_id bigint [not null]
+
+  suggested_quantity decimal(15,3) [not null]
+  purchased_quantity decimal(15,3) [not null, default: 0]
+
+  estimated_cost decimal(12,2) [not null, default: 0]
+
+  purchased boolean [not null, default: false]
+}
+
+Table business_settings {
+  business_settings_id bigint [pk, increment]
+
+  business_name varchar(150) [not null]
+  ruc varchar(20)
+  address varchar(250)
+  phone varchar(30)
+
+  // PEN for Peruvian Sol.
+  currency varchar(10) [not null, default: 'PEN']
+
+  logo_url varchar(500)
+
+  default_min_stock decimal(15,3) [not null, default: 10]
+  expiration_warning_days int [not null, default: 10]
+
+  critical_stock_alert boolean [not null, default: true]
+  expiration_alert boolean [not null, default: true]
+  auto_print_ticket boolean [not null, default: false]
+
+  updated_at timestamp
+}
+
+
+// ======================================================
+// RELATIONSHIPS
+// ======================================================
+
+Ref: users.role_id > role.role_id
+
+Ref: product.category_id > category.category_id
+Ref: product.base_unit_id > unit_of_measure.unit_of_measure_id
+
+Ref: promotion.product_id > product.product_id
+Ref: promotion.unit_of_measure_id > unit_of_measure.unit_of_measure_id
+
+Ref: purchase.supplier_id > supplier.supplier_id
+Ref: purchase.user_id > users.user_id
+
+Ref: purchase_detail.purchase_id > purchase.purchase_id
+Ref: purchase_detail.product_id > product.product_id
+Ref: purchase_detail.unit_of_measure_id > unit_of_measure.unit_of_measure_id
+
+Ref: lot.product_id > product.product_id
+Ref: lot.purchase_detail_id > purchase_detail.purchase_detail_id
+
+Ref: sale.user_id > users.user_id
+
+Ref: sale_detail.sale_id > sale.sale_id
+Ref: sale_detail.product_id > product.product_id
+Ref: sale_detail.unit_of_measure_id > unit_of_measure.unit_of_measure_id
+
+Ref: internal_consumption.user_id > users.user_id
+
+Ref: internal_consumption_detail.internal_consumption_id > internal_consumption.internal_consumption_id
+Ref: internal_consumption_detail.product_id > product.product_id
+Ref: internal_consumption_detail.unit_of_measure_id > unit_of_measure.unit_of_measure_id
+
+Ref: inventory_movement.product_id > product.product_id
+Ref: inventory_movement.lot_id > lot.lot_id
+Ref: inventory_movement.user_id > users.user_id
+Ref: inventory_movement.purchase_detail_id > purchase_detail.purchase_detail_id
+Ref: inventory_movement.sale_detail_id > sale_detail.sale_detail_id
+Ref: inventory_movement.internal_consumption_detail_id > internal_consumption_detail.internal_consumption_detail_id
+
+Ref: sale_history.sale_id > sale.sale_id
+Ref: sale_history.user_id > users.user_id
+
+Ref: shopping_list.user_id > users.user_id
+
+Ref: shopping_list_detail.shopping_list_id > shopping_list.shopping_list_id
+Ref: shopping_list_detail.product_id > product.product_id
+Ref: shopping_list_detail.supplier_id > supplier.supplier_id
+Ref: shopping_list_detail.unit_of_measure_id > unit_of_measure.unit_of_measure_id

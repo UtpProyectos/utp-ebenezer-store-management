@@ -1,3 +1,18 @@
 export const ROUTES = {
   home: '/',
+  login: '/login',
+  sales: '/sales',
+  internalConsumption: '/sales/internal-consumption',
+  inventory: '/inventory',
+  purchases: '/inventory/purchases',
+  shoppingList: '/shopping-list',
+  salesHistory: '/sales-history',
+  assistant: '/assistant',
+  admin: '/admin',
+  products: '/admin/products',
+  categories: '/admin/categories',
+  suppliers: '/admin/suppliers',
+  users: '/admin/users',
+  settings: '/admin/settings',
+  history: '/admin/history',
 } as const

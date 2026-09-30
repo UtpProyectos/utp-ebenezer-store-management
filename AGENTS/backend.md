@@ -57,19 +57,22 @@ src/main/java/pe/edu/utp/ebenezer/
 ├── api/
 │   ├── controller/
 │   │   ├── health/          # HealthController (/api/health)
-│   │   ├── auth/  user/  product/  inventory/  purchase/  sale/  ai/
+│   │   ├── auth/  user/     # Implementados (AuthController, UserController, RoleController)
+│   │   ├── category/  unit/  product/  promotion/  supplier/  purchase/
+│   │   ├── inventory/  sale/  consumption/  shoppinglist/  settings/  ai/
 │   └── dto/
-│       ├── auth/  user/  product/  category/  supplier/
-│       ├── inventory/  purchase/  sale/  consumption/  ai/
-├── config/                  # SecurityConfig, CorsConfig, CorsProperties
+│       ├── auth/  user/  category/  unit/  product/  promotion/  supplier/
+│       ├── purchase/  inventory/  sale/  consumption/  shoppinglist/  settings/  ai/
+├── config/                  # SecurityConfig, CorsConfig, DataInitializer, *Properties
 ├── domain/
-│   ├── entity/              # Entidades JPA
-│   ├── repository/          # Spring Data JPA
+│   ├── entity/              # Entidades JPA (plano)
+│   ├── repository/<feature>/ # Spring Data JPA agrupado por feature
 │   └── enums/               # Enums del dominio
 ├── service/
-│   ├── auth/  user/  product/  category/  supplier/  inventory/
-│   ├── purchase/  sale/  consumption/  dashboard/  ai/
-├── security/                # JWT, filtro, UserDetailsService
+│   ├── auth/  user/         # Implementados
+│   ├── category/  unit/  product/  promotion/  supplier/  purchase/  inventory/
+│   ├── sale/  consumption/  shoppinglist/  settings/  dashboard/  ai/
+├── security/                # JwtService, JwtAuthenticationFilter, CustomUserDetailsService, CurrentUserProvider
 ├── exception/               # GlobalExceptionHandler, ApiError, excepciones
 ├── ai/
 │   ├── provider/            # AiProvider + OpenAiProvider / OpenRouterProvider
@@ -140,24 +143,29 @@ Incorrecto: Entity → Controller → Client
 
 ### Entities (`domain/entity/`)
 
-Solo entidades JPA. Entidades previstas:
+Solo entidades JPA. Mapean 1:1 el modelo de [`database.md`](database.md) (nombres físicos en su §1.1) y [`database/001_ddl.sql`](../database/001_ddl.sql):
 
 ```text
-User, Role, Category, Product, Supplier, Purchase, PurchaseDetail, Lot,
-InventoryMovement, Sale, SaleDetail, InternalConsumption, InternalConsumptionDetail
+Role, User, Category, UnitOfMeasure, Product, Promotion, Supplier, Purchase, PurchaseDetail, Lot,
+Sale, SaleDetail, SaleHistory, InternalConsumption, InternalConsumptionDetail, InventoryMovement,
+ShoppingList, ShoppingListDetail, BusinessSettings
 ```
 
 - No usar entidades como DTOs.
 - No agregar campos definitivos si aún no se definieron en el modelo de datos.
-- Tablas y columnas en inglés, `snake_case` (ej. `purchase_detail`, `unit_price`).
+- Tablas y columnas en inglés, `snake_case` (ej. `purchase_detail`, `unit_price`). Si cambia una entidad, actualizar también el DDL y el `.dbml`.
+- Lombok `@Getter @Setter @NoArgsConstructor` (no `@Data`). `@ManyToOne(fetch = LAZY)` siempre.
+- `@OneToMany` solo cabecera → detalle (`Purchase.details`, `Sale.details`, `InternalConsumption.details`, `ShoppingList.details`) con `PERSIST/MERGE`; nunca `CascadeType.REMOVE`. Al agregar un detalle, setear ambos lados (`detail.setSale(sale)` + `sale.getDetails().add(detail)`).
+- `created_at` / `updated_at` los llena Hibernate; las fechas de negocio (`saleDate`, `purchaseDate`, `movementDate`…) las asigna el service.
+- Sin stock, FEFO ni conversiones de unidades en entidades.
 
 ### Repositories (`domain/repository/`)
 
-Interfaces Spring Data JPA. Solo acceso a datos; sin reglas de negocio. Agrupar por feature cuando crezcan (`domain/repository/product/ProductRepository.java`).
+Interfaces Spring Data JPA. Solo acceso a datos; sin reglas de negocio. Agrupadas por feature (`domain/repository/product/ProductRepository.java`). El stock se consulta con `InventoryMovementRepository.sumBaseQuantityByProductId` / `sumBaseQuantityByLotId`; agregar nuevas consultas aquí, no en services.
 
 ### Enums (`domain/enums/`)
 
-Para valores del dominio que no deben ser texto libre: `RoleName`, `PaymentMethod`, `InventoryMovementType`, `ProductStatus`, `PurchaseStatus`, `SaleStatus`.
+Valores del dominio que no deben ser texto libre, persistidos con `@Enumerated(EnumType.STRING)`: `RoleName`, `UnitType`, `SupplierType`, `PurchaseStatus`, `PaymentMethod`, `SaleStatus`, `SaleHistoryAction`, `InventoryMovementType`, `ShoppingListSource`, `ShoppingListStatus`. Equivalencias con los nombres funcionales en [`database.md`](database.md) §1.1.
 
 ---
 
@@ -189,25 +197,45 @@ Evitar field injection (`@Autowired` sobre campos).
 
 ## 10. Security (`security/` y `config/SecurityConfig`)
 
-Estado actual (`config/SecurityConfig.java`):
+Implementado (`config/SecurityConfig.java` + `security/`):
 
 - API stateless, CSRF deshabilitado, CORS habilitado, sin form login ni HTTP Basic.
-- Públicos: `/api/health`, `/error`, preflight `OPTIONS`. Todo lo demás requiere autenticación.
-- Errores 401/403 se delegan a `GlobalExceptionHandler` → respuesta `ApiError`.
-- `PasswordEncoder` = BCrypt.
-
-Pendiente (cuando se implemente autenticación):
+- Públicos: `/api/health`, `/api/auth/login`, `/error`, preflight `OPTIONS`. Todo lo demás requiere JWT.
+- Errores 401/403 se delegan a `GlobalExceptionHandler` → respuesta `ApiError`. Login fallido o usuario inactivo → 401 `Invalid username or password`.
+- `PasswordEncoder` = BCrypt. `@EnableMethodSecurity` activo.
 
 ```text
 security/
-├── JwtService.java                 # generar / validar JWT, extraer claims
-├── JwtAuthenticationFilter.java    # OncePerRequestFilter
-├── CustomUserDetailsService.java   # carga del usuario
+├── JwtProperties.java              # app.jwt.secret (Base64, ≥256 bits) / app.jwt.expiration-ms
+├── JwtService.java                 # generar / validar JWT (HS256, subject = username, claim role)
+├── JwtAuthenticationFilter.java    # OncePerRequestFilter; recarga el usuario en cada request
+├── CustomUserDetailsService.java   # User → UserDetails con authority ROLE_ADMIN / ROLE_CASHIER
+├── CurrentUserProvider.java        # User autenticado para los services
 └── SecurityConstants.java
 ```
 
-- Nuevos endpoints públicos (ej. `/api/auth/login`) se agregan a `PUBLIC_ENDPOINTS` en `SecurityConfig`.
-- Configuración JWT en `app.jwt.secret` / `app.jwt.expiration-ms` (desde `JWT_SECRET`, `JWT_EXPIRATION_MS`).
+Endpoints:
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/auth/login` | público → `{ token, tokenType, expiresIn, user }` |
+| GET | `/api/auth/me` | autenticado |
+| PUT | `/api/auth/password` | autenticado (cambia su propia contraseña) |
+| GET / POST | `/api/users` | ADMIN |
+| GET / PUT | `/api/users/{id}` | ADMIN |
+| PATCH | `/api/users/{id}/status` | ADMIN (no puede desactivarse a sí mismo) |
+| PUT | `/api/users/{id}/password` | ADMIN (reset) |
+| GET | `/api/roles` | ADMIN |
+
+Los usuarios no se eliminan físicamente (están referenciados por ventas/compras): se desactivan.
+
+Al arrancar, `config/DataInitializer` crea los roles `ADMIN` y `CASHIER` si faltan, y el admin inicial (`ADMIN_USERNAME` / `ADMIN_PASSWORD` / `ADMIN_NAME`) solo si la tabla `users` está vacía.
+
+Convenciones para las features:
+
+- Autorización por rol con `@PreAuthorize("hasRole('ADMIN')")` en el controller (clase o método). Sin anotación = cualquier usuario autenticado.
+- El usuario que registra una venta, compra, consumo o movimiento se obtiene con `CurrentUserProvider.getCurrentUser()` dentro del service (`@Transactional`); nunca se recibe `userId` desde el cliente.
+- Nuevos endpoints públicos se agregan a `PUBLIC_ENDPOINTS` en `SecurityConfig`.
 - Sin lógica comercial en `security/`.
 
 ---
@@ -279,7 +307,8 @@ Variables de entorno (ver `backend/.env.example`):
 | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Conexión PostgreSQL |
 | `SERVER_PORT` | Puerto (default 8080) |
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend (default `http://localhost:5173`) |
-| `JWT_SECRET`, `JWT_EXPIRATION_MS` | JWT (pendiente de uso) |
+| `JWT_SECRET`, `JWT_EXPIRATION_MS` | JWT. Secreto Base64 de al menos 256 bits (`openssl rand -base64 32`); sin él la app no arranca |
+| `ADMIN_NAME`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin inicial (solo si no hay usuarios) |
 | `OPENAI_API_KEY`, `OPENROUTER_API_KEY` | IA (pendiente de uso) |
 
 Nunca crear archivos con claves reales dentro de `resources`.
