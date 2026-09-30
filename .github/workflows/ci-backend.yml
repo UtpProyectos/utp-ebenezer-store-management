@@ -53,6 +53,8 @@ jobs:
       DB_URL: jdbc:postgresql://localhost:5432/ebenezer_test
       DB_USERNAME: ebenezer
       DB_PASSWORD: ebenezer
+      # Throwaway test-only key (Base64, 256 bits). Never used outside CI.
+      JWT_SECRET: Y2ktb25seS10ZXN0LWtleS1ub3QtYS1yZWFsLXNlY3JldCE=
 
     steps:
       - name: Checkout repository

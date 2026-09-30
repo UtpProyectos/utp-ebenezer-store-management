@@ -4,7 +4,25 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 type RequestOptions = Omit<RequestInit, 'body'> & {
   body?: unknown
+  /** Overrides the session token (e.g. to call the API before the session is stored). */
   token?: string
+  /** Skips the automatic Authorization header (public endpoints such as login). */
+  skipAuth?: boolean
+}
+
+type AuthHandlers = {
+  getToken: () => string | null
+  onUnauthorized: () => void
+}
+
+let authHandlers: AuthHandlers = {
+  getToken: () => null,
+  onUnauthorized: () => {},
+}
+
+/** Registered once by the AuthProvider so every feature gets the token injected automatically. */
+export function configureApiAuth(handlers: AuthHandlers) {
+  authHandlers = handlers
 }
 
 export class ApiClientError extends Error {
@@ -19,12 +37,17 @@ export class ApiClientError extends Error {
   }
 }
 
-async function request<T>(path: string, { body, token, headers, ...init }: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  { body, token, skipAuth, headers, ...init }: RequestOptions = {},
+): Promise<T> {
+  const authToken = skipAuth ? null : (token ?? authHandlers.getToken())
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       ...headers,
     },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -32,6 +55,10 @@ async function request<T>(path: string, { body, token, headers, ...init }: Reque
 
   if (!response.ok) {
     const payload = (await response.json().catch(() => undefined)) as ApiError | undefined
+    // An authenticated request rejected with 401 means the session is no longer valid.
+    if (response.status === 401 && authToken) {
+      authHandlers.onUnauthorized()
+    }
     throw new ApiClientError(response.status, payload?.message ?? response.statusText, payload)
   }
 

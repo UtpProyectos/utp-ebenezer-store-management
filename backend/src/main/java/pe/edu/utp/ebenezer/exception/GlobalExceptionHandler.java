@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +33,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiError> handleBusiness(BusinessException ex, HttpServletRequest request) {
         return build(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), request);
+    }
+
+    // Login failures share one message so the response does not reveal whether the user exists or is disabled.
+    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    public ResponseEntity<ApiError> handleBadCredentials(AuthenticationException ex, HttpServletRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, "Invalid username or password", request);
     }
 
     @ExceptionHandler({UnauthorizedException.class, AuthenticationException.class})

@@ -1,0 +1,113 @@
+/*
+ * Eben-Ezer theme — palette from prototype/SistemaDeDiseno.dc.html mapped to HeroUI v3 tokens.
+ * Use the tokens as Tailwind utilities (bg-accent, text-muted, bg-success-soft, text-info...);
+ * never hardcode hex values in components.
+ *
+ * Unlayered on purpose so it overrides the HeroUI defaults declared in @layer base.
+ */
+:root,
+.light,
+[data-theme="light"] {
+  /* Primary · Naranja */
+  --accent: #de6b4e;
+  --accent-foreground: #ffffff;
+  --accent-hover: #c85a3f;
+  --accent-soft: #fbede8;
+  --accent-soft-foreground: #a94429;
+  --accent-soft-hover: color-mix(in oklab, #fbede8 85%, #de6b4e 15%);
+  --focus: var(--accent);
+
+  /* Background · Papel / Text */
+  --background: #f5f5f5;
+  --foreground: #111111;
+  --muted: #6b6b6b;
+  --link: #111111;
+
+  /* Surfaces: cards, tables, modals */
+  --surface: #ffffff;
+  --surface-foreground: #111111;
+  --surface-secondary: #fafafa;
+  --surface-secondary-foreground: #111111;
+  --surface-tertiary: #efefef;
+  --surface-tertiary-foreground: #111111;
+  --overlay: #ffffff;
+  --overlay-foreground: #111111;
+
+  /* Neutral (secondary buttons, soft backgrounds, inactive) */
+  --default: #efefef;
+  --default-foreground: #111111;
+
+  /* Borders and dividers */
+  --border: #e6e6e6;
+  --separator: #f2f2f2;
+
+  /* Form fields: white pill with a 1px border, orange border on focus */
+  --field-background: #ffffff;
+  --field-foreground: #111111;
+  --field-placeholder: #8a8a8a;
+  --field-border: #dadada;
+  --field-border-width: 1px;
+  --field-border-hover: #a6a6a6;
+  --field-border-focus: var(--accent);
+
+  /* Status */
+  --success: #2f8a57;
+  --success-foreground: #ffffff;
+  --success-soft: #e4f3ea;
+  --success-soft-foreground: #1e6a40;
+
+  --warning: #d98e1a;
+  --warning-foreground: #111111;
+  --warning-soft: #fff1d9;
+  --warning-soft-foreground: #8a5200;
+
+  --danger: #d62839;
+  --danger-foreground: #ffffff;
+  --danger-hover: #b31f2e;
+  --danger-soft: #fde7ea;
+  --danger-soft-foreground: #b31f2e;
+
+  /* Information / próximo a vencer (not a HeroUI token) */
+  --info: #6b7585;
+  --info-foreground: #ffffff;
+  --info-soft: #eef0f3;
+  --info-soft-foreground: #4a5361;
+
+  /* IA · Lavanda — only for the AI assistant gradient */
+  --ai: #a78bfa;
+
+  /* Shadows: resting surfaces use a border, shadow only for what floats */
+  --surface-shadow: 0 0 0 1px var(--border);
+  --field-shadow: none;
+  --overlay-shadow: 0 12px 32px -8px rgba(17, 17, 17, 0.18);
+
+  /* Radius: lg 14px (cards); fields and buttons are pills */
+  --radius: 0.875rem;
+  --field-radius: 9999px;
+}
+
+/*
+ * Design system inputs with icons (search, login) have no divider between the icon and the text.
+ * HeroUI draws one when fields have a border, so remove it for every InputGroup.
+ */
+.input-group__prefix,
+.input-group__suffix {
+  border-inline: none;
+}
+
+.input-group__prefix {
+  padding-inline-end: 0.5rem;
+}
+
+.input-group__suffix {
+  padding-inline-start: 0.5rem;
+}
+
+/* Expose the extra tokens as Tailwind colors: bg-info, text-info-soft-foreground, from-ai... */
+@theme inline {
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-soft: var(--info-soft);
+  --color-info-soft-foreground: var(--info-soft-foreground);
+  --color-ai: var(--ai);
+}
