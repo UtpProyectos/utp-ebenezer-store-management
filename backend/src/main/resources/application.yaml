@@ -23,7 +23,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: ${SERVER_PORT:8080}
+  # PORT is injected by Render; SERVER_PORT is the local override.
+  port: ${PORT:${SERVER_PORT:8080}}
   error:
     include-stacktrace: never
     include-message: never
@@ -34,3 +35,9 @@ app:
   jwt:
     secret: ${JWT_SECRET:}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  # Initial admin, created on startup only when the users table is empty.
+  bootstrap:
+    admin:
+      name: ${ADMIN_NAME:Administrator}
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:}

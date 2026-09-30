@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:18px;max-width:1280px;margin:0 auto">
+  <sc-if value="{{ fromList }}">
+  <div style="display:flex;align-items:center;gap:8px;font:500 13px 'Figtree';color:#6B6862;flex-wrap:wrap">
+    <span style="padding:5px 10px;border-radius:999px;background:#F2F0EC;color:#1C1B19;font-weight:600">✓ 1 · Inventario</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chevron_right</span>
+    <button onClick="{{ goLista }}" style="padding:5px 10px;border-radius:999px;border:none;background:#F2F0EC;color:#1C1B19;font:600 13px 'Figtree';cursor:pointer">✓ 2 · Lista de compra</button><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chevron_right</span>
+    <span style="padding:5px 10px;border-radius:999px;background:#1C1B19;color:#fff;font-weight:600">3 · Ingreso de mercadería</span>
+  </div>
+  </sc-if>
+  <div style="display:grid;grid-template-columns:{{ cols }};gap:20px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px;border-radius:50%;background:#1C1B19;color:#fff;display:grid;place-items:center;font:700 12px 'Figtree'">1</span><h3 style="margin:0;font:700 16px 'Figtree'">¿Qué producto ingresa?</h3></div>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Producto <span style="color:#C23B2E">*</span></span>
+          <select value="{{ pid }}" onChange="{{ onPid }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid {{ pidBorder }};background:#fff;font:500 15px 'Figtree';outline:none;cursor:pointer" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)">
+            <option value="">Selecciona un producto…</option>
+            <sc-for list="{{ prodOpts }}" as="o"><option value="{{ o.id }}">{{ o.name }}</option></sc-for>
+          </select>
+          <sc-if value="{{ pidErr }}"><span style="font:500 12px 'Figtree';color:#A3281C">Elige el producto que estás recibiendo.</span></sc-if>
+        </label>
+        <sc-if value="{{ hasProd }}">
+          <div style="display:flex;flex-wrap:wrap;gap:20px;padding:12px 14px;border-radius:12px;background:#F7F6F3;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 12px 'Figtree';color:#6B6862">Stock actual</span><span style="font:700 16px 'Figtree';color:{{ stockFg }}">{{ prod.stock }} {{ prod.unit }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 12px 'Figtree';color:#6B6862">Mínimo</span><span style="font:700 16px 'Figtree'">{{ prod.min }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 12px 'Figtree';color:#6B6862">Último costo</span><span style="font:700 16px 'Figtree'">{{ lastCost }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 12px 'Figtree';color:#6B6862">Precio actual</span><span style="font:700 16px 'Figtree'">{{ curPrice }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 12px 'Figtree';color:#6B6862">Sugerido comprar</span><span style="font:700 16px 'Figtree';color:#1C1B19">{{ sug }}</span></div>
+          </div>
+        </sc-if>
+      </section>
+
+      <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px;border-radius:50%;background:#1C1B19;color:#fff;display:grid;place-items:center;font:700 12px 'Figtree'">2</span><h3 style="margin:0;font:700 16px 'Figtree'">¿Dónde lo compraste?</h3></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Proveedor</span>
+            <select value="{{ prov }}" onChange="{{ onProv }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"><sc-for list="{{ provOpts }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Fecha de compra</span>
+            <input type="date" value="{{ date }}" onChange="{{ onDate }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input>
+          </label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Canal o lugar de compra</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ canales }}" as="c">
+              <button onClick="{{ c.go }}" aria-pressed="{{ c.on }}" style="display:flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:999px;border:1.5px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }};font:600 13px 'Figtree';cursor:pointer;transition:background-color 150ms ease,border-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.96)"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ c.icon }}</span>{{ c.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px;border-radius:50%;background:#1C1B19;color:#fff;display:grid;place-items:center;font:700 12px 'Figtree'">3</span><h3 style="margin:0;font:700 16px 'Figtree'">Cantidad, costo y precio</h3></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Cantidad <span style="color:#C23B2E">*</span></span><input value="{{ qty }}" onChange="{{ onQty }}" inputmode="numeric" placeholder="0" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid {{ qtyBorder }};background:#fff;font:600 15px 'Figtree';outline:none;font-variant-numeric:tabular-nums" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Unidad</span><select value="{{ unit }}" onChange="{{ onUnit }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 15px 'Figtree';outline:none"><sc-for list="{{ units }}" as="u"><option value="{{ u }}">{{ u }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Costo total (S/) <span style="color:#C23B2E">*</span></span><input value="{{ total }}" onChange="{{ onTotal }}" inputmode="decimal" placeholder="0.00" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid {{ totalBorder }};background:#fff;font:600 15px 'Figtree';outline:none;font-variant-numeric:tabular-nums" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree';color:#6B6862">Costo unitario</span><div style="height:44px;padding:0 12px;border-radius:10px;background:#F7F6F3;display:flex;align-items:center;gap:6px;font:700 15px 'Figtree';font-variant-numeric:tabular-nums"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#8A867F">calculate</span>{{ unitCost }}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;align-items:end">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Precio de venta (S/)</span><input value="{{ price }}" onChange="{{ onPrice }}" inputmode="decimal" placeholder="0.00" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:600 15px 'Figtree';outline:none;font-variant-numeric:tabular-nums" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;height:44px;padding:0 6px 0 12px;border-radius:10px;border:1px dashed #D6D2CA;background:#F7F5F1">
+            <span style="font:500 13px 'Figtree';color:#1C1B19">Sugerido <b style="font-variant-numeric:tabular-nums">{{ suggestedPrice }}</b> <span style="color:#6B6862">(+30%)</span></span>
+            <button onClick="{{ useSuggested }}" disabled="{{ noSuggest }}" style="height:32px;padding:0 10px;border-radius:8px;border:none;background:#1C1B19;color:#fff;font:600 12px 'Figtree';cursor:pointer" style-active="transform:scale(.96)">Usar</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font:600 13px 'Figtree'"><span>Margen estimado</span><span style="color:{{ marginFg }};font-variant-numeric:tabular-nums">{{ marginLabel }}</span></div>
+          <div style="height:8px;border-radius:4px;background:#F2F0EC;overflow:hidden"><div style="height:100%;width:{{ marginPct }};background:{{ marginFg }};border-radius:4px;transition:width 240ms cubic-bezier(.23,1,.32,1),background-color 200ms ease"></div></div>
+          <span style="font:500 12px 'Figtree';color:#6B6862">{{ marginHint }}</span>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px;border-radius:50%;background:#1C1B19;color:#fff;display:grid;place-items:center;font:700 12px 'Figtree'">4</span><h3 style="margin:0;font:700 16px 'Figtree'">Lote y vencimiento</h3></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Código de lote</span><input value="{{ lote }}" onChange="{{ onLote }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:600 14px ui-monospace,Menlo,monospace;outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input><span style="font:500 12px 'Figtree';color:#8A867F">Generado automáticamente, puedes cambiarlo.</span></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Fecha de vencimiento</span><input type="date" value="{{ exp }}" onChange="{{ onExp }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input><span style="font:500 12px 'Figtree';color:#8A867F">Déjalo vacío si el producto no vence.</span></label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Observaciones</span><textarea value="{{ obs }}" onChange="{{ onObs }}" rows="2" placeholder="Ej. llegó una caja golpeada, se aceptó igual" style="padding:10px 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 14px/1.5 'Figtree';outline:none;resize:vertical" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></textarea></label>
+      </section>
+    </div>
+
+    <aside style="position:{{ asidePos }};top:92px;display:flex;flex-direction:column;gap:16px">
+      <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;overflow:hidden">
+        <div style="padding:16px 18px;border-bottom:1px solid #EFECE7"><h3 style="margin:0;font:700 16px 'Figtree'">Resumen del ingreso</h3></div>
+        <div style="padding:16px 18px;display:flex;flex-direction:column;gap:12px;font:500 14px 'Figtree'">
+          <div style="display:flex;justify-content:space-between;gap:10px"><span style="color:#6B6862">Producto</span><span style="font-weight:600;text-align:right">{{ prodName }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#6B6862">Proveedor</span><span style="font-weight:600;text-align:right">{{ prov }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#6B6862">Cantidad</span><span style="font-weight:600">{{ qtyLabel }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#6B6862">Costo unitario</span><span style="font-weight:600;font-variant-numeric:tabular-nums">{{ unitCost }}</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:#F7F5F1"><span style="color:#1C1B19;font-weight:600">Stock después</span><span style="font:700 16px 'Figtree';color:#1C1B19">{{ stockAfter }}</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:4px;border-top:1px solid #EFECE7"><span style="font-weight:600">Total</span><span style="font:700 24px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ totalLabel }}</span></div>
+        </div>
+        <div style="padding:0 18px 18px;display:flex;flex-direction:column;gap:8px">
+          <button onClick="{{ save }}" disabled="{{ saving }}" style="height:48px;border-radius:12px;border:none;background:{{ saveBg }};color:#fff;font:600 15px 'Figtree';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background-color 200ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.97)">
+            <sc-if value="{{ saving }}"><span style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:eeSpin 600ms linear infinite"></span></sc-if>
+            <sc-if value="{{ saved }}"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;animation:eePop 200ms cubic-bezier(.23,1,.32,1)">check_circle</span></sc-if>
+            {{ saveLabel }}
+          </button>
+          <button onClick="{{ reset }}" style="height:40px;border-radius:10px;border:none;background:transparent;color:#6B6862;font:600 14px 'Figtree';cursor:pointer" style-hover="background:#F7F6F3">Limpiar formulario</button>
+        </div>
+      </section>
+      <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+        <h3 style="margin:0;font:700 15px 'Figtree'">Ingresos recientes</h3>
+        <sc-for list="{{ recent }}" as="r">
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #F2F0EC;animation:{{ r.anim }}">
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 13px 'Figtree'">{{ r.prod }}</span><span style="font:500 12px 'Figtree';color:#8A867F">{{ r.date }} · {{ r.qty }} · {{ r.lote }}</span></div>
+            <span style="font:600 13px 'Figtree';font-variant-numeric:tabular-nums;white-space:nowrap">{{ r.totalL }}</span>
+          </div>
+        </sc-for>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { pid: '', prov: 'Distribuidora San Martín', canal: 'Distribuidor', date: '2026-09-29', qty: '', unit: 'unid.', total: '', price: '', lote: 'L-0929-' + Math.floor(100 + Math.random() * 899), exp: '', obs: '', tried: false, saveState: 'idle', recent: null };
+  componentDidMount() {
+    const c = this.props.ctx || {};
+    if (c.prefillId) { this.pick(String(c.prefillId)); this.setState({ fromList: !!c.fromList }); this.props.setCtx && this.props.setCtx({ prefillId: null, fromList: null }); }
+  }
+  pick = id => {
+    const p = (this.props.products || []).find(x => String(x.id) === id);
+    this.setState({ pid: id, ...(p ? { prov: p.prov, unit: p.unit, price: p.price.toFixed(2), qty: String(this.props.d.suggested(p) || ''), total: '' } : {}) });
+  };
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], nav = this.props.nav || (() => {}), toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, p = P.find(x => String(x.id) === s.pid);
+    const qty = parseFloat(s.qty) || 0, total = parseFloat(s.total) || 0, price = parseFloat(s.price) || 0;
+    const uc = qty > 0 && total > 0 ? total / qty : 0;
+    const sugP = uc ? Math.ceil(uc * 1.3 * 10) / 10 : 0;
+    const margin = uc && price ? (price - uc) / price : null;
+    const mFg = margin === null ? '#C2BEB6' : margin < 0.1 ? '#C23B2E' : margin < 0.2 ? '#D98E1A' : '#2F8A57';
+    const recent = s.recent || d.purchases;
+    const canalDefs = [['Distribuidor', 'local_shipping'], ['Mercado', 'storefront'], ['Autoservicio', 'shopping_cart'], ['Tienda / bodega', 'store']];
+    const errs = { pid: !p, qty: qty <= 0, total: total <= 0 };
+    const bad = s.tried && (errs.pid || errs.qty || errs.total);
+    const save = () => {
+      if (errs.pid || errs.qty || errs.total) { this.setState({ tried: true }); toast('Completa producto, cantidad y costo total', 'error'); return; }
+      this.setState({ saveState: 'saving' });
+      setTimeout(() => {
+        this.props.setProducts && this.props.setProducts(ps => ps.map(x => x.id === p.id ? { ...x, stock: x.stock + qty, cost: +uc.toFixed(2), price: price || x.price, exp: s.exp || x.exp } : x));
+        this.setState(x => ({ saveState: 'saved', recent: [{ date: 'Ahora', prod: p.name, qty: `${qty} ${s.unit}`, prov: s.prov, total, lote: s.lote, isNew: true }, ...(x.recent || d.purchases).map(r => ({ ...r, isNew: false }))] }));
+        toast(`Ingreso guardado · ${p.name} +${qty}`);
+        setTimeout(() => this.setState({ saveState: 'idle', pid: '', qty: '', total: '', price: '', exp: '', obs: '', tried: false, lote: 'L-0929-' + Math.floor(100 + Math.random() * 899) }), 1400);
+      }, 800);
+    };
+    const bd = e => e && s.tried ? '#C23B2E' : '#DCD8D0';
+    return {
+      cols: this.props.narrow ? '1fr' : 'minmax(0,1.7fr) minmax(300px,1fr)', asidePos: this.props.narrow ? 'static' : 'sticky', fromList: !!s.fromList, goLista: () => nav('lista'),
+      pid: s.pid, onPid: e => this.pick(e.target.value), prodOpts: P.map(x => ({ id: String(x.id), name: `${x.name} · stock ${x.stock}` })), pidBorder: bd(errs.pid), pidErr: s.tried && errs.pid,
+      hasProd: !!p, prod: p || {}, stockFg: p && d.status(p) === 'critico' ? '#A3281C' : '#1C1B19', lastCost: p ? d.money(p.cost) : '', curPrice: p ? d.money(p.price) : '', sug: p ? `${d.suggested(p)} ${p.unit}` : '',
+      prov: s.prov, onProv: e => this.setState({ prov: e.target.value }), provOpts: d.providers.map(x => x.name), date: s.date, onDate: e => this.setState({ date: e.target.value }),
+      canales: canalDefs.map(([label, icon]) => { const on = s.canal === label; return { label, icon, on, go: () => this.setState({ canal: label }), bg: on ? '#F2F0EC' : '#fff', border: on ? '#1C1B19' : '#DCD8D0', fg: on ? '#1C1B19' : '#45423D' }; }),
+      qty: s.qty, onQty: e => this.setState({ qty: e.target.value.replace(/[^0-9.]/g, '') }), qtyBorder: bd(errs.qty),
+      unit: s.unit, onUnit: e => this.setState({ unit: e.target.value }), units: ['unid.', 'caja', 'paquete', 'bolsa', 'botella', 'lata', 'kg', 'docena'],
+      total: s.total, onTotal: e => this.setState({ total: e.target.value.replace(/[^0-9.]/g, '') }), totalBorder: bd(errs.total),
+      unitCost: uc ? d.money(uc) : '—', price: s.price, onPrice: e => this.setState({ price: e.target.value.replace(/[^0-9.]/g, '') }),
+      suggestedPrice: sugP ? d.money(sugP) : '—', noSuggest: !sugP, useSuggested: () => this.setState({ price: sugP.toFixed(2) }),
+      marginFg: mFg, marginLabel: margin === null ? '—' : `${Math.round(margin * 100)}% · gana ${d.money(price - uc)} por unidad`, marginPct: margin === null ? '0%' : Math.max(3, Math.min(100, Math.round(margin * 250))) + '%',
+      marginHint: margin === null ? 'Ingresa cantidad, costo y precio para calcular el margen.' : margin < 0.1 ? 'Margen muy bajo. Revisa el precio de venta.' : margin < 0.2 ? 'Margen aceptable para productos de alta rotación.' : 'Buen margen.',
+      lote: s.lote, onLote: e => this.setState({ lote: e.target.value }), exp: s.exp, onExp: e => this.setState({ exp: e.target.value }), obs: s.obs, onObs: e => this.setState({ obs: e.target.value }),
+      prodName: p ? p.name : '—', qtyLabel: qty ? `${qty} ${s.unit}` : '—', stockAfter: p ? `${p.stock} → ${p.stock + qty}` : '—', totalLabel: d.money(total),
+      save, saving: s.saveState === 'saving', saved: s.saveState === 'saved', saveBg: s.saveState === 'saved' ? '#2F8A57' : bad ? '#A8A49C' : '#1C1B19',
+      saveLabel: s.saveState === 'saving' ? 'Guardando…' : s.saveState === 'saved' ? 'Ingreso guardado' : 'Guardar ingreso y lote',
+      reset: () => this.setState({ pid: '', qty: '', total: '', price: '', exp: '', obs: '', tried: false }),
+      recent: recent.slice(0, 5).map(r => ({ ...r, totalL: d.money(r.total), anim: r.isNew ? 'eeIn 260ms cubic-bezier(.23,1,.32,1)' : 'none' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -48,7 +48,7 @@ src/
 └── main.tsx
 ```
 
-Estado actual: `app/router/`, `features/dashboard/pages/`, `shared/components/layout/`, `shared/services/`, `shared/types/`, `styles/`.
+Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/pages/`, `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
 
 **No crear carpetas vacías.** Crear la estructura progresivamente según se implemente cada módulo.
 
@@ -196,7 +196,19 @@ export const productApi = {
 
 Evitar un `services/api.ts` gigante con todos los endpoints, y evitar `fetch` directo en componentes.
 
-Cuando se implemente auth, la inyección del token puede centralizarse en `apiClient` (sin duplicarla en cada feature).
+El token se inyecta automáticamente en `apiClient` (configurado por `AuthProvider` con `configureApiAuth`); las features **no** pasan `token` manualmente. Un 401 en una petición autenticada cierra la sesión. Endpoints públicos usan `{ skipAuth: true }`.
+
+## 7.1 Autenticación (`features/auth/` + `app/providers/AuthProvider.tsx`)
+
+- `useAuth()` → `{ status, user, login, logout }` (`status`: `loading | authenticated | anonymous`). `user.role` es `ADMIN | CASHIER`.
+- Sesión (`token` + `expiresAt`) en `sessionStore`: `localStorage` si se marca "Recordar sesión", si no `sessionStorage`. Al recargar se valida con `GET /auth/me`.
+- Rutas: envolver páginas privadas en `ProtectedRoute` (opcional `roles={['ADMIN']}`); el login usa `GuestRoute`, que redirige a la ruta de origen tras autenticarse.
+- Menú lateral: se define en `shared/constants/navigation.ts` (`NAV_GROUPS`, `ADMIN_ITEMS`). Cada ítem puede llevar `roles`; `ADMIN` ve todo, `CASHIER` todo excepto Administración. Las rutas de `/admin/*` van dentro de `ProtectedRoute roles={['ADMIN']}` en `AppRouter`.
+- Cada ruta declara `handle: { title, subtitle, parent? }`; `AppHeader` lo usa para el título y el botón "volver". Los módulos sin implementar usan `PagePlaceholder`: al crear la página real, reemplazar el `element` de su ruta.
+- Tamaño de letra (Configuración): preferencia por dispositivo en `localStorage` (`shared/utils/textSize.ts`, `useTextSize`). Escala el `font-size` raíz (Pequeño 76 %, Normal 86 %, Grande 100 %, Muy grande 112 %), así que **usar siempre unidades rem** (utilidades de Tailwind) y no `px` fijos para tamaños y espaciados.
+- Iconos: `@gravity-ui/icons` (set usado en la documentación de HeroUI v3), importando cada icono por ruta: `import Eye from '@gravity-ui/icons/Eye'`.
+- Tema: la paleta del design system (`prototype/SistemaDeDiseno.dc.html`) está mapeada a los tokens de HeroUI en `styles/theme.css`. Usar siempre tokens: `bg-accent` (naranja `#DE6B4E`), `bg-background` (papel), `bg-surface`, `text-muted`, `border-border`, `bg-success-soft text-success-soft-foreground`, `bg-warning-soft`, `bg-danger-soft`, y los extra `bg-info-soft text-info-soft-foreground` (info / próximo a vencer) y `ai` (lavanda, solo asistente IA). Nunca hex en componentes.
+- Superficies en reposo con borde, sin sombra; la sombra solo para lo que flota (popovers, modales). Inputs y botones tipo píldora. Fuente Plus Jakarta Sans.
 
 ---
 

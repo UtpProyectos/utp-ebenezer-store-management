@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Eben-Ezer · Store Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F7F6F3;color:#1C1B19;font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;color:inherit}
+a{color:#1C1B19}a:hover{color:#1C1B19}
+::selection{background:#EDE9E2}
+@keyframes eeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes eePop{from{opacity:0;transform:scale(.96) translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes eeToast{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes eeFade{from{opacity:0}to{opacity:1}}
+@keyframes eeSpin{to{transform:rotate(360deg)}}
+@keyframes eeBump{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+@keyframes eeShake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes eeDrawer{from{transform:translateX(100%)}to{transform:none}}
+@keyframes eeDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:120ms!important;animation-iteration-count:1!important;transition-duration:120ms!important}}
+</style>
+</helmet>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:grid;grid-template-columns:{{ loginCols }};background:#F7F6F3">
+  <sc-if value="{{ wide }}">
+  <div style="position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px;background:#1C1B19;color:#F2F0EC;overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:12px;background:#C4501F;color:#FFFFFF;display:grid;place-items:center;font:800 18px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">EE</div>
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 18px/1.1 'Bricolage Grotesque',sans-serif">Eben-Ezer</span><span style="font:500 14px/1 'Figtree';color:#D2CEC6">Bodega · Minimarket</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;max-width:460px">
+      <div style="aspect-ratio:4/3;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:repeating-linear-gradient(135deg,rgba(255,255,255,.06) 0 10px,rgba(255,255,255,.12) 10px 20px);display:grid;place-items:center"><span style="font:500 14px ui-monospace,Menlo,monospace;color:#D2CEC6">foto de la bodega / fachada</span></div>
+      <h1 style="margin:0;font:700 40px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;text-wrap:balance">Hasta aquí nos ha ayudado Dios. Sigamos atendiendo bien.</h1>
+      <p style="margin:0;font:400 17px/1.55 'Figtree';color:#E7E4DE;text-wrap:pretty">Ventas, inventario y reposición de tu bodega en un solo lugar.</p>
+    </div>
+    <span style="font:500 14px 'Figtree';color:#B5B0A7">Eben-Ezer Store Management · v1.0</span>
+  </div>
+  </sc-if>
+  <div style="display:flex;align-items:center;justify-content:center;padding:32px 20px">
+    <form onSubmit="{{ login }}" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-if value="{{ narrowLogin }}"><div style="width:44px;height:44px;border-radius:12px;background:#C4501F;color:#fff;display:grid;place-items:center;font:800 18px/1 'Bricolage Grotesque',sans-serif;margin-bottom:8px">EE</div></sc-if>
+        <h2 style="margin:0;font:700 30px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">¡Buen día!</h2>
+        <p style="margin:0;font:400 17px/1.5 'Figtree';color:#6B6862">Ingresa para abrir la caja de hoy.</p>
+      </div>
+      <sc-if value="{{ loginError }}">
+        <div role="alert" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:#FCE8E5;color:#A3281C;font:500 16px/1.4 'Figtree';animation:eeShake 260ms cubic-bezier(.23,1,.32,1)">
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">error</span><span>{{ loginErrorMsg }}</span>
+        </div>
+      </sc-if>
+      <label style="display:flex;flex-direction:column;gap:6px">
+        <span style="font:600 15px 'Figtree';color:#1C1B19">Usuario o correo</span>
+        <div style="position:relative;display:flex;align-items:center">
+          <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">person</span>
+          <input value="{{ user }}" onChange="{{ onUser }}" autocomplete="username" placeholder="tu.usuario" style="width:100%;height:52px;padding:0 14px 0 42px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 17px 'Figtree';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input>
+        </div>
+      </label>
+      <label style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 15px 'Figtree';color:#1C1B19">Contraseña</span><a href="#" onClick="{{ forgot }}" style="font:500 15px 'Figtree';text-decoration:none">¿La olvidaste?</a></div>
+        <div style="position:relative;display:flex;align-items:center">
+          <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">lock</span>
+          <input type="{{ passType }}" value="{{ pass }}" onChange="{{ onPass }}" autocomplete="current-password" placeholder="••••••••" style="width:100%;height:52px;padding:0 46px 0 42px;border-radius:10px;border:1px solid {{ passBorder }};background:#fff;font:500 17px 'Figtree';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input>
+          <button type="button" onClick="{{ togglePass }}" aria-label="Mostrar u ocultar contraseña" style="position:absolute;right:6px;width:34px;height:34px;border:none;border-radius:8px;background:transparent;cursor:pointer;display:grid;place-items:center;color:#6B6862;transition:background-color 150ms ease" style-hover="background:#F2F0EC"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ passIcon }}</span></button>
+        </div>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font:500 16px 'Figtree';color:#1C1B19">
+        <input type="checkbox" checked="{{ remember }}" onChange="{{ toggleRemember }}" style="width:18px;height:18px;accent-color:#C4501F;margin:0"></input>
+        Recordar sesión en esta caja
+      </label>
+      <button type="submit" disabled="{{ loginLoading }}" style="height:48px;border:none;border-radius:12px;background:#C4501F;color:#fff;font:600 17px 'Figtree';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform 140ms cubic-bezier(.23,1,.32,1),background-color 150ms ease" style-hover="background:#A8431A" style-active="transform:scale(.97)">
+        <sc-if value="{{ loginLoading }}"><span style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:eeSpin 600ms linear infinite"></span></sc-if>
+        <span>{{ loginLabel }}</span>
+      </button>
+      <p style="margin:0;font:400 14px/1.5 'Figtree';color:#6B6862;text-align:center">Demo: cualquier contraseña funciona. Escribe <b>error</b> para ver el estado de error.</p>
+    </form>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;min-height:100vh;background:#F7F6F3">
+  <sc-if value="{{ drawerOverlay }}"><div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;background:rgba(28,27,25,.45);z-index:40;animation:eeFade 200ms ease"></div></sc-if>
+  <aside style="position:{{ asidePos }};top:0;left:0;height:100vh;width:{{ sideW }};flex:none;z-index:50;background:#FFFFFF;color:#1C1B19;border-right:1px solid #E7E4DE;display:flex;flex-direction:column;transform:{{ asideTf }};transition:width 220ms cubic-bezier(.23,1,.32,1),transform 300ms cubic-bezier(.32,.72,0,1);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px;height:68px;padding:0 {{ brandPad }};flex:none">
+      <div style="width:40px;height:40px;flex:none;border-radius:11px;background:#C4501F;color:#FFFFFF;display:grid;place-items:center;font:800 18px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">EE</div>
+      <sc-if value="{{ showLabels }}"><div style="display:flex;flex-direction:column;gap:3px;white-space:nowrap;animation:eeFade 180ms ease"><span style="font:700 18px/1 'Bricolage Grotesque',sans-serif;color:#1C1B19">Eben-Ezer</span><span style="font:500 13px/1 'Figtree';color:#77736C">Bodega · Minimarket</span></div></sc-if>
+    </div>
+    <nav style="flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 12px 12px;display:flex;flex-direction:column;gap:4px">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="5">
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <sc-if value="{{ g.showLabel }}"><button onClick="{{ g.toggle }}" aria-expanded="{{ g.open }}" style="display:flex;align-items:center;justify-content:space-between;height:50px;margin-top:10px;padding:0 14px;border:none;border-top:1px solid #EFECE7;background:transparent;font:600 16px 'Figtree';color:#45423D;cursor:pointer;white-space:nowrap" style-hover="color:#1C1B19">{{ g.title }}<span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;transform:{{ g.chev }};transition:transform 200ms cubic-bezier(.23,1,.32,1)">expand_more</span></button></sc-if>
+          <sc-if value="{{ g.showDivider }}"><div style="height:1px;background:#EFECE7;margin:10px 8px"></div></sc-if>
+          <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+            <button onClick="{{ it.go }}" title="{{ it.label }}" aria-current="{{ it.aria }}" style="position:relative;display:flex;align-items:center;gap:14px;height:50px;padding:0 {{ it.pad }};justify-content:{{ it.justify }};border:none;border-radius:12px;background:{{ it.bg }};color:{{ it.fg }};font:{{ it.weight }} 18px 'Figtree',sans-serif;cursor:pointer;text-align:left;white-space:nowrap;transition:background-color 150ms ease,color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="color:#1C1B19;background:#F7F6F3" style-active="transform:scale(.98)">
+              <span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;flex:none;color:{{ it.iconColor }};font-variation-settings:'FILL' {{ it.fill }}">{{ it.icon }}</span>
+              <sc-if value="{{ it.showLabel }}"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">{{ it.label }}</span></sc-if>
+              <sc-if value="{{ it.hasBadge }}"><span style="position:{{ it.badgePos }};top:5px;right:6px;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:{{ it.badgeBg }};color:{{ it.badgeFg }};font:700 15px/24px 'Figtree';text-align:center;font-variant-numeric:tabular-nums">{{ it.badge }}</span></sc-if>
+            </button>
+          </sc-for></sc-if>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="flex:none;padding:12px;border-top:1px solid #EFECE7;display:flex;flex-direction:column;gap:4px">
+      <button onClick="{{ goSistema }}" title="Sistema de diseño" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 {{ footPad }};justify-content:{{ footJustify }};border:none;border-radius:10px;background:{{ sysBg }};color:#45423D;font:500 16px 'Figtree';cursor:pointer;white-space:nowrap;transition:background-color 150ms ease" style-hover="background:#F7F6F3">
+        <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#77736C">palette</span><sc-if value="{{ showLabels }}"><span>Sistema de diseño</span></sc-if>
+      </button>
+      <sc-if value="{{ desktop }}">
+      <button onClick="{{ toggleCollapse }}" title="{{ collapseLabel }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 {{ footPad }};justify-content:{{ footJustify }};border:none;border-radius:10px;background:transparent;color:#6B6862;font:500 16px 'Figtree';cursor:pointer;white-space:nowrap;transition:background-color 150ms ease" style-hover="background:#F7F6F3;color:#1C1B19">
+        <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">{{ collapseIcon }}</span><sc-if value="{{ showLabels }}"><span>{{ collapseLabel }}</span></sc-if>
+      </button>
+      </sc-if>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="position:sticky;top:0;z-index:30;height:80px;flex:none;display:flex;align-items:center;gap:12px;padding:0 {{ mainPad }};background:rgba(247,246,243,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid #E7E4DE">
+      <sc-if value="{{ mobile }}">
+        <button onClick="{{ openDrawer }}" aria-label="Abrir menú" style="width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;display:grid;place-items:center;cursor:pointer;flex:none" style-active="transform:scale(.96)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">menu</span></button>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+        <h1 style="margin:0;font:700 24px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</h1>
+        <span style="font:500 17px/1.3 'Figtree';color:#6B6862;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ subtitle }}</span>
+      </div>
+      <sc-if value="{{ showSearch }}">
+        <div style="position:relative;display:flex;align-items:center;width:300px;flex:none">
+          <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">search</span>
+          <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ onQ }}" onKeyDown="{{ onQKey }}" placeholder="Buscar producto, proveedor…" style="width:100%;height:48px;padding:0 52px 0 40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;font:500 16px 'Figtree';outline:none;transition:border-color 150ms ease,box-shadow 150ms ease" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input>
+          <span style="position:absolute;right:10px;padding:2px 6px;border-radius:5px;border:1px solid #E7E4DE;font:600 13px 'Figtree';color:#6B6862;background:#FBFAF8">Ctrl K</span>
+          <sc-if value="{{ hasResults }}">
+            <div style="position:absolute;top:46px;left:0;right:0;background:#fff;border:1px solid #E7E4DE;border-radius:12px;box-shadow:0 12px 32px -8px rgba(28,33,29,.18);padding:6px;transform-origin:top center;animation:eePop 160ms cubic-bezier(.23,1,.32,1)">
+              <sc-for list="{{ results }}" as="r">
+                <button onClick="{{ r.go }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:8px;background:transparent;cursor:pointer;text-align:left;font:500 16px 'Figtree'" style-hover="background:#F3F1ED">
+                  <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#6B6862">{{ r.icon }}</span><span style="flex:1">{{ r.name }}</span><span style="font:500 14px 'Figtree';color:#6B6862">{{ r.meta }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ showCaja }}">
+        <div style="display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;font:600 15px 'Figtree';white-space:nowrap;flex:none">
+          <span style="width:8px;height:8px;border-radius:50%;background:#2F8A57;box-shadow:0 0 0 3px #E4F3EA"></span>Caja 1 · Abierta
+        </div>
+      </sc-if>
+      <div style="position:relative;flex:none">
+        <button onClick="{{ toggleNotif }}" aria-label="Notificaciones" style="position:relative;width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:{{ notifBg }};display:grid;place-items:center;cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#fff" style-active="transform:scale(.96)">
+          <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">notifications</span>
+          <span style="position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#C23B2E;color:#fff;border:2px solid #F7F6F3;font:700 12px/15px 'Figtree';text-align:center">{{ alertCount }}</span>
+        </button>
+        <sc-if value="{{ notifOpen }}">
+          <div style="position:absolute;top:48px;right:0;width:340px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #E7E4DE;border-radius:14px;box-shadow:0 16px 40px -10px rgba(28,33,29,.22);transform-origin:top right;animation:eePop 170ms cubic-bezier(.23,1,.32,1);overflow:hidden">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #EFECE7"><span style="font:700 17px 'Figtree'">Alertas</span><span style="font:500 14px 'Figtree';color:#6B6862">{{ alertCount }} pendientes</span></div>
+            <div style="max-height:320px;overflow:auto;padding:6px">
+              <sc-for list="{{ alerts }}" as="a">
+                <button onClick="{{ goInv }}" style="width:100%;display:flex;gap:12px;align-items:flex-start;padding:10px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:left" style-hover="background:#F7F6F3">
+                  <span style="width:32px;height:32px;flex:none;border-radius:9px;background:{{ a.bg }};color:{{ a.fg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1">{{ a.icon }}</span>
+                  <span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 16px/1.3 'Figtree'">{{ a.name }}</span><span style="font:500 14px/1.3 'Figtree';color:#6B6862">{{ a.msg }}</span></span>
+                </button>
+              </sc-for>
+            </div>
+            <button onClick="{{ goLista }}" style="width:100%;height:44px;border:none;border-top:1px solid #EFECE7;background:#FBFAF8;color:#1C1B19;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#F2F0EC">Ver lista de compra</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative;flex:none">
+        <button onClick="{{ toggleUser }}" style="display:flex;align-items:center;gap:10px;height:48px;padding:0 {{ userPad }};border-radius:10px;border:1px solid #E7E4DE;background:{{ userBg }};cursor:pointer;transition:background-color 150ms ease" style-hover="background:#fff">
+          <span style="width:30px;height:30px;border-radius:50%;background:#C4501F;color:#FFFFFF;display:grid;place-items:center;font:700 14px 'Figtree'">RQ</span>
+          <sc-if value="{{ showUserName }}"><span style="display:flex;flex-direction:column;align-items:flex-start;gap:1px"><span style="font:600 15px/1.1 'Figtree'">Rosa Quispe</span><span style="font:500 13px/1.1 'Figtree';color:#6B6862">Administrador</span></span><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#6B6862">expand_more</span></sc-if>
+        </button>
+        <sc-if value="{{ userOpen }}">
+          <div style="position:absolute;top:48px;right:0;width:230px;background:#fff;border:1px solid #E7E4DE;border-radius:14px;box-shadow:0 16px 40px -10px rgba(28,33,29,.22);padding:6px;transform-origin:top right;animation:eePop 160ms cubic-bezier(.23,1,.32,1)">
+            <div style="padding:10px 10px 12px;border-bottom:1px solid #EFECE7;margin-bottom:4px;display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'Figtree'">Rosa Quispe</span><span style="font:500 14px 'Figtree';color:#6B6862">rosa.quispe · Administrador</span></div>
+            <button onClick="{{ goUsuarios }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:8px;background:transparent;cursor:pointer;font:500 16px 'Figtree';text-align:left" style-hover="background:#F3F1ED"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6862">manage_accounts</span>Mi perfil</button>
+            <button onClick="{{ goConfig }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:8px;background:transparent;cursor:pointer;font:500 16px 'Figtree';text-align:left" style-hover="background:#F3F1ED"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6862">settings</span>Configuración</button>
+            <button onClick="{{ logout }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:8px;background:transparent;cursor:pointer;font:500 16px 'Figtree';color:#A3281C;text-align:left" style-hover="background:#FCE8E5"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Cerrar sesión</button>
+          </div>
+        </sc-if>
+      </div>
+    </header>
+
+    <main style="flex:1;padding:{{ mainPad }};padding-top:24px;padding-bottom:96px;min-width:0">
+      <sc-if value="{{ loading }}"><div style="display:grid;gap:16px"><div style="height:120px;border-radius:14px;background:#EEEBE6"></div><div style="height:320px;border-radius:14px;background:#EEEBE6"></div></div></sc-if>
+      <sc-if value="{{ is.dashboard }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEDashboard" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.ventas }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEVentas" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,760px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.inventario }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEInventario" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.ingresos }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEIngresos" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.productos }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEProductos" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.categorias }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EECategorias" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.proveedores }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEProveedores" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.consumo }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEConsumo" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.lista }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EELista" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.asistente }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEAsistente" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,760px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.usuarios }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEUsuarios" d="{{ d }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,600px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.config }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEConfig" d="{{ d }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.sistema }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="SistemaDeDiseno" embedded="{{ true }}" hint-size="100%,1400px"></dc-import></div></sc-if>
+    </main>
+  </div>
+
+  <sc-if value="{{ showFab }}">
+    <div style="position:fixed;right:{{ fabRight }};bottom:20px;z-index:35;display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+      <sc-if value="{{ fabOpen }}">
+        <div style="width:300px;max-width:calc(100vw - 32px);background:radial-gradient(120% 90% at 100% 0%,rgba(228,112,63,.16) 0%,rgba(228,112,63,0) 55%),radial-gradient(100% 80% at 0% 100%,rgba(139,123,234,.12) 0%,rgba(139,123,234,0) 60%),#FFFFFF;border:1px solid #E7E4DE;border-radius:16px;box-shadow:0 20px 48px -12px rgba(28,27,25,.3);padding:14px;display:flex;flex-direction:column;gap:8px;transform-origin:bottom right;animation:eePop 180ms cubic-bezier(.23,1,.32,1)">
+          <span style="font:700 18px 'Figtree';padding:2px 4px 6px">Toca una pregunta</span>
+          <sc-for list="{{ quickQs }}" as="qq">
+            <button onClick="{{ qq.go }}" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid #E7E4DE;background:#FBFAF8;cursor:pointer;text-align:left;font:500 15px/1.3 'Figtree';transition:background-color 150ms ease,border-color 150ms ease" style-hover="background:#F2F0EC;border-color:#D6D2CA">
+              <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#1C1B19">north_east</span>{{ qq.q }}
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <button onClick="{{ toggleFab }}" style="display:flex;align-items:center;gap:8px;height:54px;padding:0 18px 0 14px;border:1px solid #E7E4DE;border-radius:999px;background:linear-gradient(135deg,#FFFFFF 0%,#FFF1EA 55%,#EFEBFF 100%);color:#1C1B19;font:600 16px 'Figtree';cursor:pointer;box-shadow:0 10px 28px -10px rgba(28,27,25,.25);transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.96)">
+        <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#C4501F;font-variation-settings:'FILL' 1">auto_awesome</span>Asistente
+      </button>
+    </div>
+  </sc-if>
+
+  <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none">
+    <sc-for list="{{ toasts }}" as="t">
+      <div role="status" style="display:flex;align-items:center;gap:10px;padding:12px 16px 12px 12px;border-radius:12px;background:#1C1B19;color:#fff;font:500 16px 'Figtree';box-shadow:0 12px 32px -8px rgba(28,27,25,.45);animation:eeToast 260ms cubic-bezier(.23,1,.32,1);opacity:{{ t.op }};transform:{{ t.tf }};transition:opacity 200ms ease,transform 200ms cubic-bezier(.23,1,.32,1)">
+        <span style="width:26px;height:26px;border-radius:8px;background:{{ t.iconBg }};color:#1C1B19;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-variation-settings:'FILL' 1">{{ t.icon }}</span>{{ t.msg }}
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;dashboard&quot;,&quot;ventas&quot;,&quot;inventario&quot;,&quot;ingresos&quot;,&quot;productos&quot;,&quot;categorias&quot;,&quot;proveedores&quot;,&quot;consumo&quot;,&quot;lista&quot;,&quot;asistente&quot;,&quot;usuarios&quot;,&quot;config&quot;,&quot;sistema&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;startCollapsed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showAiFab&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { d: null, products: null, screen: this.props.startScreen ?? 'login', collapsed: !!this.props.startCollapsed, drawer: false, w: window.innerWidth, menu: null, toasts: [], ctx: {}, user: 'rosa.quispe', pass: '', showPass: false, remember: true, loginState: 'idle', fabOpen: false, q: '' };
+  searchRef = React.createRef();
+  componentDidMount() {
+    import('./ee-data.js').then(m => this.setState({ d: m, products: m.products.map(p => ({ ...p })) }));
+    this.onR = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this.onR);
+    this.onK = e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); this.searchRef.current && this.searchRef.current.focus(); }
+      if (e.key === 'Escape') this.setState({ menu: null, fabOpen: false, drawer: false, q: '' });
+    };
+    window.addEventListener('keydown', this.onK);
+  }
+  componentDidUpdate(pp) { if (pp.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen }); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); window.removeEventListener('keydown', this.onK); }
+  nav = (s, ctx) => {
+    this.setState(st => ({ screen: s, drawer: false, menu: null, fabOpen: false, q: '', ctx: ctx ? { ...st.ctx, ...ctx } : st.ctx }));
+    window.scrollTo(0, 0);
+  };
+  toast = (msg, type = 'success') => {
+    const id = Date.now() + Math.random();
+    this.setState(s => ({ toasts: [...s.toasts, { id, msg, type, leaving: false }].slice(-3) }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.map(t => t.id === id ? { ...t, leaving: true } : t) })), 2600);
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 2820);
+  };
+  setProducts = fn => this.setState(s => ({ products: fn(s.products) }));
+  setCtx = o => this.setState(s => ({ ctx: { ...s.ctx, ...o } }));
+  login = e => {
+    e && e.preventDefault();
+    if (this.state.loginState === 'loading') return;
+    this.setState({ loginState: 'loading' });
+    setTimeout(() => {
+      const p = this.state.pass.trim();
+      if (!p) this.setState({ loginState: 'error', loginMsg: 'Ingresa tu contraseña para continuar.' });
+      else if (p.toLowerCase() === 'error') this.setState({ loginState: 'error', loginMsg: 'Usuario o contraseña incorrectos. Revisa e intenta otra vez.' });
+      else { this.setState({ loginState: 'idle', screen: 'dashboard', pass: '' }); setTimeout(() => this.toast('Bienvenida, Rosa. Caja 1 abierta.'), 300); }
+    }, 900);
+  };
+  renderVals() {
+    const s = this.state, d = s.d, P = s.products || [];
+    const mobile = s.w < 900, desktop = !mobile;
+    const collapsed = desktop && s.collapsed;
+    const showLabels = !collapsed;
+    const sideWpx = mobile ? 300 : (collapsed ? 84 : 296);
+    const contentW = s.w - (mobile ? 0 : sideWpx);
+    const narrow = contentW < 760;
+    const crit = d ? P.filter(p => d.status(p) === 'critico').length : 0;
+    const need = d ? P.filter(p => ['critico', 'bajo'].includes(d.status(p))).length : 0;
+    const alertsRaw = d ? P.filter(p => ['critico', 'vence', 'vencido'].includes(d.status(p))) : [];
+    const alerts = alertsRaw.map(p => {
+      const st = d.status(p), dt = d.daysTo(p.exp);
+      const m = st === 'critico' ? { icon: 'trending_down', msg: `Por agotarse: quedan ${p.stock}` } : st === 'vencido' ? { icon: 'block', msg: `Ya venció. Retíralo del estante` } : { icon: 'schedule', msg: `Vence en ${dt} días` };
+      return { ...m, name: p.name, bg: d.STATUS[st].bg === '#A3281C' ? '#FCE8E5' : d.STATUS[st].bg, fg: st === 'vencido' ? '#A3281C' : d.STATUS[st].fg };
+    });
+    const G = [
+      [null, [['dashboard', 'Inicio', 'home'], ['ventas', 'Ventas', 'point_of_sale'], ['inventario', 'Inventario', 'inventory_2', crit, 'd'], ['ingresos', 'Ingreso de mercadería', 'local_shipping'], ['productos', 'Productos', 'shopping_basket'], ['asistente', 'Asistente', 'auto_awesome'], ['config', 'Configuración', 'settings']]],
+      ['Más opciones', [['lista', 'Lista de compra', 'checklist', (s.ctx.buyList || []).length || need, 'a'], ['consumo', 'Consumo interno', 'output'], ['categorias', 'Categorías', 'sell'], ['proveedores', 'Proveedores', 'handshake'], ['usuarios', 'Usuarios', 'group']]],
+    ];
+    const secondary = ['lista', 'consumo', 'categorias', 'proveedores', 'usuarios'];
+    const moreOpen = collapsed || s.moreOpen || secondary.includes(s.screen);
+    const groups = G.map(([title, items], gi) => ({
+      title, showLabel: showLabels && !!title, showDivider: !showLabels && gi > 0, open: !title || moreOpen, chev: moreOpen ? 'rotate(180deg)' : 'none', toggle: () => this.setState({ moreOpen: !moreOpen }),
+      items: items.map(([id, label, icon, badge, kind]) => {
+        const act = s.screen === id;
+        return {
+          id, label, icon, go: () => this.nav(id), aria: act ? 'page' : undefined,
+          bg: act ? '#FCEDE5' : 'transparent', fg: act ? '#8E3511' : '#45423D', weight: act ? 600 : 500,
+          iconColor: act ? '#C4501F' : '#8A867F', fill: act ? 1 : 0,
+          pad: collapsed ? '0' : '12px', justify: collapsed ? 'center' : 'flex-start', showLabel: showLabels,
+          hasBadge: !!badge, badge, badgePos: collapsed ? 'absolute' : 'static',
+          badgeBg: kind === 'd' ? '#C23B2E' : '#C4501F', badgeFg: kind === 'd' ? '#fff' : '#1C1B19',
+        };
+      }),
+    }));
+    const T = { dashboard: ['Inicio', 'Resumen de hoy, martes 29 de septiembre'], ventas: ['Ventas', 'Toca los productos y luego presiona Cobrar'], inventario: ['Inventario', 'Cuánto tienes de cada producto'], ingresos: ['Ingreso de mercadería', 'Anota lo que llegó a la tienda en 4 pasos'], productos: ['Productos', 'Precios y datos de lo que vendes'], categorias: ['Categorías', 'Grupos para ordenar tus productos'], proveedores: ['Proveedores', 'A quién le compras'], consumo: ['Consumo interno', 'Productos que se usan en la tienda y no se venden'], lista: ['Lista de compra', 'Productos por agotarse que debes comprar'], asistente: ['Asistente', 'Pregunta lo que quieras sobre tu tienda'], usuarios: ['Usuarios', 'Quién puede entrar al sistema'], config: ['Configuración', 'Datos de la tienda y avisos'], sistema: ['Sistema de diseño', 'Referencia visual'] };
+    const [title, subtitle] = T[s.screen] || ['', ''];
+    const is = {}; Object.keys(T).forEach(k => is[k] = !!d && s.screen === k);
+    const qn = s.q.trim().toLowerCase();
+    const results = qn && d ? [
+      ...P.filter(p => p.name.toLowerCase().includes(qn) || p.code.includes(qn)).slice(0, 5).map(p => ({ name: p.name, meta: `${p.stock} en stock`, icon: 'shopping_basket', go: () => this.nav('inventario', { invQ: p.name }) })),
+      ...d.providers.filter(p => p.name.toLowerCase().includes(qn)).slice(0, 2).map(p => ({ name: p.name, meta: 'Proveedor', icon: 'handshake', go: () => this.nav('proveedores') })),
+    ] : [];
+    const quick = ['¿Qué productos debo comprar hoy?', '¿Qué productos tienen stock crítico?', '¿Qué se vendió más esta semana?', '¿Qué productos están próximos a vencer?'];
+    const lf = s.loginState;
+    return {
+      isLogin: s.screen === 'login', isApp: s.screen !== 'login', wide: s.w >= 900, narrowLogin: s.w < 900, loginCols: s.w >= 900 ? 'minmax(0,1.05fr) minmax(0,1fr)' : '1fr',
+      user: s.user, pass: s.pass, onUser: e => this.setState({ user: e.target.value }), onPass: e => this.setState({ pass: e.target.value, loginState: lf === 'error' ? 'idle' : lf }),
+      passType: s.showPass ? 'text' : 'password', passIcon: s.showPass ? 'visibility_off' : 'visibility', togglePass: () => this.setState({ showPass: !s.showPass }),
+      remember: s.remember, toggleRemember: () => this.setState({ remember: !s.remember }), forgot: e => { e.preventDefault(); this.setState({ loginState: 'error', loginMsg: 'Pide al administrador que restablezca tu contraseña desde Usuarios.' }); },
+      login: this.login, loginLoading: lf === 'loading', loginLabel: lf === 'loading' ? 'Ingresando…' : 'Iniciar sesión', loginError: lf === 'error', loginErrorMsg: s.loginMsg, passBorder: lf === 'error' ? '#C23B2E' : '#DCD8D0',
+      mobile, desktop, drawerOverlay: mobile && s.drawer, closeDrawer: () => this.setState({ drawer: false }), openDrawer: () => this.setState({ drawer: true }),
+      asidePos: mobile ? 'fixed' : 'sticky', asideTf: mobile && !s.drawer ? 'translateX(-100%)' : 'none', sideW: sideWpx + 'px', brandPad: collapsed ? '18px' : '20px',
+      showLabels, groups, footPad: collapsed ? '0' : '12px', footJustify: collapsed ? 'center' : 'flex-start', sysBg: s.screen === 'sistema' ? '#F2F0EC' : 'transparent',
+      goSistema: () => this.nav('sistema'), toggleCollapse: () => this.setState({ collapsed: !s.collapsed }), collapseIcon: collapsed ? 'left_panel_open' : 'left_panel_close', collapseLabel: collapsed ? 'Expandir menú' : 'Contraer menú',
+      mainPad: s.w < 600 ? '16px' : '28px', title, subtitle, showSearch: contentW >= 1080, showCaja: false, showUserName: contentW >= 760, userPad: contentW >= 760 ? '5px 10px 5px 5px' : '5px',
+      searchRef: this.searchRef, q: s.q, onQ: e => this.setState({ q: e.target.value }), onQKey: e => { if (e.key === 'Enter' && results[0]) results[0].go(); }, hasResults: results.length > 0, results,
+      alertCount: alerts.length, alerts, notifOpen: s.menu === 'notif', notifBg: s.menu === 'notif' ? '#fff' : 'transparent', toggleNotif: () => this.setState({ menu: s.menu === 'notif' ? null : 'notif' }),
+      goInv: () => this.nav('inventario'), goLista: () => this.nav('lista'), goUsuarios: () => this.nav('usuarios'), goConfig: () => this.nav('config'),
+      userOpen: s.menu === 'user', userBg: s.menu === 'user' ? '#fff' : 'transparent', toggleUser: () => this.setState({ menu: s.menu === 'user' ? null : 'user' }), logout: () => this.setState({ screen: 'login', menu: null }),
+      loading: !d, is, d, products: P, setProducts: this.setProducts, ctx: s.ctx, setCtx: this.setCtx, nav: this.nav, toast: this.toast, narrow,
+      showFab: (this.props.showAiFab ?? true) && !!d && !['asistente', 'ventas', 'sistema'].includes(s.screen), fabRight: '20px', fabOpen: s.fabOpen, toggleFab: () => this.setState({ fabOpen: !s.fabOpen }),
+      quickQs: quick.map(q => ({ q, go: () => this.nav('asistente', { aiQ: q, aiQid: Date.now() }) })),
+      toasts: s.toasts.map(t => ({ ...t, op: t.leaving ? 0 : 1, tf: t.leaving ? 'translateY(8px) scale(.98)' : 'none', icon: t.type === 'error' ? 'error' : t.type === 'info' ? 'info' : 'check', iconBg: t.type === 'error' ? '#F2A197' : t.type === 'info' ? '#C4501F' : '#8FD3A8' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:16px;max-width:880px;margin:0 auto">
+  <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:3px"><h3 style="margin:0;font:700 17px 'Figtree'">Datos del negocio</h3><span style="font:500 13px 'Figtree';color:#6B6862">Aparecen en tickets y reportes.</span></div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div style="width:72px;height:72px;border-radius:16px;background:#1C1B19;color:#FFFFFF;display:grid;place-items:center;font:800 26px 'Bricolage Grotesque',sans-serif">EE</div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 14px 'Figtree'">Logo</span><div style="display:flex;gap:8px"><button onClick="{{ changed }}" style="height:36px;padding:0 12px;border-radius:9px;border:1px solid #DCD8D0;background:#fff;font:600 13px 'Figtree';cursor:pointer" style-hover="background:#F7F6F3">Subir imagen</button><button style="height:36px;padding:0 12px;border-radius:9px;border:none;background:transparent;color:#6B6862;font:600 13px 'Figtree';cursor:pointer" style-hover="background:#F2F0EC">Quitar</button></div><span style="font:500 12px 'Figtree';color:#8A867F">PNG o JPG, cuadrado, mínimo 256 px.</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Nombre del negocio</span><input value="{{ name }}" onChange="{{ onName }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">RUC <span style="font-weight:500;color:#8A867F">(opcional)</span></span><input onChange="{{ changed }}" placeholder="10XXXXXXXXX" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Dirección</span><input onChange="{{ changed }}" value="Jr. Las Magnolias 245, Los Olivos" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Teléfono</span><input onChange="{{ changed }}" value="987 120 455" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Moneda</span><select onChange="{{ changed }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 15px 'Figtree'"><option>Sol peruano (S/)</option><option>Dólar (US$)</option></select></label>
+    </div>
+  </section>
+
+  <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:3px"><h3 style="margin:0;font:700 17px 'Figtree'">Inventario</h3><span style="font:500 13px 'Figtree';color:#6B6862">Valores que se usan al crear productos nuevos.</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Stock mínimo predeterminado</span><div style="display:flex;align-items:center;gap:8px"><input value="{{ minStock }}" onChange="{{ onMin }}" inputmode="numeric" style="width:100px;height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:600 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input><span style="font:500 14px 'Figtree';color:#6B6862">unidades</span></div></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px 'Figtree'">Avisar vencimiento con</span><div style="display:flex;align-items:center;gap:8px"><input value="{{ expDays }}" onChange="{{ onExp }}" inputmode="numeric" style="width:100px;height:44px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:600 15px 'Figtree';outline:none" style-focus="border-color:#1C1B19;box-shadow:0 0 0 3px rgba(28,27,25,.10)"></input><span style="font:500 14px 'Figtree';color:#6B6862">días de anticipación</span></div></label>
+    </div>
+  </section>
+
+  <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:8px 20px">
+    <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid {{ t.line }}">
+        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:600 14px 'Figtree'">{{ t.label }}</span><span style="font:500 13px 'Figtree';color:#6B6862">{{ t.desc }}</span></div>
+        <button onClick="{{ t.go }}" role="switch" aria-checked="{{ t.on }}" aria-label="{{ t.label }}" style="position:relative;flex:none;width:44px;height:26px;border-radius:999px;border:none;background:{{ t.track }};cursor:pointer;transition:background-color 180ms ease"><span style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transform:{{ t.knob }};transition:transform 180ms cubic-bezier(.23,1,.32,1)"></span></button>
+      </div>
+    </sc-for>
+  </section>
+
+  <sc-if value="{{ dirty }}">
+    <div style="position:sticky;bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 18px;border-radius:14px;background:#1C1B19;color:#fff;box-shadow:0 16px 40px -10px rgba(28,27,25,.5);animation:eeToast 240ms cubic-bezier(.23,1,.32,1)">
+      <span style="font:600 14px 'Figtree'">Tienes cambios sin guardar</span>
+      <div style="display:flex;gap:8px"><button onClick="{{ discard }}" style="height:38px;padding:0 12px;border-radius:9px;border:none;background:rgba(255,255,255,.08);color:#fff;font:600 13px 'Figtree';cursor:pointer" style-hover="background:rgba(255,255,255,.14)">Descartar</button><button onClick="{{ save }}" style="height:38px;padding:0 16px;border-radius:9px;border:none;background:#1C1B19;color:#FFFFFF;font:700 13px 'Figtree';cursor:pointer" style-active="transform:scale(.97)">Guardar cambios</button></div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { name: 'Bodega Eben-Ezer', minStock: '10', expDays: '10', t: { crit: true, exp: true, daily: false, ticket: true }, dirty: false };
+  renderVals() {
+    const s = this.state, toast = this.props.toast || (() => {});
+    const defs = [['crit', 'Alertas de stock crítico', 'Notificar cuando un producto baja a la mitad de su mínimo.'], ['exp', 'Alertas de vencimiento', 'Notificar productos próximos a vencer y vencidos.'], ['daily', 'Resumen diario por WhatsApp', 'Recibe las ventas del día al cerrar la caja.'], ['ticket', 'Imprimir ticket automáticamente', 'Al confirmar cada venta.']];
+    return {
+      name: s.name, onName: e => this.setState({ name: e.target.value, dirty: true }), changed: () => this.setState({ dirty: true }),
+      minStock: s.minStock, onMin: e => this.setState({ minStock: e.target.value.replace(/\D/g, ''), dirty: true }),
+      expDays: s.expDays, onExp: e => this.setState({ expDays: e.target.value.replace(/\D/g, ''), dirty: true }),
+      toggles: defs.map(([k, label, desc], i) => { const on = s.t[k]; return { label, desc, on, line: i === defs.length - 1 ? 'transparent' : '#F2F0EC', track: on ? '#1C1B19' : '#D2CEC6', knob: on ? 'translateX(18px)' : 'none', go: () => this.setState(x => ({ t: { ...x.t, [k]: !on }, dirty: true })) }; }),
+      dirty: s.dirty, discard: () => this.setState({ dirty: false }), save: () => { this.setState({ dirty: false }); toast('Configuración guardada'); },
+    };
+  }
+}
+</script>
+</body>
+</html>

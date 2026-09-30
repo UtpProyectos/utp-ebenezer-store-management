@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:grid;grid-template-columns:{{ cols }};gap:16px;align-items:start;max-width:1640px;margin:0 auto">
+  <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+    <sc-if value="{{ hasChanges }}">
+      <div role="alert" style="display:flex;align-items:center;gap:14px;padding:14px 16px 14px 14px;border-radius:999px;background:#FFF1D9;color:#6B4000;flex-wrap:wrap;animation:eeIn 220ms cubic-bezier(.23,1,.32,1)">
+        <span style="width:44px;height:44px;flex:none;border-radius:50%;background:#FFFFFF;color:#8A5200;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;font-variation-settings:'FILL' 1">warning</span>
+        <span style="flex:1 1 240px;font:600 16px/1.4 'Plus Jakarta Sans'">{{ changesMsg }}</span>
+      </div>
+    </sc-if>
+    <section style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border-radius:32px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 4px 6px">
+        <div style="position:relative;flex:1 1 260px;display:flex;align-items:center">
+          <span style="position:absolute;left:18px;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6B6B">search</span>
+          <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar por número o producto" style="width:100%;height:54px;padding:0 16px 0 52px;border-radius:999px;border:none;background:#F5F5F5;font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="background:#FFFFFF;box-shadow:0 0 0 2px #DE6B4E,0 0 0 6px rgba(222,107,78,.16)"></input>
+        </div>
+        <button onClick="{{ openCreate }}" style="display:flex;align-items:center;gap:10px;height:54px;padding:0 20px 0 8px;border-radius:999px;border:none;background:#DE6B4E;color:#FFFFFF;font:700 16px 'Plus Jakarta Sans';cursor:pointer;white-space:nowrap" style-hover="background:#C85A3F" style-active="transform:scale(.97)"><span style="width:38px;height:38px;border-radius:50%;background:#FFFFFF;color:#DE6B4E;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">add</span>Registrar venta</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 12px;font:600 15px 'Plus Jakarta Sans';color:#6B6B6B"><span style="white-space:nowrap">{{ countLabel }}</span><span style="white-space:nowrap">Total: <b style="color:#111111;font-variant-numeric:tabular-nums">{{ totalL }}</b></span></div>
+      <sc-if value="{{ empty }}"><div style="padding:36px;text-align:center;border-radius:24px;background:#F5F5F5;font:500 16px 'Plus Jakarta Sans';color:#6B6B6B">No hay ventas que coincidan.</div></sc-if>
+      <sc-for list="{{ rows }}" as="v" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:14px;padding:10px 10px 10px 16px;border-radius:24px;background:#F5F5F5;flex-wrap:wrap">
+          <span style="width:58px;font:600 15px 'Plus Jakarta Sans';color:#6B6B6B;font-variant-numeric:tabular-nums">{{ v.time }}</span>
+          <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="display:flex;align-items:center;gap:8px;min-width:0;font:600 17px 'Plus Jakarta Sans'"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Venta #{{ v.id }} · {{ v.pay }}</span><sc-if value="{{ v.changed }}"><span style="padding:2px 10px;border-radius:999px;background:#FFF1D9;color:#8A5200;font:600 13px 'Plus Jakarta Sans'">Editada</span></sc-if></span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ v.items }} · {{ v.who }}</span></div>
+          <span style="font:700 18px 'Plus Jakarta Sans';font-variant-numeric:tabular-nums;white-space:nowrap">{{ v.totalL }}</span>
+          <div style="display:flex;gap:6px">
+            <button onClick="{{ v.edit }}" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;border-radius:999px;border:none;background:#FFFFFF;font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#FAFAFA" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">edit</span>Editar</button>
+            <button onClick="{{ v.del }}" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;border-radius:999px;border:none;background:#FFFFFF;color:#B31F2E;font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#FDE7EA" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">delete</span>Eliminar</button>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </div>
+
+  <aside style="position:{{ asidePos }};top:104px;display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border-radius:32px">
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 8px 6px"><span style="width:44px;height:44px;flex:none;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">history</span><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:700 18px/1.25 'Plus Jakarta Sans';white-space:nowrap">Cambios registrados</span><span style="font:500 14px/1.3 'Plus Jakarta Sans';color:#6B6B6B">Quién, cuándo y por qué</span></div></div>
+    <sc-if value="{{ noAudit }}"><div style="padding:24px 16px;text-align:center;border-radius:24px;background:#F5F5F5;font:500 15px/1.45 'Plus Jakarta Sans';color:#6B6B6B">Aún no hay cambios hoy. Cada edición o eliminación aparecerá aquí.</div></sc-if>
+    <sc-for list="{{ log }}" as="a">
+      <div style="display:flex;gap:12px;padding:12px 14px;border-radius:24px;background:#F5F5F5;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+        <span style="width:36px;height:36px;flex:none;border-radius:50%;background:{{ a.bg }};color:{{ a.fg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:18px;line-height:1">{{ a.icon }}</span>
+        <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 15px 'Plus Jakarta Sans'">{{ a.main }}</span><span style="font:500 14px/1.4 'Plus Jakarta Sans';color:#3A3A3A">{{ a.sub }}</span><span style="font:500 13px 'Plus Jakarta Sans';color:#6B6B6B">{{ a.date }}</span></div>
+      </div>
+    </sc-for>
+    <button onClick="{{ goMov }}" style="display:flex;align-items:center;justify-content:center;gap:6px;height:48px;border-radius:999px;border:none;background:#F2F2F2;font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#E9E9E9">Ver todos los movimientos<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chevron_right</span></button>
+  </aside>
+
+  <sc-if value="{{ modalOpen }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:80;background:rgba(17,17,17,.45);display:grid;place-items:center;padding:16px;animation:eeFade 180ms ease">
+      <form onClick="{{ stop }}" onSubmit="{{ submit }}" role="dialog" aria-modal="true" style="width:100%;max-width:480px;background:#FFFFFF;border-radius:32px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 24px 60px -16px rgba(17,17,17,.4);animation:eePop 220ms cubic-bezier(.23,1,.32,1)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:4px"><h3 style="margin:0;font:700 22px 'Plus Jakarta Sans'">{{ mTitle }}</h3><span style="font:500 15px/1.4 'Plus Jakarta Sans';color:#6B6B6B">{{ mSub }}</span></div>
+          <button type="button" onClick="{{ closeModal }}" aria-label="Cerrar" style="width:44px;height:44px;flex:none;border-radius:50%;border:none;background:#F2F2F2;cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;display:grid;place-items:center">close</button>
+        </div>
+        <sc-if value="{{ isCreate }}">
+          <label style="display:flex;flex-direction:column;gap:8px"><span style="font:600 16px 'Plus Jakarta Sans'">¿Qué se vendió?</span><input value="{{ mItems }}" onChange="{{ onItems }}" placeholder="Ej. Gaseosa cola ×2, Pan francés ×5" style="height:54px;padding:0 18px;border-radius:999px;border:1.5px solid {{ itemsBorder }};font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 4px rgba(222,107,78,.16)"></input></label>
+        </sc-if>
+        <sc-if value="{{ notDel }}">
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="font:600 16px 'Plus Jakarta Sans'">Método de pago</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ pays }}" as="p"><button type="button" onClick="{{ p.go }}" style="height:46px;padding:0 16px;border-radius:999px;border:none;background:{{ p.bg }};color:{{ p.fg }};font:600 15px 'Plus Jakarta Sans';cursor:pointer;transition:background-color 150ms ease">{{ p.label }}</button></sc-for></div>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px"><span style="font:600 16px 'Plus Jakarta Sans'">Total (S/)</span><input value="{{ mTotal }}" onChange="{{ onTotal }}" inputmode="decimal" placeholder="0.00" style="height:54px;padding:0 18px;border-radius:999px;border:1.5px solid {{ totalBorder }};font:700 19px 'Plus Jakarta Sans';outline:none;font-variant-numeric:tabular-nums" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 4px rgba(222,107,78,.16)"></input></label>
+        </sc-if>
+        <sc-if value="{{ isDel }}">
+          <div style="display:flex;gap:10px;padding:14px 16px;border-radius:20px;background:#FDE7EA;color:#B31F2E;font:500 16px/1.45 'Plus Jakarta Sans'"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1.1">warning</span><span>La venta se quitará del total de caja. El administrador recibirá un aviso.</span></div>
+        </sc-if>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font:600 16px 'Plus Jakarta Sans'">{{ reasonLabel }}</span><input value="{{ mReason }}" onChange="{{ onReason }}" placeholder="{{ reasonPh }}" style="height:54px;padding:0 18px;border-radius:999px;border:1.5px solid {{ reasonBorder }};font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 4px rgba(222,107,78,.16)"></input></label>
+        <sc-if value="{{ hasErr }}"><span style="font:500 15px 'Plus Jakarta Sans';color:#B31F2E">{{ errMsg }}</span></sc-if>
+        <span style="display:flex;align-items:center;gap:8px;font:500 14px 'Plus Jakarta Sans';color:#6B6B6B"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">history</span>Queda registrado en movimientos con tu nombre y la hora.</span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" onClick="{{ closeModal }}" style="flex:1 1 120px;height:54px;border-radius:999px;border:none;background:#F2F2F2;font:600 16px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#E9E9E9">Cancelar</button>
+          <button type="submit" style="flex:2 1 180px;height:54px;border-radius:999px;border:none;background:{{ btnBg }};color:#FFFFFF;font:700 17px 'Plus Jakarta Sans';cursor:pointer" style-active="transform:scale(.97)">{{ btnLabel }}</button>
+        </div>
+      </form>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', modal: null, sid: null, mItems: '', mPay: 'Efectivo', mTotal: '', mReason: '', tried: false };
+  renderVals() {
+    const d = this.props.d, nav = this.props.nav || (() => {});
+    if (!d) return {};
+    const s = this.state, S = this.props.sales || [], A = this.props.audit || [];
+    const q = s.q.trim().toLowerCase();
+    const list = S.filter(v => !q || String(v.id).includes(q) || v.items.toLowerCase().includes(q));
+    const cur = S.find(v => v.id === s.sid);
+    const open = (modal, v) => this.setState({ modal, sid: v ? v.id : null, mItems: v ? v.items : '', mPay: v ? v.pay : 'Efectivo', mTotal: v ? (+v.total).toFixed(2) : '', mReason: '', tried: false });
+    const total = parseFloat(s.mTotal) || 0, reason = s.mReason.trim();
+    const err = s.modal === 'create' ? (!s.mItems.trim() ? 'Escribe qué se vendió.' : total <= 0 ? 'Escribe el total de la venta.' : '') : s.modal === 'edit' ? (total <= 0 ? 'Escribe el total de la venta.' : !reason ? 'Escribe el motivo del cambio.' : '') : (!reason ? 'Escribe por qué eliminas esta venta.' : '');
+    const submit = e => {
+      e.preventDefault();
+      if (err) { this.setState({ tried: true }); return; }
+      if (s.modal === 'create') this.props.createSale && this.props.createSale({ items: s.mItems.trim(), pay: s.mPay, total }, reason);
+      else if (s.modal === 'edit') this.props.editSale && this.props.editSale(s.sid, { pay: s.mPay, total }, reason);
+      else this.props.deleteSale && this.props.deleteSale(s.sid, reason);
+      this.setState({ modal: null });
+    };
+    const changes = A.filter(a => a.kind !== 'create');
+    const editedIds = new Set(A.filter(a => a.kind === 'edit').map(a => +(a.main.match(/#(\d+)/) || [])[1]));
+    const bad = f => s.tried && f ? '#D62839' : '#DADADA';
+    return {
+      cols: this.props.narrow ? '1fr' : 'minmax(0,1.7fr) minmax(300px,1fr)', asidePos: this.props.narrow ? 'static' : 'sticky',
+      hasChanges: changes.length > 0, changesMsg: `Hoy se ${changes.length === 1 ? 'hizo 1 cambio' : `hicieron ${changes.length} cambios`} en ventas ya cobradas. Revisa el detalle a la derecha.`,
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), openCreate: () => open('create'),
+      countLabel: `${list.length} venta${list.length === 1 ? '' : 's'} hoy`, totalL: d.money(list.reduce((a, v) => a + (+v.total), 0)), empty: list.length === 0,
+      rows: list.map(v => ({ ...v, totalL: d.money(+v.total), changed: editedIds.has(v.id), edit: () => open('edit', v), del: () => open('delete', v) })),
+      noAudit: A.length === 0, goMov: () => nav('historiales'),
+      log: A.slice(0, 6).map(a => ({ ...a, icon: a.kind === 'delete' ? 'delete' : a.kind === 'edit' ? 'edit' : 'add', bg: a.kind === 'delete' ? '#FDE7EA' : a.kind === 'edit' ? '#FFF1D9' : '#E4F3EA', fg: a.kind === 'delete' ? '#B31F2E' : a.kind === 'edit' ? '#8A5200' : '#1E6A40' })),
+      modalOpen: !!s.modal && (s.modal === 'create' || !!cur), isCreate: s.modal === 'create', isDel: s.modal === 'delete', notDel: s.modal !== 'delete',
+      closeModal: () => this.setState({ modal: null }), stop: e => e.stopPropagation(), submit,
+      mTitle: s.modal === 'create' ? 'Registrar venta' : s.modal === 'edit' ? `Editar venta #${s.sid}` : `¿Eliminar la venta #${s.sid}?`,
+      mSub: s.modal === 'create' ? 'Para una venta que se olvidó anotar en caja.' : cur ? `${cur.time} · ${cur.items}` : '',
+      mItems: s.mItems, onItems: e => this.setState({ mItems: e.target.value }), itemsBorder: bad(!s.mItems.trim() && s.modal === 'create'),
+      pays: ['Efectivo', 'Yape / Plin', 'Tarjeta'].map(p => { const on = s.mPay === p; return { label: p, go: () => this.setState({ mPay: p }), bg: on ? '#111111' : '#F2F2F2', fg: on ? '#FFFFFF' : '#111111' }; }),
+      mTotal: s.mTotal, onTotal: e => this.setState({ mTotal: e.target.value.replace(/[^0-9.]/g, '') }), totalBorder: bad(total <= 0),
+      reasonLabel: s.modal === 'create' ? 'Nota (opcional)' : 'Motivo del cambio', reasonPh: s.modal === 'create' ? 'Ej. no se registró en caja' : 'Ej. me equivoqué de monto',
+      mReason: s.mReason, onReason: e => this.setState({ mReason: e.target.value }), reasonBorder: bad(!reason && s.modal !== 'create'),
+      hasErr: s.tried && !!err, errMsg: err,
+      btnLabel: s.modal === 'create' ? 'Guardar venta' : s.modal === 'edit' ? 'Guardar cambios' : 'Eliminar venta', btnBg: s.modal === 'delete' ? '#D62839' : '#DE6B4E',
+    };
+  }
+}
+</script>
+</body>
+</html>

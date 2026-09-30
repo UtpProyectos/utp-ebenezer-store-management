@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:16px;max-width:1180px;margin:0 auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <p style="margin:0;font:500 16px 'Figtree';color:#6B6862">{{ summary }}</p>
+    <button onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 18px;border-radius:10px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#A8431A" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Nueva categoría</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="8">
+      <div style="display:flex;flex-direction:column;gap:14px;padding:16px;border-radius:16px;background:#fff;border:1px solid #E7E4DE;opacity:{{ c.op }};transition:opacity 200ms ease,border-color 150ms ease" style-hover="border-color:#D6D2CA">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <span style="width:44px;height:44px;flex:none;border-radius:12px;background:{{ c.iconBg }};color:{{ c.iconFg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">{{ c.icon }}</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:700 18px 'Figtree'">{{ c.name }}</span><span style="font:500 15px/1.4 'Figtree';color:#6B6862">{{ c.desc }}</span></div>
+          <button onClick="{{ c.edit }}" title="Editar" style="width:32px;height:32px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:#6B6862;display:grid;place-items:center" style-hover="background:#F2F0EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">edit</span></button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #F2F0EC">
+          <span style="font:600 15px 'Figtree';color:#45423D">{{ c.countL }}</span>
+          <button onClick="{{ c.toggle }}" role="switch" aria-checked="{{ c.active }}" style="display:flex;align-items:center;gap:8px;border:none;background:transparent;cursor:pointer;font:600 14px 'Figtree';color:{{ c.stFg }}">{{ c.stLabel }}<span style="position:relative;width:36px;height:22px;border-radius:999px;background:{{ c.track }};transition:background-color 180ms ease"><span style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transform:{{ c.knob }};transition:transform 180ms cubic-bezier(.23,1,.32,1)"></span></span></button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ modal }}">
+    <div onClick="{{ close }}" style="position:fixed;inset:0;z-index:70;background:rgba(28,27,25,.45);display:grid;place-items:center;padding:16px;animation:eeFade 180ms ease">
+      <div onClick="{{ stop }}" role="dialog" aria-modal="true" style="width:100%;max-width:420px;background:#fff;border-radius:20px;box-shadow:0 30px 60px -20px rgba(28,27,25,.45);animation:eePop 220ms cubic-bezier(.23,1,.32,1);overflow:hidden">
+        <div style="padding:20px 22px 4px"><h3 style="margin:0;font:700 20px 'Bricolage Grotesque',sans-serif">{{ modalTitle }}</h3></div>
+        <div style="padding:14px 22px 20px;display:flex;flex-direction:column;gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Nombre</span><input value="{{ fName }}" onChange="{{ onName }}" placeholder="Ej. Congelados" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid {{ nameBorder }};font:500 17px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input><sc-if value="{{ nameErr }}"><span style="font:500 14px 'Figtree';color:#A3281C">Escribe un nombre para la categoría.</span></sc-if></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Descripción</span><input value="{{ fDesc }}" onChange="{{ onDesc }}" placeholder="Opcional" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 17px 'Figtree';outline:none" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input></label>
+        </div>
+        <div style="display:flex;gap:10px;padding:14px 22px;background:#FBFAF8;border-top:1px solid #EFECE7">
+          <button onClick="{{ close }}" style="flex:1;height:44px;border-radius:11px;border:1px solid #DCD8D0;background:#fff;font:600 16px 'Figtree';cursor:pointer">Cancelar</button>
+          <button onClick="{{ save }}" style="flex:1;height:44px;border-radius:11px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-active="transform:scale(.97)">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { cats: null, modal: null, fName: '', fDesc: '', tried: false };
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, cats = s.cats || d.categories;
+    const setCats = c => this.setState({ cats: c });
+    return {
+      summary: `${cats.filter(c => c.active).length} categorías activas · ${P.length} productos`,
+      openNew: () => this.setState({ modal: 'new', fName: '', fDesc: '', tried: false }),
+      cats: cats.map((c, i) => { const n = P.filter(p => p.cat === c.name).length; return {
+        ...c, countL: n ? `${n} producto${n > 1 ? 's' : ''}` : 'Sin productos', op: c.active ? 1 : 0.6,
+        iconBg: c.active ? '#F2F0EC' : '#F2F0EC', iconFg: c.active ? '#1C1B19' : '#8A867F',
+        stLabel: c.active ? 'Activa' : 'Inactiva', stFg: c.active ? '#1E6A40' : '#8A867F', track: c.active ? '#C4501F' : '#D2CEC6', knob: c.active ? 'translateX(14px)' : 'none',
+        toggle: () => { setCats(cats.map((x, j) => j === i ? { ...x, active: !x.active } : x)); toast(`Categoría ${c.name} ${c.active ? 'desactivada' : 'activada'}`, 'info'); },
+        edit: () => this.setState({ modal: i, fName: c.name, fDesc: c.desc, tried: false }),
+      }; }),
+      modal: s.modal !== null, modalTitle: s.modal === 'new' ? 'Nueva categoría' : 'Editar categoría',
+      fName: s.fName, fDesc: s.fDesc, onName: e => this.setState({ fName: e.target.value }), onDesc: e => this.setState({ fDesc: e.target.value }),
+      nameErr: s.tried && !s.fName.trim(), nameBorder: s.tried && !s.fName.trim() ? '#C23B2E' : '#DCD8D0',
+      close: () => this.setState({ modal: null }), stop: e => e.stopPropagation(),
+      save: () => {
+        if (!s.fName.trim()) { this.setState({ tried: true }); return; }
+        if (s.modal === 'new') setCats([...cats, { name: s.fName.trim(), desc: s.fDesc || 'Sin descripción', icon: 'label', active: true }]);
+        else setCats(cats.map((x, j) => j === s.modal ? { ...x, name: s.fName.trim(), desc: s.fDesc } : x));
+        this.setState({ modal: null }); toast('Categoría guardada');
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

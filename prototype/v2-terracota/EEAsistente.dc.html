@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:grid;grid-template-columns:{{ cols }};gap:20px;max-width:1280px;margin:0 auto;align-items:start">
+  <section style="display:flex;flex-direction:column;background:radial-gradient(120% 90% at 100% 0%,rgba(228,112,63,.16) 0%,rgba(228,112,63,0) 55%),radial-gradient(100% 80% at 0% 100%,rgba(139,123,234,.12) 0%,rgba(139,123,234,0) 60%),#FFFFFF;border:1px solid #E7E4DE;border-radius:18px;overflow:hidden;min-height:{{ minH }}">
+    <div ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:22px;display:flex;flex-direction:column;gap:18px;max-height:{{ maxH }}">
+      <sc-if value="{{ isEmpty }}">
+        <div style="display:flex;flex-direction:column;gap:18px;padding:12px 4px 4px">
+          <div style="display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#E4703F,#8B7BEA);color:#FFFFFF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;font-variation-settings:'FILL' 1">auto_awesome</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 22px 'Bricolage Grotesque',sans-serif">¿Qué quieres saber de tu bodega?</span><span style="font:500 16px 'Figtree';color:#6B6862">Respondo con tus ventas, stock, lotes y proveedores. Nada se modifica sin tu confirmación.</span></div></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+            <sc-for list="{{ starters }}" as="s">
+              <button onClick="{{ s.go }}" style="display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:14px;border:1px solid #E7E4DE;background:rgba(255,255,255,.75);text-align:left;cursor:pointer;transition:border-color 150ms ease,background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="border-color:#DCD8D0;background:#FFFFFF" style-active="transform:scale(.98)">
+                <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#1C1B19">{{ s.icon }}</span><span style="font:600 16px/1.35 'Figtree';color:#1C1B19">{{ s.q }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-for list="{{ msgs }}" as="m">
+        <sc-if value="{{ m.isUser }}">
+          <div style="align-self:flex-end;max-width:80%;padding:10px 14px;border-radius:14px 14px 4px 14px;background:#C4501F;color:#fff;font:500 16px/1.45 'Figtree';animation:eeIn 180ms cubic-bezier(.23,1,.32,1)">{{ m.text }}</div>
+        </sc-if>
+        <sc-if value="{{ m.isBot }}">
+          <div style="display:flex;gap:12px;align-items:flex-start;animation:eeIn 240ms cubic-bezier(.23,1,.32,1)">
+            <span style="width:32px;height:32px;flex:none;border-radius:10px;background:#F2F0EC;color:#1C1B19;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1">auto_awesome</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+              <p style="margin:0;font:600 18px/1.45 'Figtree';color:#1C1B19;text-wrap:pretty">{{ m.headline }}</p>
+              <sc-if value="{{ m.hasStats }}">
+                <div style="display:flex;flex-wrap:wrap;gap:1px;background:#EFECE7;border:1px solid #EFECE7;border-radius:12px;overflow:hidden">
+                  <sc-for list="{{ m.stats }}" as="st"><div style="flex:1 1 120px;padding:12px 14px;background:#FBFAF8;display:flex;flex-direction:column;gap:4px"><span style="font:500 14px 'Figtree';color:#6B6862">{{ st.k }}</span><span style="font:700 20px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ st.v }}</span></div></sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ m.hasList }}">
+                <div style="border:1px solid #EFECE7;border-radius:12px;overflow:hidden">
+                  <sc-for list="{{ m.list }}" as="r">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #F2F0EC">
+                      <span style="font:600 16px 'Figtree';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.a }}</span>
+                      <span style="font:500 15px 'Figtree';color:#6B6862;font-variant-numeric:tabular-nums">{{ r.b }}</span>
+                      <span style="padding:3px 9px;border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font:600 14px 'Figtree';white-space:nowrap">{{ r.c }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ m.hasBars }}">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid #EFECE7;border-radius:12px">
+                  <sc-for list="{{ m.bars }}" as="b">
+                    <div style="display:grid;grid-template-columns:minmax(90px,160px) minmax(0,1fr) 70px;gap:10px;align-items:center">
+                      <span style="font:500 15px 'Figtree';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.k }}</span>
+                      <div style="height:10px;border-radius:5px;background:#F2F0EC;overflow:hidden"><div style="height:100%;width:{{ b.w }};background:{{ b.c }};border-radius:5px"></div></div>
+                      <span style="font:600 15px 'Figtree';text-align:right;font-variant-numeric:tabular-nums">{{ b.v }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ m.hasNote }}"><span style="font:500 15px/1.5 'Figtree';color:#6B6862">{{ m.note }}</span></sc-if>
+              <sc-if value="{{ m.hasActions }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-for list="{{ m.actions }}" as="a">
+                    <button onClick="{{ a.go }}" style="display:inline-flex;align-items:center;gap:6px;height:46px;padding:0 14px;border-radius:10px;border:{{ a.border }};background:{{ a.bg }};color:{{ a.fg }};font:600 15px 'Figtree';cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1),filter 150ms ease" style-hover="filter:brightness(.96)" style-active="transform:scale(.97)">{{ a.label }}<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_forward</span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </sc-for>
+      <sc-if value="{{ thinking }}">
+        <div style="display:flex;gap:12px;align-items:center;animation:eeFade 160ms ease">
+          <span style="width:32px;height:32px;border-radius:10px;background:#F2F0EC;color:#1C1B19;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1">auto_awesome</span>
+          <span style="display:flex;gap:5px;align-items:center;font:500 15px 'Figtree';color:#6B6862">Revisando tus datos<span style="width:5px;height:5px;border-radius:50%;background:#C4501F;animation:eeDot 1s infinite"></span><span style="width:5px;height:5px;border-radius:50%;background:#C4501F;animation:eeDot 1s 150ms infinite"></span><span style="width:5px;height:5px;border-radius:50%;background:#C4501F;animation:eeDot 1s 300ms infinite"></span></span>
+        </div>
+      </sc-if>
+    </div>
+    <form onSubmit="{{ submit }}" style="padding:14px;border-top:1px solid #EFECE7;background:rgba(255,255,255,.6);display:flex;flex-direction:column;gap:10px">
+      <sc-if value="{{ showChips }}">
+        <div style="display:flex;gap:6px;overflow-x:auto">
+          <sc-for list="{{ chips }}" as="c"><button type="button" onClick="{{ c.go }}" style="flex:none;height:40px;padding:0 12px;border-radius:999px;border:1px solid #DCD8D0;background:#fff;font:500 15px 'Figtree';cursor:pointer;white-space:nowrap" style-hover="background:#FDF3EE;border-color:#D6D2CA">{{ c.q }}</button></sc-for>
+        </div>
+      </sc-if>
+      <div style="display:flex;gap:8px;align-items:center;padding:6px 6px 6px 14px;border-radius:14px;border:1.5px solid #DCD8D0;background:#fff;transition:border-color 150ms ease,box-shadow 150ms ease">
+        <input ref="{{ inputRef }}" value="{{ q }}" onChange="{{ onQ }}" placeholder="Pregunta, por ejemplo: ¿qué debería comprar mañana?" style="flex:1;min-width:0;height:40px;border:none;outline:none;background:transparent;font:500 17px 'Figtree'"></input>
+        <button type="submit" disabled="{{ cantSend }}" aria-label="Enviar" style="width:40px;height:40px;border-radius:10px;border:none;background:{{ sendBg }};color:#fff;display:grid;place-items:center;cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.94)"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">arrow_upward</span></button>
+      </div>
+    </form>
+  </section>
+
+  <sc-if value="{{ showSide }}">
+  <aside style="position:sticky;top:92px;display:flex;flex-direction:column;gap:14px">
+    <section style="background:radial-gradient(120% 90% at 100% 0%,rgba(228,112,63,.16) 0%,rgba(228,112,63,0) 55%),radial-gradient(100% 80% at 0% 100%,rgba(139,123,234,.12) 0%,rgba(139,123,234,0) 60%),#FFFFFF;border:1px solid #E7E4DE;color:#1C1B19;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <span style="font:600 14px 'Figtree';letter-spacing:.08em;text-transform:uppercase;color:#6B6862">Tu bodega hoy</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Figtree';color:#C9C5BD">Ventas</span><span style="font:700 22px 'Bricolage Grotesque',sans-serif;color:#1C1B19">S/ 486.40</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Figtree';color:#C9C5BD">Stock crítico</span><span style="font:700 22px 'Bricolage Grotesque',sans-serif;color:#C23B2E">{{ nCrit }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Figtree';color:#C9C5BD">Por vencer / vencidos</span><span style="font:700 22px 'Bricolage Grotesque',sans-serif;color:#C4501F">{{ nExp }}</span></div>
+    </section>
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <span style="font:700 16px 'Figtree'">Más preguntas</span>
+      <sc-for list="{{ more }}" as="c"><button onClick="{{ c.go }}" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border:none;border-top:1px solid #F2F0EC;background:transparent;text-align:left;font:500 15px/1.35 'Figtree';color:#1C1B19;cursor:pointer" style-hover="color:#1C1B19">{{ c.q }}<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6862">north_east</span></button></sc-for>
+    </section>
+    <button onClick="{{ clear }}" style="height:40px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:600 15px 'Figtree';cursor:pointer;color:#6B6862" style-hover="background:#F7F6F3">Nueva conversación</button>
+  </aside>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', msgs: [], thinking: false };
+  scrollRef = React.createRef(); inputRef = React.createRef();
+  componentDidMount() { this.lastQid = null; this.checkCtx(); setTimeout(() => this.inputRef.current && this.inputRef.current.focus(), 250); }
+  componentDidUpdate(pp, ps) {
+    this.checkCtx();
+    if (ps.msgs.length !== this.state.msgs.length || ps.thinking !== this.state.thinking) { const el = this.scrollRef.current; if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }
+  }
+  checkCtx() { const c = this.props.ctx || {}; if (c.aiQ && c.aiQid !== this.lastQid && this.props.d) { this.lastQid = c.aiQid; this.ask(c.aiQ); } }
+  ask = text => {
+    text = (text || '').trim(); if (!text || this.state.thinking) return;
+    this.setState(s => ({ msgs: [...s.msgs, { role: 'user', text }], q: '', thinking: true }));
+    setTimeout(() => this.setState(s => ({ msgs: [...s.msgs, { role: 'bot', ...this.answer(text) }], thinking: false })), 650);
+  };
+  answer(t) {
+    const d = this.props.d, P = this.props.products || [], nav = this.props.nav || (() => {}), setCtx = this.props.setCtx || (() => {});
+    const q = t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const st = p => d.status(p), M = d.STATUS;
+    const A = (label, go, primary) => ({ label, go, primary });
+    const toLista = ids => A('Generar lista de compra', () => { setCtx({ buyList: ids }); nav('lista'); }, true);
+    const toInv = f => A('Ver inventario', () => nav('inventario', f ? { invFilter: f } : null));
+    if (/critic/.test(q)) {
+      const c = P.filter(p => st(p) === 'critico');
+      return { headline: `Hay ${c.length} productos con stock crítico. Están por debajo de la mitad de su mínimo.`, list: c.map(p => ({ a: p.name, b: `${p.stock} / mín. ${p.min}`, c: 'Crítico', bg: M.critico.bg, fg: M.critico.fg })), actions: [toInv('critico'), toLista(c.map(p => p.id))] };
+    }
+    if (/comprar|repon|reposic|pedir/.test(q)) {
+      const c = P.filter(p => ['critico', 'bajo'].includes(st(p))).sort((a, b) => a.stock / a.min - b.stock / b.min);
+      const cost = c.reduce((a, p) => a + d.suggested(p) * p.cost, 0);
+      const provs = [...new Set(c.map(p => p.prov))];
+      return { headline: `${/manana/.test(q) ? 'Para mañana' : 'Hoy'} te conviene reponer ${c.length} productos. Costo estimado ${d.money(cost)}.`, list: c.map(p => ({ a: p.name, b: `comprar ${d.suggested(p)}`, c: st(p) === 'critico' ? 'Alta' : 'Media', bg: st(p) === 'critico' ? M.critico.bg : M.bajo.bg, fg: st(p) === 'critico' ? M.critico.fg : M.bajo.fg })), note: `Se reparten entre ${provs.length} proveedores: ${provs.join(', ')}. Cantidades calculadas para cubrir el doble del stock mínimo.`, actions: [toLista(c.map(p => p.id)), toInv()] };
+    }
+    if (/venc/.test(q)) {
+      const c = P.filter(p => ['vence', 'vencido'].includes(st(p))).sort((a, b) => d.daysTo(a.exp) - d.daysTo(b.exp));
+      return { headline: `${c.length} productos requieren atención por vencimiento. ${c.filter(p => st(p) === 'vencido').length} ya venció y debe retirarse.`, list: c.map(p => { const dt = d.daysTo(p.exp); return { a: p.name, b: `${p.stock} en stock`, c: dt < 0 ? `Venció hace ${-dt} d` : `Vence en ${dt} d`, bg: dt < 0 ? M.critico.bg : M.vence.bg, fg: dt < 0 ? M.critico.fg : M.vence.fg }; }), note: 'Sugerencia: pon los próximos a vencer al frente del mostrador. Los vencidos regístralos como merma en Consumo interno.', actions: [toInv('vence'), A('Registrar merma', () => nav('consumo'))] };
+    }
+    if (/semana/.test(q) && /vend|venta/.test(q) && !/mas|producto/.test(q)) {
+      const max = Math.max(...d.sales7.map(x => x.v)), tot = d.sales7.reduce((a, b) => a + b.v, 0);
+      return { headline: `Esta semana vendiste ${d.money(tot)}. El mejor día fue el sábado con ${d.money(610)}.`, stats: [{ k: 'Total 7 días', v: d.money(tot) }, { k: 'Promedio diario', v: d.money(tot / 7) }, { k: 'vs. semana anterior', v: '+6%' }], bars: d.sales7.map(x => ({ k: x.d, v: d.money(x.v), w: Math.round(x.v / max * 100) + '%', c: x.d === 'Hoy' ? '#C4501F' : '#1C1B19' })), actions: [A('Ver dashboard', () => nav('dashboard'))] };
+    }
+    if (/mas|top|vende|vendid/.test(q) && !/hoy/.test(q)) {
+      const top = [...P].sort((a, b) => b.sold - a.sold).slice(0, 6), max = top[0].sold;
+      return { headline: `${top[0].name} es lo que más sale: ${top[0].sold} unidades en los últimos 7 días.`, bars: top.map(p => ({ k: p.name, v: `${p.sold} u.`, w: Math.round(p.sold / max * 100) + '%', c: '#1C1B19' })), note: `Por ingresos, lidera ${[...P].sort((a, b) => b.sold * b.price - a.sold * a.price)[0].name}.`, actions: [A('Ver productos', () => nav('productos'))] };
+    }
+    if (/hoy|vendi|cuanto/.test(q)) {
+      return { headline: 'Hoy llevas S/ 486.40 en ventas, 13% más que ayer a esta hora.', stats: [{ k: 'Ventas', v: 'S/ 486.40' }, { k: 'Tickets', v: '38' }, { k: 'Ticket promedio', v: 'S/ 12.80' }, { k: 'Productos', v: '112' }], note: 'La hora más fuerte fue de 7:00 a 9:00 a. m. (pan, leche y huevos).', actions: [A('Ir a ventas', () => nav('ventas'), true), A('Ver dashboard', () => nav('dashboard'))] };
+    }
+    if (/proveedor/.test(q)) {
+      const pv = [...d.providers].sort((a, b) => b.count - a.count), max = pv[0].count;
+      return { headline: `Tu proveedor más frecuente es ${pv[0].name}, con ${pv[0].count} compras. Le sigue ${pv[1].name}.`, bars: pv.slice(0, 5).map(p => ({ k: p.name, v: `${p.count}`, w: Math.round(p.count / max * 100) + '%', c: '#1C1B19' })), actions: [A('Ver proveedores', () => nav('proveedores'))] };
+    }
+    return { headline: 'Todavía no sé responder eso con tus datos.', note: 'Puedo ayudarte con reposición, stock crítico, vencimientos, ventas del día o de la semana, productos más vendidos y proveedores.' };
+  }
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [];
+    if (!d) return {};
+    const s = this.state, narrow = this.props.narrow;
+    const all = ['¿Qué productos debo reponer?', '¿Qué productos están por vencer?', '¿Cuánto vendí hoy?', '¿Qué producto se vende más?', '¿Cuáles fueron mis ventas de esta semana?', '¿Qué productos están en stock crítico?', '¿Qué proveedor utilizo más?', '¿Qué debería comprar mañana?'];
+    const icons = ['inventory_2', 'schedule', 'payments', 'trending_up', 'bar_chart', 'warning', 'handshake', 'shopping_cart'];
+    const mk = q => ({ q, go: () => this.ask(q) });
+    return {
+      cols: narrow ? '1fr' : 'minmax(0,1fr) 300px', showSide: !narrow, minH: narrow ? 'calc(100vh - 180px)' : 'calc(100vh - 160px)', maxH: narrow ? 'none' : 'calc(100vh - 290px)',
+      scrollRef: this.scrollRef, inputRef: this.inputRef, isEmpty: s.msgs.length === 0 && !s.thinking,
+      starters: all.slice(0, 6).map((q, i) => ({ ...mk(q), icon: icons[i] })),
+      msgs: s.msgs.map(m => m.role === 'user' ? { isUser: true, text: m.text } : {
+        isBot: true, headline: m.headline, hasStats: !!m.stats, stats: m.stats || [], hasList: !!(m.list && m.list.length), list: m.list || [], hasBars: !!m.bars, bars: m.bars || [], hasNote: !!m.note, note: m.note,
+        hasActions: !!(m.actions && m.actions.length), actions: (m.actions || []).map(a => ({ ...a, bg: a.primary ? '#1C1B19' : '#fff', fg: a.primary ? '#fff' : '#1C1B19', border: a.primary ? 'none' : '1px solid #DCD8D0' })),
+      }),
+      thinking: s.thinking, showChips: s.msgs.length > 0, chips: all.filter(q => !s.msgs.some(m => m.text === q)).slice(0, 5).map(mk),
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), submit: e => { e.preventDefault(); this.ask(s.q); }, cantSend: !s.q.trim() || s.thinking, sendBg: s.q.trim() ? '#1C1B19' : '#C2BEB6',
+      nCrit: P.filter(p => d.status(p) === 'critico').length, nExp: P.filter(p => ['vence', 'vencido'].includes(d.status(p))).length,
+      more: all.slice(6).concat(all.slice(0, 2)).map(mk), clear: () => this.setState({ msgs: [] }),
+    };
+  }
+}
+</script>
+</body>
+</html>

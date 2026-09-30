@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:20px;max-width:1180px;margin:0 auto">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+    <div style="display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:#FFF1D9;color:#6B4000"><span style="width:38px;height:38px;border-radius:10px;background:#fff;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1">inventory_2</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 16px 'Figtree'">Reduce el stock</span><span style="font:500 15px 'Figtree'">Los productos salen del inventario.</span></div></div>
+    <div style="display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:#F2F0EC;color:#45423D"><span style="width:38px;height:38px;border-radius:10px;background:#fff;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1">money_off</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 16px 'Figtree'">No genera ingreso de caja</span><span style="font:500 15px 'Figtree'">Se registra solo el costo para control.</span></div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:{{ cols }};gap:20px;align-items:start">
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+      <h3 style="margin:0;font:700 19px 'Figtree'">Registrar consumo interno</h3>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 90px auto;gap:10px;align-items:end">
+        <label style="display:flex;flex-direction:column;gap:6px;min-width:0"><span style="font:600 15px 'Figtree'">Producto</span>
+          <select value="{{ pid }}" onChange="{{ onPid }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none;min-width:0" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"><option value="">Selecciona…</option><sc-for list="{{ prodOpts }}" as="o"><option value="{{ o.id }}">{{ o.name }}</option></sc-for></select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Cantidad</span><input value="{{ qty }}" onChange="{{ onQty }}" inputmode="numeric" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;font:600 17px 'Figtree';outline:none;width:100%" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></input></label>
+        <button onClick="{{ addItem }}" disabled="{{ cantAdd }}" style="height:50px;padding:0 14px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:600 16px 'Figtree';cursor:pointer;opacity:{{ addOp }};display:flex;align-items:center;gap:6px" style-hover="background:#F7F6F3" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">add</span>Agregar</button>
+      </div>
+      <div style="display:flex;flex-direction:column;border:1px solid #EFECE7;border-radius:12px;overflow:hidden">
+        <sc-if value="{{ noItems }}"><div style="padding:22px;text-align:center;font:500 15px 'Figtree';color:#6B6862">Aún no agregas productos.</div></sc-if>
+        <sc-for list="{{ items }}" as="i">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F2F0EC;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+            <span style="flex:1;font:600 16px 'Figtree'">{{ i.name }}</span><span style="font:600 16px 'Figtree';font-variant-numeric:tabular-nums">×{{ i.qty }}</span><span style="font:500 15px 'Figtree';color:#6B6862;width:70px;text-align:right">{{ i.cost }}</span>
+            <button onClick="{{ i.del }}" aria-label="Quitar" style="width:30px;height:30px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:#6B6862;font-family:'Material Symbols Rounded';font-size:21px" style-hover="background:#FCE8E5;color:#A3281C">close</button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Motivo</span><select value="{{ reason }}" onChange="{{ onReason }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none"><sc-for list="{{ reasons }}" as="r"><option value="{{ r }}">{{ r }}</option></sc-for></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Responsable</span><select value="{{ who }}" onChange="{{ onWho }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none"><sc-for list="{{ people }}" as="p"><option value="{{ p }}">{{ p }}</option></sc-for></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Fecha</span><input type="date" value="{{ date }}" onChange="{{ onDate }}" style="height:50px;padding:0 12px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:500 16px 'Figtree';outline:none"></input></label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Figtree'">Observación</span><textarea value="{{ obs }}" onChange="{{ onObs }}" rows="2" placeholder="Opcional" style="padding:10px 12px;border-radius:10px;border:1px solid #DCD8D0;font:500 16px/1.5 'Figtree';outline:none;resize:vertical" style-focus="border-color:#C4501F;box-shadow:0 0 0 3px rgba(196,80,31,.18)"></textarea></label>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:4px">
+        <span style="font:500 15px 'Figtree';color:#6B6862">Costo total: <b style="color:#1C1B19">{{ totalCost }}</b> · Ingreso en caja: <b style="color:#1C1B19">S/ 0.00</b></span>
+        <button onClick="{{ save }}" disabled="{{ noItems }}" style="height:52px;padding:0 20px;border-radius:12px;border:none;background:{{ saveBg }};color:{{ saveFg }};font:700 17px 'Figtree';cursor:pointer;display:flex;align-items:center;gap:8px" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">output</span>Registrar consumo</button>
+      </div>
+    </section>
+
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;overflow:hidden">
+      <div style="padding:16px 18px;border-bottom:1px solid #EFECE7;display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 19px 'Figtree'">Historial</h3><span style="font:500 15px 'Figtree';color:#6B6862">Este mes · {{ monthCost }} en costo</span></div>
+      <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:12px 18px;border-bottom:1px solid #F2F0EC;animation:{{ h.anim }}">
+          <span style="font:600 16px 'Figtree'">{{ h.prod }} <span style="color:#6B6862;font-weight:500">×{{ h.qty }}</span></span>
+          <span style="font:600 15px 'Figtree';font-variant-numeric:tabular-nums;text-align:right">{{ h.costL }}</span>
+          <span style="font:500 14px 'Figtree';color:#6B6862">{{ h.reason }} · {{ h.who }}</span>
+          <span style="font:500 14px 'Figtree';color:#6B6862;text-align:right">{{ h.date }}</span>
+        </div>
+      </sc-for>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { pid: '', qty: '1', items: [], reason: 'Consumo del personal', who: 'Rosa Quispe', date: '2026-09-29', obs: '', hist: null };
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, hist = s.hist || d.consumos;
+    const items = s.items.map(i => ({ ...i, p: P.find(p => p.id === i.id) })).filter(i => i.p);
+    const cost = items.reduce((a, i) => a + i.qty * i.p.cost, 0);
+    const q = parseInt(s.qty) || 0;
+    return {
+      cols: this.props.narrow ? '1fr' : 'minmax(0,1.2fr) minmax(0,1fr)',
+      pid: s.pid, onPid: e => this.setState({ pid: e.target.value }), prodOpts: P.map(p => ({ id: String(p.id), name: `${p.name} (${p.stock})` })),
+      qty: s.qty, onQty: e => this.setState({ qty: e.target.value.replace(/\D/g, '') }), cantAdd: !s.pid || q <= 0, addOp: !s.pid || q <= 0 ? 0.5 : 1,
+      addItem: () => { const id = +s.pid; this.setState(x => ({ items: x.items.some(i => i.id === id) ? x.items.map(i => i.id === id ? { ...i, qty: i.qty + q } : i) : [...x.items, { id, qty: q }], pid: '', qty: '1' })); },
+      items: items.map(i => ({ name: i.p.name, qty: i.qty, cost: d.money(i.qty * i.p.cost), del: () => this.setState(x => ({ items: x.items.filter(y => y.id !== i.id) })) })), noItems: items.length === 0,
+      reason: s.reason, onReason: e => this.setState({ reason: e.target.value }), reasons: ['Consumo del personal', 'Limpieza del local', 'Merma / vencido', 'Producto dañado', 'Degustación', 'Otro'],
+      who: s.who, onWho: e => this.setState({ who: e.target.value }), people: d.users.filter(u => u.active).map(u => u.name),
+      date: s.date, onDate: e => this.setState({ date: e.target.value }), obs: s.obs, onObs: e => this.setState({ obs: e.target.value }),
+      totalCost: d.money(cost), saveBg: items.length ? '#C4501F' : '#E7E4DE', saveFg: items.length ? '#fff' : '#9A968F',
+      save: () => {
+        this.props.setProducts && this.props.setProducts(ps => ps.map(p => { const i = s.items.find(x => x.id === p.id); return i ? { ...p, stock: Math.max(0, p.stock - i.qty) } : p; }));
+        const newH = items.map(i => ({ date: 'Ahora', prod: i.p.name, qty: i.qty, reason: s.reason, who: s.who, cost: i.qty * i.p.cost, isNew: true }));
+        this.setState({ items: [], obs: '', hist: [...newH, ...hist.map(h => ({ ...h, isNew: false }))] });
+        toast(`Consumo registrado · stock actualizado, sin ingreso en caja`, 'info');
+      },
+      monthCost: d.money(hist.reduce((a, h) => a + h.cost, 0)),
+      history: hist.map(h => ({ ...h, costL: d.money(h.cost), anim: h.isNew ? 'eeIn 260ms cubic-bezier(.23,1,.32,1)' : 'none' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

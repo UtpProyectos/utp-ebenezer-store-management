@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:18px;max-width:1180px;margin:0 auto">
+  <div style="display:flex;align-items:center;gap:8px;font:500 15px 'Figtree';color:#6B6862;flex-wrap:wrap">
+    <button onClick="{{ goInv }}" style="padding:5px 10px;border-radius:999px;border:none;background:#FCEDE5;color:#8E3511;font:600 15px 'Figtree';cursor:pointer;display:flex;align-items:center;gap:4px" style-hover="background:#E8E5DF"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">check</span>1 · Inventario</button><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chevron_right</span>
+    <span style="padding:5px 10px;border-radius:999px;background:#C4501F;color:#fff;font-weight:600">2 · Lista de compra</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chevron_right</span>
+    <span style="padding:5px 10px;border-radius:999px;background:#EEEBE6">3 · Ingreso de mercadería</span>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between">
+    <div style="display:flex;gap:28px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 15px 'Figtree';color:#6B6862">Productos en la lista</span><span style="font:700 28px/1 'Bricolage Grotesque',sans-serif">{{ nItems }}</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 15px 'Figtree';color:#6B6862">Costo estimado</span><span style="font:700 28px/1 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ total }}</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 15px 'Figtree';color:#6B6862">Comprados</span><span style="font:700 28px/1 'Bricolage Grotesque',sans-serif;color:#1E6A40">{{ nBought }}</span></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onClick="{{ print }}" style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 14px;border-radius:10px;border:1px solid #DCD8D0;background:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#FBFAF8" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">print</span>Imprimir</button>
+      <button onClick="{{ goIngreso }}" style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 18px;border-radius:10px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer" style-hover="background:#A8431A" style-active="transform:scale(.97)">Registrar ingreso de mercadería<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_forward</span></button>
+    </div>
+  </div>
+
+  <sc-if value="{{ empty }}">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:64px 20px;text-align:center;background:#fff;border:1px dashed #DCD8D0;border-radius:16px">
+      <span style="width:52px;height:52px;border-radius:14px;background:#F2F0EC;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:26px;line-height:1;color:#1C1B19">task_alt</span>
+      <span style="font:700 18px 'Figtree'">Tu lista está vacía</span>
+      <span style="font:400 16px/1.5 'Figtree';color:#6B6862;max-width:340px">Selecciona productos en Inventario o deja que el sistema sugiera los que están con stock bajo.</span>
+      <button onClick="{{ goInv }}" style="margin-top:4px;height:48px;padding:0 16px;border-radius:10px;border:none;background:#C4501F;color:#fff;font:600 16px 'Figtree';cursor:pointer">Ir a inventario</button>
+    </div>
+  </sc-if>
+
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+    <section style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #EFECE7;background:#FBFAF8;flex-wrap:wrap">
+        <span style="width:34px;height:34px;border-radius:9px;background:#fff;border:1px solid #E7E4DE;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6862">storefront</span>
+        <div style="display:flex;flex-direction:column;gap:1px;flex:1;min-width:0"><span style="font:700 17px 'Figtree'">{{ g.prov }}</span><span style="font:500 14px 'Figtree';color:#6B6862">{{ g.meta }}</span></div>
+        <span style="font:700 17px 'Figtree';font-variant-numeric:tabular-nums">{{ g.total }}</span>
+      </div>
+      <sc-for list="{{ g.items }}" as="r">
+        <div style="display:grid;grid-template-columns:{{ cols }};gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid #F2F0EC;opacity:{{ r.op }};transition:opacity 200ms ease">
+          <button onClick="{{ r.toggle }}" aria-label="Marcar como comprado" style="width:26px;height:26px;border-radius:8px;border:1.5px solid {{ r.chkBorder }};background:{{ r.chkBg }};color:#fff;display:grid;place-items:center;cursor:pointer;transition:background-color 150ms ease,border-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.9)"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;opacity:{{ r.checkOp }};transition:opacity 150ms ease">check</span></button>
+          <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 16px 'Figtree';text-decoration:{{ r.deco }}">{{ r.name }}</span><span style="font:500 14px 'Figtree';color:#6B6862">Stock {{ r.stock }} · mín. {{ r.min }} · sugerido {{ r.sug }}</span></div>
+          <span style="justify-self:start;padding:3px 9px;border-radius:999px;background:{{ r.pbg }};color:{{ r.pfg }};font:600 14px 'Figtree'">{{ r.prio }}</span>
+          <div style="display:flex;align-items:center;border:1px solid #DCD8D0;border-radius:10px;overflow:hidden;height:36px;width:118px">
+            <button onClick="{{ r.dec }}" aria-label="Menos" style="width:34px;height:100%;border:none;background:#FBFAF8;cursor:pointer;font-family:'Material Symbols Rounded';font-size:21px" style-hover="background:#F2F0EC">remove</button>
+            <input value="{{ r.qty }}" onChange="{{ r.set }}" inputmode="numeric" style="width:50px;height:100%;border:none;text-align:center;font:700 16px 'Figtree';outline:none;font-variant-numeric:tabular-nums"></input>
+            <button onClick="{{ r.inc }}" aria-label="Más" style="width:34px;height:100%;border:none;background:#FBFAF8;cursor:pointer;font-family:'Material Symbols Rounded';font-size:21px" style-hover="background:#F2F0EC">add</button>
+          </div>
+          <span style="font:600 16px 'Figtree';text-align:right;font-variant-numeric:tabular-nums">{{ r.cost }}</span>
+          <sc-if value="{{ r.showActions }}"><button onClick="{{ r.remove }}" title="Quitar de la lista" style="width:32px;height:32px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:#6B6862;display:grid;place-items:center" style-hover="background:#FCE8E5;color:#A3281C"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">close</span></button></sc-if>
+        </div>
+      </sc-for>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ids: null, qty: {}, bought: [] };
+  renderVals() {
+    const d = this.props.d, P = this.props.products || [], nav = this.props.nav || (() => {}), toast = this.props.toast || (() => {});
+    if (!d) return {};
+    const s = this.state, ctx = this.props.ctx || {};
+    const ids = s.ids || (ctx.buyList && ctx.buyList.length ? ctx.buyList : P.filter(p => ['critico', 'bajo'].includes(d.status(p))).map(p => p.id));
+    const items = ids.map(i => P.find(p => p.id === i)).filter(Boolean);
+    const q = p => s.qty[p.id] ?? Math.max(1, d.suggested(p));
+    const setQ = (p, n) => this.setState(x => ({ qty: { ...x.qty, [p.id]: Math.max(0, n) } }));
+    const byProv = {};
+    items.forEach(p => (byProv[p.prov] = byProv[p.prov] || []).push(p));
+    const narrow = this.props.narrow;
+    const prio = p => { const k = d.status(p); return k === 'critico' ? ['Alta', '#FCE8E5', '#A3281C'] : k === 'bajo' ? ['Media', '#FFF1D9', '#8A5200'] : ['Baja', '#F2F0EC', '#6B6862']; };
+    const total = items.filter(p => !s.bought.includes(p.id)).reduce((a, p) => a + q(p) * p.cost, 0);
+    return {
+      nItems: items.length, total: d.money(total), nBought: `${s.bought.length}/${items.length}`, empty: items.length === 0,
+      cols: narrow ? '26px minmax(0,1fr) auto' : '26px minmax(0,2fr) 70px 118px 90px 32px',
+      groups: Object.entries(byProv).map(([prov, arr]) => {
+        const pv = d.providers.find(x => x.name === prov);
+        return {
+          prov, meta: pv ? `${pv.type} · ${pv.phone} · última compra ${pv.last}` : '', total: d.money(arr.reduce((a, p) => a + q(p) * p.cost, 0)),
+          items: arr.map(p => {
+            const b = s.bought.includes(p.id), [pr, pbg, pfg] = prio(p);
+            return {
+              name: p.name, stock: p.stock, min: p.min, sug: d.suggested(p), qty: q(p), cost: d.money(q(p) * p.cost), prio: pr, pbg, pfg,
+              op: b ? 0.55 : 1, deco: b ? 'line-through' : 'none', chkBg: b ? '#1C1B19' : '#fff', chkBorder: b ? '#1C1B19' : '#C2BEB6', checkOp: b ? 1 : 0, showActions: !narrow,
+              toggle: () => { this.setState(x => ({ bought: b ? x.bought.filter(i => i !== p.id) : [...x.bought, p.id] })); if (!b) toast(`${p.name} marcado como comprado`); },
+              dec: () => setQ(p, q(p) - 1), inc: () => setQ(p, q(p) + 1), set: e => setQ(p, parseInt(e.target.value) || 0),
+              remove: () => this.setState({ ids: ids.filter(i => i !== p.id) }),
+            };
+          }),
+        };
+      }),
+      goInv: () => nav('inventario'),
+      goIngreso: () => nav('ingresos', { prefillId: (items.find(p => s.bought.includes(p.id)) || items[0] || {}).id, fromList: true }),
+      print: () => toast('Preparando lista para imprimir…', 'info'),
+    };
+  }
+}
+</script>
+</body>
+</html>
