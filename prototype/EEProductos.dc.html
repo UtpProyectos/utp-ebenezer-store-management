@@ -24,33 +24,33 @@
     <div style="overflow-x:auto">
       <div style="min-width:{{ minW }}">
         <sc-if value="{{ wideTable }}">
-        <div style="display:grid;grid-template-columns:minmax(240px,2fr) 110px 100px 170px 120px;gap:14px;padding:14px 18px;background:#FAFAFA;border-bottom:1px solid #F2F2F2;font:600 15px 'Plus Jakarta Sans';color:#3A3A3A">
+        <div style="display:grid;grid-template-columns:minmax(240px,2fr) 110px 100px 170px 120px;gap:14px;padding:16px 18px 10px;background:#FFFFFF;font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">
           <span>Producto</span><span style="text-align:right">Precio</span><span style="text-align:right">Cantidad</span><span>¿Se vende?</span><span></span>
         </div>
         </sc-if>
         <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
-          <div style="display:grid;grid-template-columns:{{ rowCols }};gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid #F2F2F2;opacity:{{ r.op }};transition:opacity 200ms ease,background-color 120ms ease" style-hover="background:#FAFAFA">
-            <div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="width:34px;height:34px;flex:none;border-radius:12px;background:#F2F2F2;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#6B6B6B">{{ r.icon }}</span><div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:600 17px/1.3 'Plus Jakarta Sans'">{{ r.name }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.sub }}</span></div></div>
+          <div style="display:grid;grid-template-columns:{{ rowCols }};gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid #F5F5F5;opacity:{{ r.op }};transition:opacity 200ms ease,background-color 120ms ease" style-hover="background:#FAFAFA">
+            <span style="min-width:0;font:600 17px/1.3 'Plus Jakarta Sans'">{{ r.name }}</span>
                         <span style="font:700 17px 'Plus Jakarta Sans';text-align:right;font-variant-numeric:tabular-nums">{{ r.priceL }}</span>
-                        <sc-if value="{{ wideTable }}"><span style="font:600 16px 'Plus Jakarta Sans';text-align:right;font-variant-numeric:tabular-nums;color:{{ r.stockFg }}">{{ r.stock }}</span></sc-if>
+                        <sc-if value="{{ wideTable }}"><span style="font:600 16px 'Plus Jakarta Sans';text-align:right;font-variant-numeric:tabular-nums;color:{{ r.stockFg }}">{{ r.stock }} <span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.unitL }}</span></span></sc-if>
             <button onClick="{{ r.toggle }}" role="switch" aria-checked="{{ r.active }}" style="display:flex;align-items:center;gap:8px;border:none;background:transparent;cursor:pointer;padding:0;font:600 15px 'Plus Jakarta Sans';color:{{ r.stFg }}">
               <span style="position:relative;width:48px;height:28px;border-radius:999px;background:{{ r.trackBg }};transition:background-color 180ms ease;flex:none"><span style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transform:{{ r.knobTf }};transition:transform 180ms cubic-bezier(.23,1,.32,1)"></span></span>
               <sc-if value="{{ wideTable }}">{{ r.stLabel }}</sc-if>
             </button>
             <div style="display:flex;justify-content:flex-end;gap:2px">
-              <button onClick="{{ r.edit }}" style="height:46px;padding:0 16px;border-radius:999px;border:1.5px solid #DADADA;background:#fff;cursor:pointer;font:600 15px 'Plus Jakarta Sans';display:flex;align-items:center;gap:6px" style-hover="background:#F5F5F5" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">edit</span>Editar</button>
+              <button onClick="{{ r.edit }}" aria-label="Editar" title="Editar" style="width:44px;height:44px;border-radius:50%;border:none;background:#F2F2F2;color:#111111;cursor:pointer;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1" style-hover="background:#E6E6E6" style-active="transform:scale(.95)">edit</button>
             </div>
           </div>
         </sc-for>
       </div>
     </div>
-    <div style="padding:12px 16px;font:500 15px 'Plus Jakarta Sans';color:#6B6B6B;background:#FAFAFA">{{ countLabel }}</div>
+    <div style="padding:14px 18px;font:500 14px 'Plus Jakarta Sans';color:#9A9A9A;background:#FFFFFF">{{ countLabel }}</div>
   </div>
 
   <sc-if value="{{ drawer }}">
     <div onClick="{{ close }}" style="position:fixed;inset:0;z-index:70;background:rgba(17,17,17,.4);animation:eeFade 200ms ease"></div>
     <aside role="dialog" aria-modal="true" style="position:fixed;top:0;right:0;bottom:0;z-index:71;width:min(460px,100vw);background:#fff;box-shadow:-20px 0 50px -20px rgba(17,17,17,.35);display:flex;flex-direction:column;animation:eeDrawer 320ms cubic-bezier(.32,.72,0,1)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #F2F2F2">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #F5F5F5">
         <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ drawerKicker }}</span><h3 style="margin:0;font:700 20px 'Plus Jakarta Sans',sans-serif">{{ drawerTitle }}</h3></div>
         <button onClick="{{ close }}" aria-label="Cerrar" style="width:38px;height:38px;border-radius:999px;border:none;background:#F2F2F2;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px" style-hover="background:#E9E9E9">close</button>
       </div>
@@ -62,17 +62,34 @@
             <div style="padding:12px;border-radius:18px;background:#F5F5F5;display:flex;flex-direction:column;gap:3px"><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">Margen</span><span style="font:700 18px 'Plus Jakarta Sans'">{{ fMargin }}</span></div>
           </div>
         </sc-if>
-        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Nombre <span style="color:#D62839">*</span></span><input value="{{ f.name }}" onChange="{{ on.name }}" placeholder="Ej. Galletas de vainilla 6 unid." style="height:50px;padding:0 12px;border-radius:999px;border:1px solid {{ nameBorder }};font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input><sc-if value="{{ nameErr }}"><span style="font:500 14px 'Plus Jakarta Sans';color:#B31F2E">El nombre es obligatorio.</span></sc-if></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Nombre <span style="color:#EF3E42">*</span></span><input value="{{ f.name }}" onChange="{{ on.name }}" placeholder="Ej. Galletas de vainilla 6 unid." style="height:50px;padding:0 12px;border-radius:999px;border:1px solid {{ nameBorder }};font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input><sc-if value="{{ nameErr }}"><span style="font:500 14px 'Plus Jakarta Sans';color:#E5383B">El nombre es obligatorio.</span></sc-if></label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Categoría</span><select value="{{ f.cat }}" onChange="{{ on.cat }}" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:500 16px 'Plus Jakarta Sans';outline:none"><sc-for list="{{ catNames }}" as="c"><option value="{{ c }}">{{ c }}</option></sc-for></select></label>
-          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Unidad de medida</span><select value="{{ f.unit }}" onChange="{{ on.unit }}" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:500 16px 'Plus Jakarta Sans';outline:none"><sc-for list="{{ units }}" as="u"><option value="{{ u }}">{{ u }}</option></sc-for></select></label>
+          <sc-if value="{{ isUnitSell }}"><label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Presentación</span><select value="{{ f.unit }}" onChange="{{ on.unit }}" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:500 16px 'Plus Jakarta Sans';outline:none"><sc-for list="{{ units }}" as="u"><option value="{{ u }}">{{ u }}</option></sc-for></select></label></sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font:600 15px 'Plus Jakarta Sans'">¿Cómo se vende?</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <sc-for list="{{ sellOpts }}" as="o"><button type="button" onClick="{{ o.go }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border-radius:18px;border:1.5px solid {{ o.border }};background:{{ o.bg }};text-align:left;cursor:pointer;transition:border-color 150ms ease,background-color 150ms ease"><span style="display:flex;align-items:center;gap:8px;font:600 16px 'Plus Jakarta Sans';color:#111111"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:{{ o.ic }}">{{ o.icon }}</span>{{ o.label }}</span><span style="font:500 13px/1.35 'Plus Jakarta Sans';color:#6B6B6B">{{ o.hint }}</span></button></sc-for>
+          </div>
         </div>
         <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Descripción</span><textarea value="{{ f.desc }}" onChange="{{ on.desc }}" rows="2" placeholder="Opcional" style="padding:10px 12px;border-radius:14px;border:1px solid #DADADA;font:500 16px/1.5 'Plus Jakarta Sans';outline:none;resize:vertical" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></textarea></label>
         <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Código de barras <span style="font-weight:500;color:#6B6B6B">(opcional)</span></span><div style="position:relative;display:flex;align-items:center"><span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B">barcode</span><input value="{{ f.code }}" onChange="{{ on.code }}" placeholder="Escanea o escribe" style="width:100%;height:50px;padding:0 12px 0 40px;border-radius:999px;border:1px solid #DADADA;font:500 16px ui-monospace,Menlo,monospace;outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></div></label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Stock mínimo</span><input value="{{ f.min }}" onChange="{{ on.min }}" inputmode="numeric" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;font:600 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></label>
-          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Precio de venta (S/) <span style="color:#D62839">*</span></span><input value="{{ f.price }}" onChange="{{ on.price }}" inputmode="decimal" placeholder="0.00" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid {{ priceBorder }};font:600 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">{{ minLabel }}</span><input value="{{ f.min }}" onChange="{{ on.min }}" inputmode="numeric" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;font:600 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">{{ priceLabel }} <span style="color:#EF3E42">*</span></span><input value="{{ f.price }}" onChange="{{ on.price }}" inputmode="decimal" placeholder="0.00" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid {{ priceBorder }};font:600 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></label>
         </div>
+        <sc-if value="{{ isUnitSell }}">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;background:#F7F7F7">
+            <span style="font:600 15px 'Plus Jakarta Sans'">Oferta por cantidad <span style="font-weight:500;color:#6B6B6B">(opcional)</span></span>
+            <div style="display:flex;align-items:center;gap:10px;font:600 16px 'Plus Jakarta Sans'">
+              <input value="{{ f.promoN }}" onChange="{{ on.promoN }}" inputmode="numeric" placeholder="3" aria-label="Cantidad de la oferta" style="width:72px;height:46px;padding:0 10px;border-radius:999px;border:1px solid #DADADA;background:#FFFFFF;text-align:center;font:600 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E"></input>
+              <span>por S/</span>
+              <input value="{{ f.promoP }}" onChange="{{ on.promoP }}" inputmode="decimal" placeholder="1.00" aria-label="Precio de la oferta" style="width:96px;height:46px;padding:0 10px;border-radius:999px;border:1px solid #DADADA;background:#FFFFFF;text-align:center;font:600 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E"></input>
+            </div>
+            <span style="font:500 13px 'Plus Jakarta Sans';color:#6B6B6B">Ej. pan: 3 por S/ 1.00. El resto se cobra al precio normal.</span>
+          </div>
+        </sc-if>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:18px;border:1px solid #FFFFFF">
           <div style="display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'Plus Jakarta Sans'">Producto activo</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">Los inactivos no aparecen en Ventas.</span></div>
           <button onClick="{{ on.active }}" role="switch" aria-checked="{{ f.active }}" style="position:relative;width:44px;height:26px;border-radius:999px;border:none;background:{{ fTrack }};cursor:pointer;transition:background-color 180ms ease"><span style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transform:{{ fKnob }};transition:transform 180ms cubic-bezier(.23,1,.32,1)"></span></button>
@@ -89,7 +106,7 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = { q: '', cat: 'Todas', st: 'Todos', drawer: null, f: {}, tried: false };
-  open = (p) => this.setState({ drawer: p ? 'edit' : 'new', tried: false, f: p ? { ...p, price: p.price.toFixed(2), min: String(p.min), desc: p.desc || '' } : { name: '', cat: 'Abarrotes', unit: 'unid.', desc: '', code: '', min: '10', price: '', active: true } });
+  open = (p) => this.setState({ drawer: p ? 'edit' : 'new', tried: false, f: p ? { ...p, price: p.price.toFixed(2), min: String(p.min), desc: p.desc || '', sell: p.unit === 'kg' ? 'kg' : 'unid', promoN: p.promo ? String(p.promo.n) : '', promoP: p.promo ? p.promo.price.toFixed(2) : '' } : { sell: 'unid', promoN: '', promoP: '', name: '', cat: 'Abarrotes', unit: 'unid.', desc: '', code: '', min: '10', price: '', active: true } });
   renderVals() {
     const d = this.props.d, P = this.props.products || [], toast = this.props.toast || (() => {});
     if (!d) return {};
@@ -101,7 +118,9 @@ class Component extends DCLogic {
     const fp = parseFloat(f.price) || 0;
     const save = () => {
       if (!f.name || !fp) { this.setState({ tried: true }); return; }
-      const clean = { ...f, price: fp, min: parseInt(f.min) || 0 };
+      const kg = f.sell === 'kg', pn = parseInt(f.promoN) || 0, pp = parseFloat(f.promoP) || 0;
+      const { sell, promoN, promoP, ...rest } = f;
+      const clean = { ...rest, unit: kg ? 'kg' : (f.unit === 'kg' ? 'unid.' : f.unit), price: fp, min: parseFloat(f.min) || 0, promo: !kg && pn > 1 && pp > 0 ? { n: pn, price: pp } : undefined };
       if (s.drawer === 'new') this.props.setProducts(ps => [{ ...clean, id: Date.now(), stock: 0, cost: 0, exp: null, prov: '—', sold: 0 }, ...ps]);
       else this.props.setProducts(ps => ps.map(p => p.id === f.id ? { ...p, ...clean } : p));
       toast(s.drawer === 'new' ? `Producto “${f.name}” creado` : 'Cambios guardados');
@@ -115,8 +134,8 @@ class Component extends DCLogic {
       rowCols: wide ? 'minmax(240px,2fr) 110px 100px 170px 120px' : 'minmax(0,1fr) auto auto auto',
       rows: list.map(p => { const m = p.cost ? (p.price - p.cost) / p.price : null; return {
         name: p.name, sub: p.cat, icon: icons[p.cat] || 'shopping_basket', cat: p.cat,
-        priceL: d.money(p.price), costL: p.cost ? d.money(p.cost) : '—', margin: m === null ? '—' : Math.round(m * 100) + '%', mFg: m !== null && m < 0.2 ? '#8A5200' : '#1E6A40',
-        stock: p.stock, stockFg: d.status(p) === 'critico' ? '#B31F2E' : '#111111', active: p.active, op: p.active ? 1 : 0.55,
+        unitL: p.unit === 'kg' ? 'kg' : 'unid.', priceL: d.money(p.price) + (p.unit === 'kg' ? ' /kg' : ''), costL: p.cost ? d.money(p.cost) : '—', margin: m === null ? '—' : Math.round(m * 100) + '%', mFg: m !== null && m < 0.2 ? '#8A5200' : '#1E6A40',
+        stock: p.stock, stockFg: d.status(p) === 'critico' ? '#E5383B' : '#111111', active: p.active, op: p.active ? 1 : 0.55,
         stLabel: p.active ? 'Sí, activo' : 'No, pausado', stFg: p.active ? '#1E6A40' : '#8A8A8A', trackBg: p.active ? '#DE6B4E' : '#D0D0D0', knobTf: p.active ? 'translateX(20px)' : 'none',
         toggle: () => { this.props.setProducts(ps => ps.map(x => x.id === p.id ? { ...x, active: !x.active } : x)); toast(`${p.name} ${p.active ? 'desactivado' : 'activado'}`, 'info'); },
         edit: () => this.open(p), view: () => this.open(p),
@@ -124,9 +143,11 @@ class Component extends DCLogic {
       countLabel: `Mostrando ${list.length} de ${P.length} productos`,
       drawer: !!s.drawer, isEdit: s.drawer === 'edit', drawerKicker: s.drawer === 'edit' ? 'Editar producto' : 'Catálogo', drawerTitle: s.drawer === 'edit' ? f.name : 'Nuevo producto',
       f, fMargin: f.cost && fp ? Math.round((fp - f.cost) / fp * 100) + '%' : '—',
-      on: { name: upd('name'), cat: upd('cat'), unit: upd('unit'), desc: upd('desc'), code: upd('code'), min: upd('min'), price: upd('price'), active: () => this.setState(x => ({ f: { ...x.f, active: !x.f.active } })) },
-      catNames: d.categories.map(c => c.name), units: ['unid.', 'caja', 'paquete', 'bolsa', 'botella', 'lata', 'kg', 'litro'],
-      nameErr: s.tried && !f.name, nameBorder: s.tried && !f.name ? '#D62839' : '#DADADA', priceBorder: s.tried && !fp ? '#D62839' : '#DADADA',
+      on: { name: upd('name'), cat: upd('cat'), unit: upd('unit'), desc: upd('desc'), code: upd('code'), min: upd('min'), price: upd('price'), promoN: upd('promoN'), promoP: upd('promoP'), active: () => this.setState(x => ({ f: { ...x.f, active: !x.f.active } })) },
+      catNames: d.categories.map(c => c.name), units: ['unid.', 'paquete', 'bolsa', 'botella', 'lata', 'caja'],
+      isUnitSell: f.sell !== 'kg', minLabel: f.sell === 'kg' ? 'Stock mínimo (kg)' : 'Stock mínimo', priceLabel: f.sell === 'kg' ? 'Precio por kilo (S/)' : 'Precio de venta (S/)',
+      sellOpts: [['unid', 'package_2', 'Por unidad', 'Paquetes, latas, botellas. Ej. arroz 1 kg embolsado'], ['kg', 'scale', 'Por kilo', 'Suelto o a granel. Se vende ¼, ½ kg…']].map(([k, icon, label, hint]) => { const on = (f.sell || 'unid') === k; return { icon, label, hint, go: () => this.setState(x => ({ f: { ...x.f, sell: k } })), border: on ? '#DE6B4E' : '#EDEDED', bg: on ? '#FDF5F2' : '#FFFFFF', ic: on ? '#DE6B4E' : '#6B6B6B' }; }),
+      nameErr: s.tried && !f.name, nameBorder: s.tried && !f.name ? '#EF3E42' : '#DADADA', priceBorder: s.tried && !fp ? '#EF3E42' : '#DADADA',
       fTrack: f.active ? '#DE6B4E' : '#D0D0D0', fKnob: f.active ? 'translateX(18px)' : 'none',
       close: () => this.setState({ drawer: null }), save, saveLabel: s.drawer === 'edit' ? 'Guardar cambios' : 'Crear producto',
     };

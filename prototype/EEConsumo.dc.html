@@ -26,9 +26,9 @@
       <div style="display:flex;flex-direction:column;border:1px solid #F2F2F2;border-radius:18px;overflow:hidden">
         <sc-if value="{{ noItems }}"><div style="padding:22px;text-align:center;font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Aún no agregas productos.</div></sc-if>
         <sc-for list="{{ items }}" as="i">
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F2F2F2;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F5F5F5;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
             <span style="flex:1;font:600 16px 'Plus Jakarta Sans'">{{ i.name }}</span><span style="font:600 16px 'Plus Jakarta Sans';font-variant-numeric:tabular-nums">×{{ i.qty }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B;width:70px;text-align:right">{{ i.cost }}</span>
-            <button onClick="{{ i.del }}" aria-label="Quitar" style="width:30px;height:30px;border-radius:999px;border:none;background:transparent;cursor:pointer;color:#6B6B6B;font-family:'Material Symbols Rounded';font-size:21px" style-hover="background:#FDE7EA;color:#B31F2E">close</button>
+            <button onClick="{{ i.del }}" aria-label="Quitar" style="width:30px;height:30px;border-radius:999px;border:none;background:transparent;cursor:pointer;color:#6B6B6B;font-family:'Material Symbols Rounded';font-size:21px" style-hover="background:#FDE7EA;color:#E5383B">close</button>
           </div>
         </sc-for>
       </div>
@@ -45,9 +45,9 @@
     </section>
 
     <section style="background:#fff;border:1px solid #FFFFFF;border-radius:26px;overflow:hidden">
-      <div style="padding:16px 18px;border-bottom:1px solid #F2F2F2;display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 19px 'Plus Jakarta Sans'">Historial</h3><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Este mes · {{ monthCost }} en costo</span></div>
+      <div style="padding:16px 18px;border-bottom:1px solid #F5F5F5;display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 19px 'Plus Jakarta Sans'">Historial</h3><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Este mes · {{ monthCost }} en costo</span></div>
       <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
-        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:12px 18px;border-bottom:1px solid #F2F2F2;animation:{{ h.anim }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:12px 18px;border-bottom:1px solid #F5F5F5;animation:{{ h.anim }}">
           <span style="font:600 16px 'Plus Jakarta Sans'">{{ h.prod }} <span style="color:#6B6B6B;font-weight:500">×{{ h.qty }}</span></span>
           <span style="font:600 15px 'Plus Jakarta Sans';font-variant-numeric:tabular-nums;text-align:right">{{ h.costL }}</span>
           <span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ h.reason }} · {{ h.who }}</span>
