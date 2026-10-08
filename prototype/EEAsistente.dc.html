@@ -39,7 +39,7 @@
               <sc-if value="{{ m.hasList }}">
                 <div style="border:1px solid #F2F2F2;border-radius:18px;overflow:hidden">
                   <sc-for list="{{ m.list }}" as="r">
-                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #F2F2F2">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #F5F5F5">
                       <span style="font:600 16px 'Plus Jakarta Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.a }}</span>
                       <span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B;font-variant-numeric:tabular-nums">{{ r.b }}</span>
                       <span style="padding:3px 9px;border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font:600 14px 'Plus Jakarta Sans';white-space:nowrap">{{ r.c }}</span>
@@ -95,7 +95,7 @@
     <section style="background:radial-gradient(120% 90% at 100% 0%,rgba(222,107,78,.16) 0%,rgba(222,107,78,0) 55%),radial-gradient(100% 80% at 0% 100%,rgba(167,139,250,.12) 0%,rgba(167,139,250,0) 60%),#FFFFFF;border:1px solid #FFFFFF;color:#111111;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:14px">
       <span style="font:600 14px 'Plus Jakarta Sans';letter-spacing:.08em;text-transform:uppercase;color:#6B6B6B">Tu bodega hoy</span>
       <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Plus Jakarta Sans';color:#C8C8C8">Ventas</span><span style="font:700 22px 'Plus Jakarta Sans',sans-serif;color:#111111">S/ 486.40</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Plus Jakarta Sans';color:#C8C8C8">Stock crítico</span><span style="font:700 22px 'Plus Jakarta Sans',sans-serif;color:#D62839">{{ nCrit }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Plus Jakarta Sans';color:#C8C8C8">Stock crítico</span><span style="font:700 22px 'Plus Jakarta Sans',sans-serif;color:#EF3E42">{{ nCrit }}</span></div>
       <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 16px 'Plus Jakarta Sans';color:#C8C8C8">Por vencer / vencidos</span><span style="font:700 22px 'Plus Jakarta Sans',sans-serif;color:#DE6B4E">{{ nExp }}</span></div>
     </section>
     <section style="background:#fff;border:1px solid #FFFFFF;border-radius:26px;padding:16px;display:flex;flex-direction:column;gap:10px">

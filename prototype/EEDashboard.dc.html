@@ -7,10 +7,9 @@
 </head>
 <body>
 <x-dc>
-<div style="display:flex;flex-direction:column;gap:20px;max-width:1640px;margin:0 auto">
+<div style="display:flex;flex-direction:column;gap:32px;max-width:1640px;margin:0 auto">
   <div style="display:flex;flex-direction:column;gap:6px">
     <h2 style="margin:0;font:700 36px/1.1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em">{{ greeting }}</h2>
-    <p style="margin:0;font:400 18px/1.5 'Plus Jakarta Sans';color:#6B6B6B">¿Qué quieres hacer ahora?</p>
   </div>
 
 
@@ -18,7 +17,7 @@
     <sc-for list="{{ actions }}" as="x" hint-placeholder-count="3">
       <button onClick="{{ x.go }}" style="display:flex;align-items:center;gap:16px;padding:14px 14px 14px 14px;border-radius:999px;border:none;background:{{ x.bg }};color:{{ x.fg }};text-align:left;cursor:pointer;transition:transform 160ms cubic-bezier(.23,1,.32,1),box-shadow 200ms ease" style-hover="box-shadow:0 14px 30px -18px rgba(17,17,17,.35)" style-active="transform:scale(.98)">
         <span style="width:60px;height:60px;flex:none;border-radius:50%;background:{{ x.iconBg }};color:{{ x.iconFg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:28px;line-height:1;font-variation-settings:'FILL' 1">{{ x.icon }}</span>
-        <span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:700 20px 'Plus Jakarta Sans'">{{ x.label }}</span><span style="font:500 15px/1.3 'Plus Jakarta Sans';color:{{ x.subFg }}">{{ x.sub }}</span></span>
+        <span style="flex:1;min-width:0;font:700 20px 'Plus Jakarta Sans'">{{ x.label }}</span>
         <span style="width:48px;height:48px;flex:none;border-radius:50%;background:{{ x.arrBg }};color:{{ x.arrFg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">arrow_forward</span>
       </button>
     </sc-for>
@@ -28,10 +27,9 @@
     <h3 style="margin:0;padding:8px 10px 6px;font:700 20px 'Plus Jakarta Sans'">Resumen del día</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
       <sc-for list="{{ stats }}" as="k" hint-placeholder-count="4">
-        <button onClick="{{ k.go }}" style="display:flex;flex-direction:column;gap:10px;padding:18px 20px;border-radius:24px;border:none;background:{{ k.bg }};color:{{ k.fg }};text-align:left;cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.98)">
+        <button onClick="{{ k.go }}" style="display:flex;flex-direction:column;gap:14px;padding:22px 24px;border-radius:24px;border:none;background:{{ k.bg }};color:{{ k.fg }};text-align:left;cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.98)">
           <span style="font:600 16px 'Plus Jakarta Sans';color:{{ k.labelFg }}">{{ k.label }}</span>
           <span style="font:700 36px/1 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ k.value }}</span>
-          <span style="font:500 15px 'Plus Jakarta Sans';color:{{ k.labelFg }}">{{ k.hint }}</span>
         </button>
       </sc-for>
     </div>
@@ -39,12 +37,12 @@
 
   <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:start">
     <section style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border-radius:32px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 10px 6px;flex-wrap:wrap"><h3 style="margin:0;font:700 20px 'Plus Jakarta Sans'">Lo que necesita atención</h3><button onClick="{{ goInv }}" style="display:flex;align-items:center;gap:4px;height:40px;padding:0 14px;border-radius:999px;border:none;background:#F2F2F2;font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#E9E9E9">Ver inventario<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chevron_right</span></button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 10px 6px;flex-wrap:wrap"><h3 style="margin:0;font:700 20px 'Plus Jakarta Sans'">Lo que necesita atención</h3><button onClick="{{ goInv }}" style="display:flex;align-items:center;gap:4px;height:40px;padding:0 14px;border-radius:999px;border:none;background:#F2F2F2;font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#E9E9E9">Ver todo<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chevron_right</span></button></div>
       <sc-for list="{{ attn }}" as="a" hint-placeholder-count="4">
         <div style="display:flex;align-items:center;gap:14px;padding:12px 12px 12px 14px;border-radius:24px;background:#F5F5F5;flex-wrap:wrap">
           <span style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ a.iconBg }};color:{{ a.iconFg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ a.icon }}</span>
           <div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 17px/1.3 'Plus Jakarta Sans'">{{ a.name }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:{{ a.msgFg }}">{{ a.msg }}</span></div>
-          <button onClick="{{ a.go }}" style="height:46px;padding:0 20px;border-radius:999px;border:none;background:#FFFFFF;color:#111111;font:600 15px 'Plus Jakarta Sans';cursor:pointer;transition:background-color 150ms ease" style-hover="background:#FAFAFA" style-active="transform:scale(.97)">{{ a.action }}</button>
+          <button onClick="{{ a.go }}" aria-label="Ver producto" style="width:44px;height:44px;flex:none;border-radius:50%;border:none;background:#FFFFFF;color:#111111;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;cursor:pointer" style-hover="background:#FAFAFA" style-active="transform:scale(.95)">chevron_right</button>
         </div>
       </sc-for>
     </section>
@@ -52,7 +50,7 @@
     <section style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:32px;background:radial-gradient(90% 70% at 100% 0%,rgba(167,139,250,.22) 0%,rgba(167,139,250,0) 60%),radial-gradient(70% 60% at 0% 100%,rgba(222,107,78,.12) 0%,rgba(222,107,78,0) 60%),#FFFFFF">
       <div style="display:flex;align-items:center;gap:12px"><span style="width:48px;height:48px;flex:none;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;font-variation-settings:'FILL' 1">auto_awesome</span><span style="font:700 20px 'Plus Jakarta Sans'">Pregúntale a Eben IA</span></div>
       <form onSubmit="{{ ask }}" style="display:flex;align-items:center;gap:8px;height:60px;padding:0 6px 0 20px;border-radius:999px;background:#FFFFFF;box-shadow:0 0 0 1.5px #E6E6E6">
-        <input value="{{ aq }}" onChange="{{ onAq }}" placeholder="¿Qué quieres saber de tu negocio?" aria-label="Pregunta para Eben IA" style="flex:1;min-width:0;height:100%;border:none;background:transparent;font:500 17px 'Plus Jakarta Sans';outline:none"></input>
+        <input value="{{ aq }}" onChange="{{ onAq }}" placeholder="Escribe tu pregunta" aria-label="Pregunta para Eben IA" style="flex:1;min-width:0;height:100%;border:none;background:transparent;font:500 17px 'Plus Jakarta Sans';outline:none"></input>
         <button type="submit" aria-label="Preguntar" style="width:48px;height:48px;flex:none;border-radius:50%;border:none;background:#A78BFA;color:#FFFFFF;cursor:pointer;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-active="transform:scale(.92)">arrow_upward</button>
       </form>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -92,7 +90,7 @@ class Component extends DCLogic {
     const exp = P.filter(p => ['vence', 'vencido'].includes(st(p)));
     const h = new Date().getHours();
     const greeting = (h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches') + ', Rosa';
-    const qs = ['¿Qué debo comprar hoy?', '¿Qué productos están por agotarse?', '¿Qué se vendió más hoy?', '¿Qué productos vencen pronto?'];
+    const qs = ['¿Qué debo comprar hoy?', '¿Qué se vendió más hoy?'];
     const ask = q => nav('asistente', { aiQ: q, aiQid: Date.now() });
     const A = (label, sub, icon, go, main) => ({ label, sub, icon, go, bg: main ? '#DE6B4E' : '#FFFFFF', fg: main ? '#FFFFFF' : '#111111', subFg: main ? '#FFFFFF' : '#6B6B6B', iconBg: main ? '#FFFFFF' : '#F2F2F2', iconFg: '#DE6B4E', arrBg: main ? '#111111' : '#F2F2F2', arrFg: main ? '#FFFFFF' : '#111111' });
     const K = (label, value, hint, go, main) => ({ label, value, hint, go, bg: main ? '#111111' : '#F5F5F5', fg: main ? '#FFFFFF' : '#111111', labelFg: main ? '#E6E6E6' : '#6B6B6B' });
@@ -116,8 +114,8 @@ class Component extends DCLogic {
       mTitle: st2.modal === 'edit' ? `Editar venta #${st2.sid}` : `¿Eliminar la venta #${st2.sid}?`, mSub: cur ? `${cur.time} · ${cur.items}` : '',
       pays: ['Efectivo', 'Yape / Plin', 'Tarjeta'].map(p => { const on = st2.mPay === p; return { label: p, go: () => this.setState({ mPay: p }), bg: on ? '#111111' : '#F2F2F2', fg: on ? '#FFFFFF' : '#111111' }; }),
       mTotal: st2.mTotal, onMTotal: e => this.setState({ mTotal: e.target.value.replace(/[^0-9.]/g, '') }),
-      mReason: st2.mReason, onMReason: e => this.setState({ mReason: e.target.value }), reasonErr: st2.mTried && !st2.mReason.trim(), reasonBorder: st2.mTried && !st2.mReason.trim() ? '#D62839' : '#DADADA',
-      mBtn: st2.modal === 'edit' ? 'Guardar cambios' : 'Eliminar venta', mBtnBg: st2.modal === 'edit' ? '#DE6B4E' : '#D62839',
+      mReason: st2.mReason, onMReason: e => this.setState({ mReason: e.target.value }), reasonErr: st2.mTried && !st2.mReason.trim(), reasonBorder: st2.mTried && !st2.mReason.trim() ? '#EF3E42' : '#DADADA',
+      mBtn: st2.modal === 'edit' ? 'Guardar cambios' : 'Eliminar venta', mBtnBg: st2.modal === 'edit' ? '#DE6B4E' : '#EF3E42',
       greeting,
       actions: [
         A('Nueva venta', 'Cobrar a un cliente', 'point_of_sale', () => nav('ventas'), true),
@@ -131,11 +129,11 @@ class Component extends DCLogic {
         K('Productos por vencer', String(exp.length), 'Revisar fechas', () => nav('inventario', { invFilter: 'vence' })),
       ],
       cols: this.props.narrow ? '1fr' : 'minmax(0,1.4fr) minmax(0,1fr)',
-      attn: attnList.slice(0, 4).map(p => {
+      attn: attnList.slice(0, 3).map(p => {
         const k = st(p), dt = d.daysTo(p.exp);
-        const msg = k === 'vencido' ? 'Ya venció. Retíralo del estante' : k === 'vence' ? `Vence en ${dt} días` : `Quedan ${p.stock} ${p.stock === 1 ? 'unidad' : 'unidades'}`;
+        const msg = k === 'vencido' ? 'Vencido' : k === 'vence' ? `Vence en ${dt} días` : `Quedan ${p.stock} ${p.unit === 'kg' ? 'kg' : p.stock === 1 ? 'unidad' : 'unidades'}`;
         const red = k === 'vencido' || k === 'critico';
-        return { name: p.name, msg, msgFg: red ? '#B31F2E' : '#3A3A3A', icon: k === 'vence' ? 'schedule' : k === 'vencido' ? 'block' : 'trending_down', iconBg: red ? '#FDE7EA' : k === 'vence' ? '#EEF0F3' : '#FFF1D9', iconFg: red ? '#B31F2E' : k === 'vence' ? '#4A5361' : '#8A5200', action: 'Ver producto', go: () => nav('inventario', { invQ: p.name }) };
+        return { name: p.name, msg, msgFg: red ? '#E5383B' : '#3A3A3A', icon: k === 'vence' ? 'schedule' : k === 'vencido' ? 'block' : 'trending_down', iconBg: red ? '#FDE7EA' : k === 'vence' ? '#EEF0F3' : '#FFF1D9', iconFg: red ? '#E5383B' : k === 'vence' ? '#4A5361' : '#8A5200', action: 'Ver producto', go: () => nav('inventario', { invQ: p.name }) };
       }),
       aq: this.state.aq, onAq: e => this.setState({ aq: e.target.value }),
       ask: e => { e.preventDefault(); const q = this.state.aq.trim(); if (q) { this.setState({ aq: '' }); ask(q); } },

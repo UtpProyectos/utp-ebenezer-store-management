@@ -15,7 +15,7 @@
       </sc-for>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button onClick="{{ goIngreso }}" style="display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 22px;border-radius:999px;border:none;background:#111111;color:#FFFFFF;font:700 17px 'Plus Jakarta Sans';cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#333333" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">local_shipping</span>Registrar mercadería</button>
+    <button onClick="{{ goIngreso }}" style="display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 22px;border-radius:999px;border:none;background:#111111;color:#FFFFFF;font:700 17px 'Plus Jakarta Sans';cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#333333" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">local_shipping</span>Ingreso</button>
     <button onClick="{{ generate }}" style="display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 22px;border-radius:999px;border:none;background:#DE6B4E;color:#fff;font:700 17px 'Plus Jakarta Sans';cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#C85A3F" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">checklist</span>{{ ctaLabel }}</button>
     </div>
   </div>
@@ -27,17 +27,17 @@
 
   <div style="background:#fff;border:1px solid #FFFFFF;border-radius:28px;overflow:hidden">
     <sc-if value="{{ showTable }}">
-      <div style="display:grid;grid-template-columns:52px minmax(0,2fr) 150px 170px 130px 190px;gap:14px;align-items:center;padding:14px 18px;background:#FAFAFA;border-bottom:1px solid #F2F2F2;font:600 15px 'Plus Jakarta Sans';color:#3A3A3A">
+      <div style="display:grid;grid-template-columns:44px minmax(0,2fr) 110px 170px 140px 96px;gap:14px;align-items:center;padding:16px 18px 10px;background:#FFFFFF;font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">
         <span></span><span>Producto</span><span>Cantidad</span><span>Estado</span><span>Vence</span><span></span>
       </div>
       <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
-        <div style="display:grid;grid-template-columns:52px minmax(0,2fr) 150px 170px 130px 190px;gap:14px;align-items:center;padding:14px 18px;border-bottom:1px solid #F2F2F2;background:{{ r.rowBg }};transition:background-color 150ms ease">
+        <div style="display:grid;grid-template-columns:44px minmax(0,2fr) 110px 170px 140px 96px;gap:14px;align-items:center;padding:12px 18px;border-bottom:1px solid #F5F5F5;background:{{ r.rowBg }};transition:background-color 150ms ease">
           <input type="checkbox" checked="{{ r.sel }}" onChange="{{ r.toggle }}" aria-label="Agregar a la lista de compra" style="width:24px;height:24px;accent-color:#DE6B4E;margin:0 0 0 4px;cursor:pointer"></input>
-          <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 17px/1.3 'Plus Jakarta Sans'">{{ r.name }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.cat }}</span></div>
-          <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 19px 'Plus Jakarta Sans';color:{{ r.stockFg }};font-variant-numeric:tabular-nums">{{ r.stock }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">mínimo {{ r.min }}</span></div>
-          <span style="justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:{{ r.sbg }};color:{{ r.sfg }};font:600 15px 'Plus Jakarta Sans';white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.sdot }}"></span>{{ r.slabel }}</span>
+          <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span style="width:40px;height:40px;flex:none;border-radius:50%;background:#F5F5F5;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#DE6B4E">{{ r.icon }}</span><span style="font:600 17px/1.3 'Plus Jakarta Sans'">{{ r.name }}</span></span></div>
+          <span style="display:flex;align-items:baseline;gap:5px;font:700 18px 'Plus Jakarta Sans';color:{{ r.stockFg }};font-variant-numeric:tabular-nums">{{ r.stock }}<span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.unitL }}</span></span>
+          <span><sc-if value="{{ r.showStatus }}"><span style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:{{ r.sbg }};color:{{ r.sfg }};font:600 15px 'Plus Jakarta Sans';white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.sdot }}"></span>{{ r.slabel }}</span></sc-if></span>
           <span style="font:500 16px 'Plus Jakarta Sans';color:{{ r.expFg }}">{{ r.exp }}</span>
-          <button onClick="{{ r.ingreso }}" style="justify-self:end;height:46px;padding:0 16px;border-radius:999px;border:1.5px solid #DADADA;background:#fff;font:600 15px 'Plus Jakarta Sans';cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap" style-hover="background:#F5F5F5" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Registrar ingreso</button>
+          <sc-if value="{{ r.isVencido }}"><button onClick="{{ r.retire }}" style="justify-self:end;height:44px;padding:0 16px;border-radius:999px;border:none;background:#FDE7EA;color:#E5383B;font:600 15px 'Plus Jakarta Sans';cursor:pointer;white-space:nowrap" style-hover="background:#FBD5DA" style-active="transform:scale(.96)">Retirar</button></sc-if><sc-if value="{{ r.notVencido }}"><button onClick="{{ r.ingreso }}" aria-label="Registrar ingreso" title="Registrar ingreso" style="justify-self:end;width:44px;height:44px;border-radius:50%;border:none;background:#F2F2F2;color:#111111;cursor:pointer;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1" style-hover="background:#E6E6E6" style-active="transform:scale(.95)">add</button></sc-if>
         </div>
       </sc-for>
     </sc-if>
@@ -47,9 +47,9 @@
           <label style="display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:start;cursor:pointer">
             <input type="checkbox" checked="{{ r.sel }}" onChange="{{ r.toggle }}" style="width:24px;height:24px;accent-color:#DE6B4E;margin:2px 0 0"></input>
             <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span style="font:600 18px/1.3 'Plus Jakarta Sans'">{{ r.name }}</span><span style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:{{ r.sbg }};color:{{ r.sfg }};font:600 14px 'Plus Jakarta Sans'">{{ r.slabel }}</span></div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><span style="font:700 24px 'Plus Jakarta Sans',sans-serif;color:{{ r.stockFg }}">{{ r.stock }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">mín. {{ r.min }}</span></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><span style="font:700 24px 'Plus Jakarta Sans',sans-serif;color:{{ r.stockFg }}">{{ r.stock }} <span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.unitL }}</span></span></div>
           </label>
-          <button onClick="{{ r.ingreso }}" style="height:46px;border-radius:999px;border:1.5px solid #DADADA;background:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer">Registrar ingreso</button>
+          <sc-if value="{{ r.isVencido }}"><button onClick="{{ r.retire }}" style="height:46px;border-radius:999px;border:none;background:#FDE7EA;color:#E5383B;font:600 16px 'Plus Jakarta Sans';cursor:pointer">Retirar del estante</button></sc-if><sc-if value="{{ r.notVencido }}"><button onClick="{{ r.ingreso }}" style="height:46px;border-radius:999px;border:1.5px solid #DADADA;background:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer">Registrar ingreso</button></sc-if>
         </div>
       </sc-for>
     </sc-if>
@@ -57,11 +57,33 @@
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:56px 20px;text-align:center">
         <span style="width:60px;height:60px;border-radius:26px;background:#F2F2F2;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:#6B6B6B">search_off</span>
         <span style="font:700 19px 'Plus Jakarta Sans'">No encontramos ese producto</span>
-        <span style="font:400 16px/1.5 'Plus Jakarta Sans';color:#6B6B6B;max-width:340px">Revisa cómo lo escribiste o muestra todos los productos.</span>
+        
         <button onClick="{{ clear }}" style="height:48px;padding:0 18px;border-radius:999px;border:1.5px solid #DADADA;background:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#F5F5F5">Mostrar todos</button>
       </div>
     </sc-if>
   </div>
+
+  <sc-if value="{{ rOpen }}">
+    <div onClick="{{ rClose }}" style="position:fixed;inset:0;z-index:70;background:rgba(17,17,17,.45);display:grid;place-items:center;padding:16px;animation:eeFade 180ms ease">
+      <form onClick="{{ stop }}" onSubmit="{{ rSubmit }}" role="dialog" aria-modal="true" style="width:100%;max-width:440px;background:#FFFFFF;border-radius:28px;padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 60px -20px rgba(17,17,17,.45);animation:eePop 220ms cubic-bezier(.23,1,.32,1)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:4px"><h3 style="margin:0;font:700 20px 'Plus Jakarta Sans'">Retirar {{ rName }}</h3><span style="font:500 15px/1.45 'Plus Jakarta Sans';color:#6B6B6B">{{ rSub }}</span></div>
+          <button type="button" onClick="{{ rClose }}" aria-label="Cerrar" style="width:40px;height:40px;flex:none;border-radius:50%;border:none;background:#F2F2F2;cursor:pointer;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;display:grid;place-items:center">close</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ rOpts }}" as="o">
+            <button type="button" onClick="{{ o.go }}" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;border:1.5px solid {{ o.border }};background:{{ o.bg }};text-align:left;cursor:pointer;transition:border-color 150ms ease,background-color 150ms ease">
+              <span style="width:40px;height:40px;flex:none;border-radius:50%;background:#FFFFFF;color:{{ o.ic }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1">{{ o.icon }}</span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 16px 'Plus Jakarta Sans';color:#111111">{{ o.label }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ o.hint }}</span></span>
+            </button>
+          </sc-for>
+        </div>
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font:600 16px 'Plus Jakarta Sans'">Cantidad a retirar</span><input value="{{ rQty }}" onChange="{{ rOnQty }}" inputmode="decimal" style="width:120px;height:50px;padding:0 16px;border-radius:999px;border:1.5px solid #DADADA;text-align:center;font:700 18px 'Plus Jakarta Sans';outline:none;font-variant-numeric:tabular-nums" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 4px rgba(222,107,78,.16)"></input></label>
+        <span style="display:flex;align-items:center;gap:8px;font:500 14px 'Plus Jakarta Sans';color:#6B6B6B"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">history</span>Se descuenta del stock y queda en movimientos.</span>
+        <button type="submit" disabled="{{ rDisabled }}" style="height:54px;border-radius:999px;border:none;background:{{ rBtnBg }};color:#FFFFFF;font:700 17px 'Plus Jakarta Sans';cursor:pointer" style-active="transform:scale(.98)">{{ rBtn }}</button>
+      </form>
+    </div>
+  </sc-if>
 
   <sc-if value="{{ hasSel }}">
     <div style="position:sticky;bottom:16px;z-index:20;align-self:center;display:flex;align-items:center;gap:14px;padding:12px 12px 12px 22px;border-radius:26px;background:#111111;color:#fff;box-shadow:0 16px 40px -10px rgba(17,17,17,.45);animation:eeToast 240ms cubic-bezier(.23,1,.32,1);flex-wrap:wrap">
@@ -74,7 +96,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { q: '', f: 'todos', sel: [] };
+  state = { q: '', f: 'todos', sel: [], rid: null, rAct: 'merma', rQty: '' };
   componentDidMount() {
     const c = this.props.ctx || {};
     if (c.invFilter || c.invQ) { this.setState({ f: c.invFilter === 'vence' ? 'vence' : c.invFilter ? 'agotar' : 'todos', q: c.invQ || '' }); this.props.setCtx && this.props.setCtx({ invFilter: null, invQ: null }); }
@@ -93,16 +115,17 @@ class Component extends DCLogic {
       this.props.toast && this.props.toast(`${ids.length} productos pasaron a la lista de compra`);
       nav('lista');
     };
-    const narrow = this.props.narrow;
+    const narrow = this.props.narrow, icons = Object.fromEntries(d.categories.map(c => [c.name, c.icon]));
     const rows = list.map(p => {
       const k = st(p), m = d.STATUS[k], dt = d.daysTo(p.exp), sel = s.sel.includes(p.id);
       return {
-        name: p.name, cat: p.cat, stock: p.stock, min: p.min, sel, rowBg: sel ? '#FDF5F2' : '#fff',
+        name: p.name, icon: icons[p.cat] || 'inventory_2', cat: p.cat, stock: p.stock, unitL: p.unit === 'kg' ? 'kg' : 'unid.', min: p.min, sel, rowBg: sel ? '#FDF5F2' : '#fff',
         exp: p.exp ? (dt < 0 ? 'Ya venció' : dt <= 10 ? `En ${dt} días` : d.fmtDate(p.exp)) : 'No vence',
-        expFg: dt !== null && dt < 0 ? '#B31F2E' : dt !== null && dt <= 10 ? '#111111' : '#6B6B6B',
-        slabel: m.label, sbg: m.bg, sfg: m.fg, sdot: m.dot, stockFg: k === 'critico' ? '#B31F2E' : '#111111',
+        expFg: dt !== null && dt < 0 ? '#E5383B' : dt !== null && dt <= 10 ? '#111111' : '#9A9A9A',
+        showStatus: k !== 'normal', slabel: m.label, sbg: m.bg, sfg: m.fg, sdot: m.dot, stockFg: k === 'critico' ? '#E5383B' : '#111111',
         toggle: () => this.setState(x => ({ sel: x.sel.includes(p.id) ? x.sel.filter(i => i !== p.id) : [...x.sel, p.id] })),
-        ingreso: () => nav('ingresos', { prefillId: p.id }),
+        ingreso: () => nav('ingresos', { prefillId: p.id }), isVencido: k === 'vencido', notVencido: k !== 'vencido',
+        retire: () => this.setState({ rid: p.id, rAct: 'merma', rQty: String(p.stock) }),
       };
     });
     const tabs = [['todos', 'Todos', P.length], ['agotar', 'Por agotarse', suggestedIds.length], ['vence', 'Vencen pronto', P.filter(p => inF(p, 'vence')).length]];
@@ -110,8 +133,21 @@ class Component extends DCLogic {
       tabs: tabs.map(([k, label, n]) => { const on = s.f === k; return { label, n, on, go: () => this.setState({ f: k }), bg: on ? '#A78BFA' : '#fff', border: on ? '#A78BFA' : '#E6E6E6', fg: on ? '#FFFFFF' : '#111111', countBg: on ? '#FFFFFF' : '#EFEFEF', countFg: on ? '#6D4ED8' : '#3A3A3A' }; }),
       q: s.q, onQ: e => this.setState({ q: e.target.value }), clear: () => this.setState({ q: '', f: 'todos' }), goIngreso: () => (this.props.nav || (() => {}))('ingresos'),
       rows, showTable: !narrow && rows.length > 0, showCards: narrow && rows.length > 0, empty: rows.length === 0,
+      ...(() => {
+        const rp = P.find(p => p.id === s.rid);
+        if (!rp) return { rOpen: false };
+        const n = parseFloat(s.rQty) || 0, ok = n > 0 && n <= rp.stock, loss = d.money(n * rp.cost);
+        return {
+          rOpen: true, rName: rp.name, rSub: `Venció el ${d.fmtDate(rp.exp)}. Sácalo del estante para que no se venda.`,
+          rOpts: [['merma', 'delete', 'Desechar', `Se registra como merma · pérdida ${loss}`], ['devolver', 'undo', 'Devolver al proveedor', `${rp.prov} · pide cambio o nota de crédito`]].map(([k, icon, label, hint]) => { const on = s.rAct === k; return { icon, label, hint, go: () => this.setState({ rAct: k }), border: on ? '#DE6B4E' : '#EDEDED', bg: on ? '#FDF5F2' : '#FFFFFF', ic: on ? '#DE6B4E' : '#6B6B6B' }; }),
+          rQty: s.rQty, rOnQty: e => this.setState({ rQty: e.target.value.replace(/[^0-9.]/g, '') }),
+          rDisabled: !ok, rBtnBg: ok ? '#E5383B' : '#E6E6E6', rBtn: `Retirar ${n || ''} ${rp.unit}`,
+          rClose: () => this.setState({ rid: null }), stop: e => e.stopPropagation(),
+          rSubmit: e => { e.preventDefault(); if (!ok) return; this.props.retire && this.props.retire(rp.id, n, s.rAct); this.setState({ rid: null }); },
+        };
+      })(),
       hasSel: s.sel.length > 0, selLabel: `${s.sel.length} marcado${s.sel.length > 1 ? 's' : ''}`, clearSel: () => this.setState({ sel: [] }),
-      ctaLabel: s.sel.length ? `Hacer lista de compra (${s.sel.length})` : 'Hacer lista de compra', generate,
+      ctaLabel: s.sel.length ? `Lista de compra (${s.sel.length})` : 'Lista de compra', generate,
     };
   }
 }
