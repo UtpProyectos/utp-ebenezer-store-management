@@ -46,8 +46,8 @@ export const ADMIN_ITEMS: NavItem[] = [
   { label: 'Categorías', path: ROUTES.categories, icon: Tag, description: 'Grupos para ordenar lo que vendes' },
   { label: 'Proveedores', path: ROUTES.suppliers, icon: Handset, description: 'A quién le compras y sus teléfonos' },
   { label: 'Usuarios', path: ROUTES.users, icon: Persons, description: 'Quién entra al sistema y con qué rol' },
-  { label: 'Configuración', path: ROUTES.settings, icon: Sliders, description: 'Nombre de la tienda, moneda y avisos' },
   { label: 'Historiales', path: ROUTES.history, icon: ClockArrowRotateLeft, description: 'Ventas, ingresos, movimientos y consumo' },
+  { label: 'Configuración', path: ROUTES.settings, icon: Sliders, description: 'Nombre de la tienda, moneda y avisos' },
 ]
 
 export function canSee(item: NavItem, role: RoleName | undefined): boolean {
