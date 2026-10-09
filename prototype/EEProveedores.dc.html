@@ -11,34 +11,34 @@
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
     <div style="position:relative;display:flex;align-items:center;flex:1 1 260px;max-width:420px">
       <span style="position:absolute;left:12px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B">search</span>
-      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar proveedor o contacto" style="width:100%;height:50px;padding:0 12px 0 40px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:500 16px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar proveedor" style="width:100%;height:50px;padding:0 12px 0 40px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:500 16px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input>
     </div>
     <button onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 18px;border-radius:999px;border:none;background:#DE6B4E;color:#fff;font:600 16px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#C85A3F" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Nuevo proveedor</button>
   </div>
-  <div style="background:#fff;border:1px solid #FFFFFF;border-radius:26px;overflow:hidden">
+  <div style="background:#fff;border:1px solid #FFFFFF;border-radius:28px;overflow:hidden">
+    <sc-if value="{{ wide }}"><div style="display:grid;grid-template-columns:{{ cols }};gap:14px;padding:16px 18px 10px;font:500 14px 'Plus Jakarta Sans';color:#6B6B6B"><span>Proveedor</span><span>Tipo</span><span>Última compra</span><span>Compras</span><span></span></div></sc-if>
     <sc-for list="{{ provs }}" as="p" hint-placeholder-count="6">
-      <div style="border-bottom:1px solid #F2F2F2;opacity:{{ p.op }}">
-        <button onClick="{{ p.toggle }}" aria-expanded="{{ p.open }}" style="width:100%;display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:14px 16px;border:none;background:{{ p.bg }};text-align:left;cursor:pointer;transition:background-color 120ms ease" style-hover="background:#FAFAFA">
+      <div style="border-bottom:1px solid #F5F5F5;opacity:{{ p.op }}">
+        <button onClick="{{ p.toggle }}" aria-expanded="{{ p.open }}" style="width:100%;display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:12px 18px;border:none;background:{{ p.bg }};text-align:left;cursor:pointer;transition:background-color 120ms ease" style-hover="background:#FAFAFA">
           <div style="display:flex;align-items:center;gap:12px;min-width:0">
-            <span style="width:40px;height:40px;flex:none;border-radius:16px;background:#F2F2F2;display:grid;place-items:center;font:700 16px 'Plus Jakarta Sans',sans-serif;color:#3A3A3A">{{ p.ini }}</span>
-            <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 17px 'Plus Jakarta Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">{{ p.contact }} · {{ p.phone }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 17px 'Plus Jakarta Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#9A9A9A">{{ p.phone }}</span></div>
           </div>
-          <sc-if value="{{ wide }}"><span style="justify-self:start;padding:3px 10px;border-radius:999px;background:#EFEFEF;font:600 14px 'Plus Jakarta Sans';color:#3A3A3A">{{ p.type }}</span></sc-if>
-          <sc-if value="{{ wide }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">Última compra</span><span style="font:600 16px 'Plus Jakarta Sans'">{{ p.last }}</span></div></sc-if>
-          <sc-if value="{{ wide }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">Compras</span><span style="font:600 16px 'Plus Jakarta Sans'">{{ p.count }}</span></div></sc-if>
-          <sc-if value="{{ wide }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">Productos</span><span style="font:600 16px 'Plus Jakarta Sans'">{{ p.nProd }}</span></div></sc-if>
-          <span style="justify-self:end;display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:999px;background:{{ p.stBg }};color:{{ p.stFg }};font:600 14px 'Plus Jakarta Sans'">{{ p.stLabel }}</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B;transform:{{ p.chev }};transition:transform 200ms cubic-bezier(.23,1,.32,1)">expand_more</span></span>
+          <sc-if value="{{ wide }}"><span style="font:500 16px 'Plus Jakarta Sans';color:#6B6B6B">{{ p.type }}</span></sc-if>
+          <sc-if value="{{ wide }}"><span style="font:500 16px 'Plus Jakarta Sans'">{{ p.last }}</span></sc-if>
+          <sc-if value="{{ wide }}"><span style="font:500 16px 'Plus Jakarta Sans';font-variant-numeric:tabular-nums">{{ p.count }}</span></sc-if>
+          <span style="justify-self:end;display:flex;align-items:center;gap:10px"><sc-if value="{{ p.inactive }}"><span style="padding:3px 10px;border-radius:999px;background:#EFEFEF;color:#6B6B6B;font:600 14px 'Plus Jakarta Sans'">Inactivo</span></sc-if><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6B6B6B;transform:{{ p.chev }};transition:transform 200ms cubic-bezier(.23,1,.32,1)">expand_more</span></span>
         </button>
         <sc-if value="{{ p.open }}">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding:4px 16px 18px 68px;background:#FAFAFA;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;padding:6px 18px 20px;background:#FAFAFA;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
             <div style="display:flex;flex-direction:column;gap:10px;font:500 15px/1.45 'Plus Jakarta Sans'">
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="color:#6B6B6B">Contacto</span><span>{{ p.contactL }}</span></div>
               <div style="display:flex;flex-direction:column;gap:2px"><span style="color:#6B6B6B">Dirección</span><span>{{ p.addressL }}</span></div>
-              <div style="display:flex;flex-direction:column;gap:2px"><span style="color:#6B6B6B">Observaciones</span><span>{{ p.noteL }}</span></div>
+              <sc-if value="{{ p.hasNote }}"><div style="display:flex;flex-direction:column;gap:2px"><span style="color:#6B6B6B">Observaciones</span><span>{{ p.noteL }}</span></div></sc-if>
             </div>
-            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Productos asociados</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ p.prods }}" as="x"><span style="padding:4px 10px;border-radius:999px;background:#fff;border:1px solid #FFFFFF;font:500 14px 'Plus Jakarta Sans'">{{ x }}</span></sc-for></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">Productos</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ p.prods }}" as="x"><span style="padding:5px 12px;border-radius:999px;background:#FFFFFF;font:500 14px 'Plus Jakarta Sans'">{{ x }}</span></sc-for></div></div>
             <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">
-              <button onClick="{{ p.call }}" style="height:46px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;background:#fff;font:600 15px 'Plus Jakarta Sans';cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#F5F5F5"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">call</span>Llamar</button>
-              <button onClick="{{ p.buy }}" style="height:46px;padding:0 12px;border-radius:999px;border:none;background:#DE6B4E;color:#fff;font:600 15px 'Plus Jakarta Sans';cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#C85A3F"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">local_shipping</span>Registrar compra</button>
+              <button onClick="{{ p.call }}" aria-label="Llamar" title="Llamar" style="width:46px;height:46px;border-radius:50%;border:none;background:#FFFFFF;color:#111111;cursor:pointer;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1" style-hover="background:#F2F2F2">call</button>
+              <button onClick="{{ p.buy }}" style="height:46px;padding:0 18px;border-radius:999px;border:none;background:#DE6B4E;color:#fff;font:600 15px 'Plus Jakarta Sans';cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#C85A3F">Registrar compra</button>
               <button onClick="{{ p.toggleActive }}" style="height:46px;padding:0 12px;border-radius:999px;border:none;background:transparent;color:{{ p.actFg }};font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#EFEFEF">{{ p.actLabel }}</button>
             </div>
           </div>
@@ -76,14 +76,14 @@ class Component extends DCLogic {
     const s = this.state, provs = s.provs || d.providers, wide = !this.props.narrow;
     const q = s.q.toLowerCase();
     return {
-      q: s.q, onQ: e => this.setState({ q: e.target.value }), wide, cols: wide ? 'minmax(240px,2fr) 110px 110px 80px 80px auto' : 'minmax(0,1fr) auto',
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), wide, cols: wide ? 'minmax(240px,2fr) 150px 140px 100px 120px' : 'minmax(0,1fr) auto',
       provs: provs.map((p, i) => ({ p, i })).filter(({ p }) => !q || p.name.toLowerCase().includes(q) || p.contact.toLowerCase().includes(q)).map(({ p, i }) => {
         const prods = P.filter(x => x.prov === p.name).map(x => x.name), open = s.open === i;
         return { ...p, ini: p.name.split(' ').map(w => w[0]).slice(0, 2).join(''), nProd: prods.length, prods: prods.length ? prods : ['Sin productos asociados'], open, bg: open ? '#FAFAFA' : '#fff', chev: open ? 'rotate(180deg)' : 'none', op: p.active ? 1 : 0.6,
-          stLabel: p.active ? 'Activo' : 'Inactivo', stBg: p.active ? '#E4F3EA' : '#EFEFEF', stFg: p.active ? '#1E6A40' : '#6B6B6B',
-          addressL: p.address || 'No registrada', noteL: p.note || 'Sin observaciones',
+          inactive: !p.active, stLabel: p.active ? 'Activo' : 'Inactivo', stBg: p.active ? '#E4F3EA' : '#EFEFEF', stFg: p.active ? '#1E6A40' : '#6B6B6B',
+          addressL: p.address || 'No registrada', noteL: p.note, hasNote: !!p.note, contactL: p.contact,
           toggle: () => this.setState({ open: open ? null : i }), call: () => toast(`Llamando a ${p.contact} · ${p.phone}`, 'info'), buy: () => nav('ingresos'),
-          actLabel: p.active ? 'Desactivar' : 'Activar', actFg: p.active ? '#B31F2E' : '#111111',
+          actLabel: p.active ? 'Desactivar' : 'Activar', actFg: p.active ? '#E5383B' : '#111111',
           toggleActive: () => { this.setState({ provs: provs.map((x, j) => j === i ? { ...x, active: !x.active } : x) }); toast(`${p.name} ${p.active ? 'desactivado' : 'activado'}`, 'info'); } };
       }),
       openNew: () => this.setState({ modal: true, fName: '' }), modal: s.modal, close: () => this.setState({ modal: false }), stop: e => e.stopPropagation(),

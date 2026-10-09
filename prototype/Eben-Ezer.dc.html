@@ -57,7 +57,7 @@ a{color:#111111}a:hover{color:#111111}
         <p style="margin:0;font:400 17px/1.5 'Plus Jakarta Sans';color:#6B6B6B">Ingresa para abrir la caja de hoy.</p>
       </div>
       <sc-if value="{{ loginError }}">
-        <div role="alert" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:#FDE7EA;color:#B31F2E;font:500 16px/1.4 'Plus Jakarta Sans';animation:eeShake 260ms cubic-bezier(.23,1,.32,1)">
+        <div role="alert" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:#FDE7EA;color:#E5383B;font:500 16px/1.4 'Plus Jakarta Sans';animation:eeShake 260ms cubic-bezier(.23,1,.32,1)">
           <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">error</span><span>{{ loginErrorMsg }}</span>
         </div>
       </sc-if>
@@ -91,7 +91,7 @@ a{color:#111111}a:hover{color:#111111}
 </sc-if>
 
 <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
-<div style="zoom:{{ zoom }};display:flex;min-height:{{ vh100 }};background:#EFEFEF">
+<div style="zoom:{{ zoom }};display:flex;min-height:{{ vh100 }};background:#F7F7F7">
   <sc-if value="{{ drawerOverlay }}"><div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;background:rgba(17,17,17,.45);z-index:40;animation:eeFade 200ms ease"></div></sc-if>
   <aside style="position:{{ asidePos }};top:0;left:0;height:{{ vh100 }};width:{{ sideW }};flex:none;z-index:50;background:{{ asideBg }};color:#111111;display:flex;flex-direction:column;gap:12px;padding:14px 14px;box-sizing:border-box;overflow-y:auto;transform:{{ asideTf }};transition:width 240ms cubic-bezier(.23,1,.32,1),transform 300ms cubic-bezier(.32,.72,0,1);overflow-x:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:0 {{ brandPad }};flex:none;height:64px">
@@ -125,7 +125,7 @@ a{color:#111111}a:hover{color:#111111}
   </aside>
 
   <div style="flex:1;min-width:0;display:flex;flex-direction:column">
-    <header style="position:sticky;top:0;z-index:30;height:80px;flex:none;display:flex;align-items:center;gap:12px;padding:0 {{ mainPad }};background:rgba(239,239,239,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
+    <header style="position:sticky;top:0;z-index:30;height:80px;flex:none;display:flex;align-items:center;gap:12px;padding:0 {{ mainPad }};background:rgba(247,247,247,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
       <sc-if value="{{ mobile }}">
         <button onClick="{{ openDrawer }}" aria-label="Abrir menú" style="width:40px;height:40px;border-radius:999px;border:1px solid #FFFFFF;background:#fff;display:grid;place-items:center;cursor:pointer;flex:none" style-active="transform:scale(.96)"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">menu</span></button>
       </sc-if>
@@ -160,7 +160,7 @@ a{color:#111111}a:hover{color:#111111}
       <div style="position:relative;flex:none">
         <button onClick="{{ toggleNotif }}" aria-label="Notificaciones" style="position:relative;width:40px;height:40px;border-radius:999px;border:1px solid #FFFFFF;background:{{ notifBg }};display:grid;place-items:center;cursor:pointer;transition:background-color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)" style-hover="background:#fff" style-active="transform:scale(.96)">
           <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">notifications</span>
-          <span style="position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#D62839;color:#fff;border:2px solid #F5F5F5;font:700 12px/15px 'Plus Jakarta Sans';text-align:center">{{ alertCount }}</span>
+          <span style="position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#EF3E42;color:#fff;border:2px solid #F5F5F5;font:700 12px/15px 'Plus Jakarta Sans';text-align:center">{{ alertCount }}</span>
         </button>
         <sc-if value="{{ notifOpen }}">
           <div style="position:absolute;top:48px;right:0;width:340px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #FFFFFF;border-radius:24px;box-shadow:0 16px 40px -10px rgba(17,17,17,.22);transform-origin:top right;animation:eePop 170ms cubic-bezier(.23,1,.32,1);overflow:hidden">
@@ -187,7 +187,7 @@ a{color:#111111}a:hover{color:#111111}
             <div style="padding:10px 10px 12px;border-bottom:1px solid #F2F2F2;margin-bottom:4px;display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'Plus Jakarta Sans'">Rosa Quispe</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">rosa.quispe · Administrador</span></div>
             <button onClick="{{ goUsuarios }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';text-align:left" style-hover="background:#F2F2F2"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6B6B">manage_accounts</span>Mi perfil</button>
             <button onClick="{{ goConfig }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';text-align:left" style-hover="background:#F2F2F2"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6B6B6B">settings</span>Configuración</button>
-            <button onClick="{{ logout }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';color:#B31F2E;text-align:left" style-hover="background:#FDE7EA"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Cerrar sesión</button>
+            <button onClick="{{ logout }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:12px;background:transparent;cursor:pointer;font:500 16px 'Plus Jakarta Sans';color:#E5383B;text-align:left" style-hover="background:#FDE7EA"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Cerrar sesión</button>
           </div>
         </sc-if>
       </div>
@@ -197,7 +197,7 @@ a{color:#111111}a:hover{color:#111111}
       <sc-if value="{{ loading }}"><div style="display:grid;gap:16px"><div style="height:120px;border-radius:24px;background:#EDEDED"></div><div style="height:320px;border-radius:24px;background:#EDEDED"></div></div></sc-if>
       <sc-if value="{{ is.dashboard }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEDashboard" sales="{{ sales }}" edit-sale="{{ editSale }}" delete-sale="{{ deleteSale }}" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
       <sc-if value="{{ is.ventas }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEVentas" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,760px"></dc-import></div></sc-if>
-      <sc-if value="{{ is.inventario }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEInventario" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
+      <sc-if value="{{ is.inventario }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEInventario" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" retire="{{ retire }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
       <sc-if value="{{ is.ingresos }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEIngresos" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" ctx="{{ ctx }}" set-ctx="{{ setCtx }}" hint-size="100%,900px"></dc-import></div></sc-if>
       <sc-if value="{{ is.productos }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EEProductos" d="{{ d }}" products="{{ products }}" set-products="{{ setProducts }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,900px"></dc-import></div></sc-if>
       <sc-if value="{{ is.categorias }}"><div style="animation:eeIn 220ms cubic-bezier(.23,1,.32,1)"><dc-import name="EECategorias" d="{{ d }}" products="{{ products }}" nav="{{ nav }}" toast="{{ toast }}" narrow="{{ narrow }}" hint-size="100%,700px"></dc-import></div></sc-if>
@@ -290,6 +290,12 @@ class Component extends DCLogic {
     this.setState(s => ({ sales: [{ id, time, who: 'Rosa Quispe', ...sale }, ...s.sales], audit: [{ date: this.stamp(), main: `Venta #${id} registrada a mano`, sub: `Rosa Quispe · S/ ${(+sale.total).toFixed(2)} · ${sale.pay}${reason ? ' · Motivo: ' + reason : ''}`, kind: 'create' }, ...s.audit] }));
     this.toast(`Venta #${id} registrada`);
   };
+  retire = (id, qty, action) => {
+    const p = (this.state.products || []).find(x => x.id === id); if (!p) return;
+    const left = Math.max(0, p.stock - qty), loss = qty * p.cost;
+    this.setState(s => ({ products: s.products.map(x => x.id === id ? { ...x, stock: left, exp: left > 0 ? x.exp : null } : x), audit: [{ date: this.stamp(), kind: 'retire', main: `${p.name} retirado`, sub: `Rosa Quispe · ${qty} ${p.unit} · ${action === 'devolver' ? 'Devuelto a ' + p.prov : 'Merma · pérdida S/ ' + loss.toFixed(2)}` }, ...s.audit] }));
+    this.toast(action === 'devolver' ? `${p.name}: devolución registrada` : `${p.name}: merma registrada`);
+  };
   deleteSale = (id, reason) => {
     const old = this.state.sales.find(x => x.id === id); if (!old) return;
     this.setState(s => ({ sales: s.sales.filter(x => x.id !== id), audit: [{ date: this.stamp(), main: `Venta #${id} eliminada`, sub: `Rosa Quispe · S/ ${(+old.total).toFixed(2)} · Motivo: ${reason}`, kind: 'delete', seen: s.screen === 'histventas' }, ...s.audit] }));
@@ -322,11 +328,11 @@ class Component extends DCLogic {
     const crit = d ? P.filter(p => d.status(p) === 'critico').length : 0;
     const need = d ? P.filter(p => ['critico', 'bajo'].includes(d.status(p))).length : 0;
     const alertsRaw = d ? P.filter(p => ['critico', 'vence', 'vencido'].includes(d.status(p))) : [];
-    const auditAlerts = s.audit.filter(a => a.kind !== 'create').map(a => ({ icon: a.kind === 'delete' ? 'delete' : 'edit', name: a.main, msg: a.sub, bg: a.kind === 'delete' ? '#FDE7EA' : '#FFF1D9', fg: a.kind === 'delete' ? '#B31F2E' : '#8A5200', go: () => this.nav('histventas') }));
+    const auditAlerts = s.audit.filter(a => a.kind !== 'create').map(a => ({ icon: a.kind === 'delete' ? 'delete' : 'edit', name: a.main, msg: a.sub, bg: a.kind === 'delete' ? '#FDE7EA' : '#FFF1D9', fg: a.kind === 'delete' ? '#E5383B' : '#8A5200', go: () => this.nav('histventas') }));
     const alerts = [...auditAlerts, ...alertsRaw.map(p => {
       const st = d.status(p), dt = d.daysTo(p.exp);
       const m = st === 'critico' ? { icon: 'trending_down', msg: `Por agotarse: quedan ${p.stock}` } : st === 'vencido' ? { icon: 'block', msg: `Ya venció. Retíralo del estante` } : { icon: 'schedule', msg: `Vence en ${dt} días` };
-      return { ...m, go: () => this.nav('inventario'), name: p.name, bg: d.STATUS[st].bg === '#B31F2E' ? '#FDE7EA' : d.STATUS[st].bg, fg: st === 'vencido' ? '#B31F2E' : d.STATUS[st].fg };
+      return { ...m, go: () => this.nav('inventario'), name: p.name, bg: d.STATUS[st].bg === '#E5383B' ? '#FDE7EA' : d.STATUS[st].bg, fg: st === 'vencido' ? '#E5383B' : d.STATUS[st].fg };
     })];
     const G = [
       [null, [['dashboard', 'Inicio', 'home'], ['ventas', 'Ventas', 'point_of_sale'], ['inventario', 'Inventario', 'inventory_2', crit, 'd'], ['lista', 'Compras', 'checklist', (s.ctx.buyList || []).length || need, 'a'], ['histventas', 'Historial', 'receipt_long', s.audit.filter(a => a.kind !== 'create' && !a.seen).length, 'd'], ['asistente', 'Asistente', 'auto_awesome']]],
@@ -346,11 +352,11 @@ class Component extends DCLogic {
           iconColor: act ? '#FFFFFF' : '#DE6B4E', circleBg: act ? '#DE6B4E' : '#F2F2F2', fill: 1, badgeMr: collapsed ? '0' : '12px',
           pad: collapsed ? '0' : '0', justify: collapsed ? 'center' : 'flex-start', showLabel: showLabels,
           hasBadge: !!badge, badge, badgePos: collapsed ? 'absolute' : 'static',
-          badgeBg: kind === 'd' ? '#D62839' : '#DE6B4E', badgeFg: kind === 'd' ? '#fff' : '#111111',
+          badgeBg: kind === 'd' ? '#EF3E42' : '#DE6B4E', badgeFg: kind === 'd' ? '#fff' : '#111111',
         };
       }),
     }));
-    const T = { histventas: ['Historial de ventas', 'Corrige, elimina o registra ventas. Todo queda anotado.'], admin: ['Administración', 'Datos de la tienda, usuarios y reportes'], historiales: ['Historiales', 'Lo que pasó en la tienda, día por día'], dashboard: ['Inicio', 'Resumen de hoy, martes 29 de septiembre'], ventas: ['Ventas', 'Toca los productos y luego presiona Cobrar'], inventario: ['Inventario', 'Cuánto tienes de cada producto'], ingresos: ['Ingreso de mercadería', 'Anota lo que llegó a la tienda en 3 pasos'], productos: ['Productos', 'Precios y datos de lo que vendes'], categorias: ['Categorías', 'Grupos para ordenar tus productos'], proveedores: ['Proveedores', 'A quién le compras'], consumo: ['Consumo interno', 'Productos que se usan en la tienda y no se venden'], lista: ['Lista de compra', 'Productos por agotarse que debes comprar'], asistente: ['Asistente', 'Pregunta lo que quieras sobre tu tienda'], usuarios: ['Usuarios', 'Quién puede entrar al sistema'], config: ['Configuración', 'Datos de la tienda y avisos'], sistema: ['Sistema de diseño', 'Referencia visual'] };
+    const T = { histventas: ['Historial de ventas', ''], admin: ['Administración', 'Datos de la tienda, usuarios y reportes'], historiales: ['Historiales', ''], dashboard: ['Inicio', 'Resumen de hoy, martes 29 de septiembre'], ventas: ['Ventas', ''], inventario: ['Inventario', ''], ingresos: ['Ingreso de mercadería', 'Anota lo que llegó a la tienda en 3 pasos'], productos: ['Productos', 'Precios y datos de lo que vendes'], categorias: ['Categorías', 'Grupos para ordenar tus productos'], proveedores: ['Proveedores', ''], consumo: ['Consumo interno', 'Productos que se usan en la tienda y no se venden'], lista: ['Lista de compra', ''], asistente: ['Asistente', 'Pregunta lo que quieras sobre tu tienda'], usuarios: ['Usuarios', 'Quién puede entrar al sistema'], config: ['Configuración', 'Datos de la tienda y avisos'], sistema: ['Sistema de diseño', 'Referencia visual'] };
     const [title, subtitle] = s.screen === 'dashboard' ? ['', ''] : (T[s.screen] || ['', '']);
     const is = {}; Object.keys(T).forEach(k => is[k] = !!d && s.screen === k);
     const qn = s.q.trim().toLowerCase();
@@ -366,7 +372,7 @@ class Component extends DCLogic {
       user: s.user, pass: s.pass, onUser: e => this.setState({ user: e.target.value }), onPass: e => this.setState({ pass: e.target.value, loginState: lf === 'error' ? 'idle' : lf }),
       passType: s.showPass ? 'text' : 'password', passIcon: s.showPass ? 'visibility_off' : 'visibility', togglePass: () => this.setState({ showPass: !s.showPass }),
       remember: s.remember, toggleRemember: () => this.setState({ remember: !s.remember }), forgot: e => { e.preventDefault(); this.setState({ loginState: 'error', loginMsg: 'Pide al administrador que restablezca tu contraseña desde Usuarios.' }); },
-      login: this.login, loginLoading: lf === 'loading', loginLabel: lf === 'loading' ? 'Ingresando…' : 'Iniciar sesión', loginError: lf === 'error', loginErrorMsg: s.loginMsg, passBorder: lf === 'error' ? '#D62839' : '#DADADA',
+      login: this.login, loginLoading: lf === 'loading', loginLabel: lf === 'loading' ? 'Ingresando…' : 'Iniciar sesión', loginError: lf === 'error', loginErrorMsg: s.loginMsg, passBorder: lf === 'error' ? '#EF3E42' : '#DADADA',
       hasBack: !!parent, backLabel: parent ? PLABEL[parent] : '', goBack: () => parent && this.nav(parent),
       mobile, desktop, drawerOverlay: mobile && s.drawer, closeDrawer: () => this.setState({ drawer: false }), openDrawer: () => this.setState({ drawer: true }),
       asidePos: mobile ? 'fixed' : 'sticky', asideTf: mobile && !s.drawer ? 'translateX(-100%)' : 'none', sideW: sideWpx + 'px', brandPad: collapsed ? '8px' : '8px', asideBg: mobile ? '#EFEFEF' : 'transparent',
@@ -377,7 +383,7 @@ class Component extends DCLogic {
       alertCount: alerts.length, alerts, notifOpen: s.menu === 'notif', notifBg: s.menu === 'notif' ? '#fff' : 'transparent', toggleNotif: () => this.setState({ menu: s.menu === 'notif' ? null : 'notif' }),
       goInv: () => this.nav('inventario'), goLista: () => this.nav('lista'), goUsuarios: () => this.nav('usuarios'), goConfig: () => this.nav('config'),
       userOpen: s.menu === 'user', userBg: s.menu === 'user' ? '#fff' : 'transparent', toggleUser: () => this.setState({ menu: s.menu === 'user' ? null : 'user' }), logout: () => this.setState({ screen: 'login', menu: null }),
-      sales: s.sales, audit: s.audit, createSale: this.createSale, editSale: this.editSale, deleteSale: this.deleteSale, loading: !d, is, d, products: P, setProducts: this.setProducts, ctx: s.ctx, setCtx: this.setCtx, nav: this.nav, toast: this.toast, narrow,
+      sales: s.sales, audit: s.audit, createSale: this.createSale, editSale: this.editSale, deleteSale: this.deleteSale, loading: !d, is, d, products: P, setProducts: this.setProducts, retire: this.retire, ctx: s.ctx, setCtx: this.setCtx, nav: this.nav, toast: this.toast, narrow,
       showFab: (this.props.showAiFab ?? true) && !!d && !['asistente', 'ventas', 'sistema'].includes(s.screen), fabRight: '20px', fabOpen: s.fabOpen, toggleFab: () => this.setState({ fabOpen: !s.fabOpen }),
       quickQs: quick.map(q => ({ q, go: () => this.nav('asistente', { aiQ: q, aiQid: Date.now() }) })),
       toasts: s.toasts.map(t => ({ ...t, op: t.leaving ? 0 : 1, tf: t.leaving ? 'translateY(8px) scale(.98)' : 'none', icon: t.type === 'error' ? 'error' : t.type === 'info' ? 'info' : 'check', iconBg: t.type === 'error' ? '#F4A3AD' : t.type === 'info' ? '#DE6B4E' : '#8FD3A8' })),

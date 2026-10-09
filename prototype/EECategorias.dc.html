@@ -32,7 +32,7 @@
       <div onClick="{{ stop }}" role="dialog" aria-modal="true" style="width:100%;max-width:420px;background:#fff;border-radius:28px;box-shadow:0 30px 60px -20px rgba(17,17,17,.45);animation:eePop 220ms cubic-bezier(.23,1,.32,1);overflow:hidden">
         <div style="padding:20px 22px 4px"><h3 style="margin:0;font:700 20px 'Plus Jakarta Sans',sans-serif">{{ modalTitle }}</h3></div>
         <div style="padding:14px 22px 20px;display:flex;flex-direction:column;gap:14px">
-          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Nombre</span><input value="{{ fName }}" onChange="{{ onName }}" placeholder="Ej. Congelados" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid {{ nameBorder }};font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input><sc-if value="{{ nameErr }}"><span style="font:500 14px 'Plus Jakarta Sans';color:#B31F2E">Escribe un nombre para la categoría.</span></sc-if></label>
+          <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Nombre</span><input value="{{ fName }}" onChange="{{ onName }}" placeholder="Ej. Congelados" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid {{ nameBorder }};font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input><sc-if value="{{ nameErr }}"><span style="font:500 14px 'Plus Jakarta Sans';color:#E5383B">Escribe un nombre para la categoría.</span></sc-if></label>
           <label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 15px 'Plus Jakarta Sans'">Descripción</span><input value="{{ fDesc }}" onChange="{{ onDesc }}" placeholder="Opcional" style="height:50px;padding:0 12px;border-radius:999px;border:1px solid #DADADA;font:500 17px 'Plus Jakarta Sans';outline:none" style-focus="border-color:#DE6B4E;box-shadow:0 0 0 3px rgba(222,107,78,.18)"></input></label>
         </div>
         <div style="display:flex;gap:10px;padding:14px 22px;background:#FAFAFA;border-top:1px solid #F2F2F2">
@@ -64,7 +64,7 @@ class Component extends DCLogic {
       }; }),
       modal: s.modal !== null, modalTitle: s.modal === 'new' ? 'Nueva categoría' : 'Editar categoría',
       fName: s.fName, fDesc: s.fDesc, onName: e => this.setState({ fName: e.target.value }), onDesc: e => this.setState({ fDesc: e.target.value }),
-      nameErr: s.tried && !s.fName.trim(), nameBorder: s.tried && !s.fName.trim() ? '#D62839' : '#DADADA',
+      nameErr: s.tried && !s.fName.trim(), nameBorder: s.tried && !s.fName.trim() ? '#EF3E42' : '#DADADA',
       close: () => this.setState({ modal: null }), stop: e => e.stopPropagation(),
       save: () => {
         if (!s.fName.trim()) { this.setState({ tried: true }); return; }

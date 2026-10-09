@@ -20,8 +20,9 @@ const products = [
   P(16, 'Papel higiénico x4', 'Limpieza', '7750001000165', 'paquete', 16, 10, 6.9, 5.4, null, 'Makro Independencia', 15),
   P(17, 'Cuaderno A4 cuadriculado', 'Librería', '7750001000172', 'unid.', 20, 10, 5.0, 3.2, null, 'Librería Amauta', 8),
   P(18, 'Lapicero azul', 'Librería', '7750001000189', 'unid.', 48, 20, 1.0, 0.45, null, 'Librería Amauta', 17),
-  P(19, 'Pan francés', 'Panadería', '', 'unid.', 60, 40, 0.3, 0.18, null, 'Panadería La Espiga', 240),
-  P(20, 'Huevos rosados', 'Abarrotes', '', 'unid.', 90, 60, 0.6, 0.45, '2026-10-15', 'Mercado Central', 130),
+  { ...P(19, 'Pan francés', 'Panadería', '', 'unid.', 60, 40, 0.4, 0.18, null, 'Panadería La Espiga', 240), promo: { n: 3, price: 1 } },
+  P(20, 'Huevos rosados', 'Abarrotes', '', 'kg', 6.5, 4, 8.5, 6.8, '2026-10-15', 'Mercado Central', 42),
+  P(21, 'Arroz suelto', 'Abarrotes', '', 'kg', 18, 10, 4.2, 3.4, null, 'Makro Independencia', 55),
 ];
 const categories = [
   { name: 'Bebidas', icon: 'local_drink', desc: 'Gaseosas, aguas y jugos', active: true },
@@ -76,9 +77,9 @@ const fmtDate = exp => { if (!exp) return '—'; const d = new Date(exp + 'T12:0
 const STATUS = {
   normal: { label: 'Bien', fg: '#1E6A40', bg: '#E4F3EA', dot: '#2F8A57' },
   bajo: { label: 'Quedan pocos', fg: '#8A5200', bg: '#FFF1D9', dot: '#D98E1A' },
-  critico: { label: 'Crítico', fg: '#B31F2E', bg: '#FDE7EA', dot: '#D62839' },
+  critico: { label: 'Crítico', fg: '#E5383B', bg: '#FDE7EA', dot: '#EF3E42' },
   vence: { label: 'Vence pronto', fg: '#4A5361', bg: '#EEF0F3', dot: '#6B7585' },
-  vencido: { label: 'Vencido', fg: '#FFFFFF', bg: '#B31F2E', dot: '#FFFFFF' },
+  vencido: { label: 'Vencido', fg: '#FFFFFF', bg: '#E5383B', dot: '#FFFFFF' },
 };
 const status = p => {
   const dt = daysTo(p.exp);

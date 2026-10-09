@@ -21,24 +21,23 @@
     </div>
   </div>
 
-  <section style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border-radius:32px">
-    <div style="display:flex;align-items:center;gap:14px;padding:8px 10px 10px;flex-wrap:wrap">
-      <span style="width:48px;height:48px;flex:none;border-radius:50%;background:#DE6B4E;color:#FFFFFF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px;line-height:1">{{ cur.icon }}</span>
-      <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0"><span style="font:700 20px 'Plus Jakarta Sans'">{{ cur.title }}</span><span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B">{{ cur.hint }}</span></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><span style="font:700 24px/1 'Plus Jakarta Sans';font-variant-numeric:tabular-nums">{{ cur.total }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ cur.totalLabel }}</span></div>
-      <button onClick="{{ print }}" style="display:flex;align-items:center;gap:8px;height:48px;padding:0 18px;border-radius:999px;border:none;background:#F2F2F2;color:#111111;font:600 15px 'Plus Jakarta Sans';cursor:pointer" style-hover="background:#E9E9E9" style-active="transform:scale(.97)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">print</span>Imprimir</button>
+  <section style="display:flex;flex-direction:column;padding:12px 0 8px;background:#FFFFFF;border-radius:28px;overflow:hidden">
+    <div style="display:flex;align-items:center;gap:14px;padding:8px 18px 4px 22px;flex-wrap:wrap">
+      <span style="flex:1;min-width:0;font:700 20px 'Plus Jakarta Sans'">{{ cur.title }}</span>
+      <span style="font:700 22px/1 'Plus Jakarta Sans';font-variant-numeric:tabular-nums">{{ cur.total }}</span>
+      <button onClick="{{ print }}" aria-label="Imprimir" title="Imprimir" style="width:44px;height:44px;border-radius:50%;border:none;background:#F2F2F2;color:#111111;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;cursor:pointer" style-hover="background:#E9E9E9" style-active="transform:scale(.95)">print</button>
     </div>
     <sc-if value="{{ showHead }}">
-      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;padding:4px 18px;font:600 14px 'Plus Jakarta Sans';color:#6B6B6B">
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;padding:16px 18px 10px;font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">
         <sc-for list="{{ heads }}" as="h"><span style="text-align:{{ h.align }}">{{ h.label }}</span></sc-for>
       </div>
     </sc-if>
     <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
-      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:14px 18px;border-radius:24px;background:#F5F5F5;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
-        <span style="font:600 15px 'Plus Jakarta Sans';color:#3A3A3A;font-variant-numeric:tabular-nums">{{ r.date }}</span>
-        <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 17px/1.3 'Plus Jakarta Sans'">{{ r.main }}</span><span style="font:500 14px 'Plus Jakarta Sans';color:#6B6B6B">{{ r.sub }}</span></div>
-        <sc-if value="{{ showHead }}"><span style="justify-self:start;padding:5px 12px;border-radius:999px;background:{{ r.tagBg }};color:{{ r.tagFg }};font:600 14px 'Plus Jakarta Sans'">{{ r.tag }}</span></sc-if>
-        <span style="font:700 17px 'Plus Jakarta Sans';text-align:right;font-variant-numeric:tabular-nums;color:{{ r.amtFg }}">{{ r.amt }}</span>
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:center;padding:12px 18px;border-bottom:1px solid #F5F5F5;background:#FFFFFF;animation:eeIn 200ms cubic-bezier(.23,1,.32,1)">
+        <span style="font:500 15px 'Plus Jakarta Sans';color:#6B6B6B;font-variant-numeric:tabular-nums">{{ r.date }}</span>
+        <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 16px/1.3 'Plus Jakarta Sans'">{{ r.main }}</span><sc-if value="{{ r.hasSub }}"><span style="font:500 14px 'Plus Jakarta Sans';color:#9A9A9A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</span></sc-if></div>
+        <sc-if value="{{ showHead }}"><span style="justify-self:start;font:500 15px 'Plus Jakarta Sans';color:{{ r.tagFg }}">{{ r.tag }}</span></sc-if>
+        <span style="font:600 16px 'Plus Jakarta Sans';text-align:right;font-variant-numeric:tabular-nums;color:{{ r.amtFg }}">{{ r.amt }}</span>
       </div>
     </sc-for>
   </section>
@@ -59,21 +58,21 @@ class Component extends DCLogic {
     const TABS = {
       ventas: { label: 'Ventas', icon: 'point_of_sale', title: 'Historial de ventas', hint: 'Cada venta cobrada en caja', totalLabel: 'vendido',
         heads: ['Fecha', 'Venta', 'Pago', 'Total'],
-        rows: (this.props.sales ? this.props.sales.map(x => ['Hoy ' + x.time, '#' + x.id, x.who + ' · ' + x.items, x.pay, x.total]).concat(sales.slice(4)) : sales).map(([date, n, who, pay, amt]) => ({ date, main: `Venta ${n}`, sub: who, ...tag(pay, '#FFFFFF', '#3A3A3A'), amt: d.money(amt), amtFg: '#111111', v: amt })) },
+        rows: (this.props.sales ? this.props.sales.map(x => ['Hoy ' + x.time, '#' + x.id, x.items, x.pay, x.total]).concat(sales.slice(4)) : sales).map(([date, n, who, pay, amt]) => ({ date, main: n, sub: /^[A-ZÁÉÍÓÚ][a-záéíóú]+ [A-ZÁÉÍÓÚ][a-záéíóú]+$/.test(who) ? '' : who, ...tag(pay, '#FFFFFF', '#6B6B6B'), amt: d.money(amt), amtFg: '#111111', v: amt })) },
       ingresos: { label: 'Ingresos', icon: 'local_shipping', title: 'Historial de ingresos', hint: 'Mercadería que llegó a la tienda', totalLabel: 'pagado',
         heads: ['Fecha', 'Producto', 'Proveedor', 'Pagaste'],
-        rows: d.purchases.map(p => ({ date: p.date, main: p.prod, sub: `${p.qty} · lote ${p.lote}`, ...tag(p.prov.split(' ')[0], '#FFFFFF', '#3A3A3A'), amt: d.money(p.total), amtFg: '#111111', v: p.total })) },
+        rows: d.purchases.map(p => ({ date: p.date, main: p.prod, sub: `${p.qty} · lote ${p.lote}`, ...tag(p.prov.split(' ')[0], '#FFFFFF', '#6B6B6B'), amt: d.money(p.total), amtFg: '#111111', v: p.total })) },
       movimientos: { label: 'Movimientos', icon: 'swap_vert', title: 'Movimientos de inventario', hint: 'Entradas y salidas de productos', totalLabel: 'movimientos',
         heads: ['Fecha', 'Producto', 'Tipo', 'Cantidad'],
         rows: [
-          ...(this.props.audit || []).map(a => ({ date: a.date, main: a.main, sub: a.sub, ...tag(a.kind === 'delete' ? 'Eliminación' : a.kind === 'create' ? 'Venta manual' : 'Edición', a.kind === 'delete' ? '#FDE7EA' : a.kind === 'create' ? '#E4F3EA' : '#FFF1D9', a.kind === 'delete' ? '#B31F2E' : a.kind === 'create' ? '#1E6A40' : '#8A5200'), amt: 'Auditoría', amtFg: '#6B6B6B' })),
+          ...(this.props.audit || []).map(a => ({ date: a.date, main: a.main, sub: a.sub, ...tag(a.kind === 'delete' ? 'Eliminación' : a.kind === 'create' ? 'Venta manual' : a.kind === 'retire' ? 'Retiro' : 'Edición', a.kind === 'delete' ? '#FDE7EA' : a.kind === 'create' ? '#E4F3EA' : '#FFF1D9', a.kind === 'delete' ? '#E5383B' : a.kind === 'create' ? '#1E6A40' : '#8A5200'), amt: 'Auditoría', amtFg: '#6B6B6B' })),
           ...d.purchases.slice(0, 3).map(p => ({ date: p.date, main: p.prod, sub: 'Ingreso de mercadería', ...tag('Entrada', '#E4F3EA', '#1E6A40'), amt: '+' + p.qty.split(' ')[0], amtFg: '#1E6A40' })),
-          ...d.consumos.slice(0, 2).map(c => ({ date: c.date, main: c.prod, sub: c.reason, ...tag('Consumo interno', '#F1ECFF', '#5B3FC4'), amt: '−' + c.qty, amtFg: '#B31F2E' })),
-          { date: 'Hoy 11:42', main: 'Gaseosa cola 500 ml', sub: 'Venta #1038', ...tag('Venta', '#FBEDE8', '#A94429'), amt: '−3', amtFg: '#B31F2E' },
+          ...d.consumos.slice(0, 2).map(c => ({ date: c.date, main: c.prod, sub: c.reason, ...tag('Consumo interno', '#F1ECFF', '#5B3FC4'), amt: '−' + c.qty, amtFg: '#E5383B' })),
+          { date: 'Hoy 11:42', main: 'Gaseosa cola 500 ml', sub: 'Venta #1038', ...tag('Venta', '#FBEDE8', '#A94429'), amt: '−3', amtFg: '#E5383B' },
         ] },
       consumo: { label: 'Consumo interno', icon: 'output', title: 'Consumo interno', hint: 'Bajó el stock, pero no entró dinero a caja', totalLabel: 'costo',
         heads: ['Fecha', 'Producto', 'Motivo', 'Costo'],
-        rows: d.consumos.map(c => ({ date: c.date, main: `${c.prod} ×${c.qty}`, sub: c.who, ...tag(c.reason, '#FFFFFF', '#3A3A3A'), amt: d.money(c.cost), amtFg: '#111111', v: c.cost })) },
+        rows: d.consumos.map(c => ({ date: c.date, main: `${c.prod} ×${c.qty}`, sub: c.who, ...tag(c.reason, '#FFFFFF', '#6B6B6B'), amt: d.money(c.cost), amtFg: '#111111', v: c.cost })) },
     };
     const cur = TABS[s.tab];
     const total = s.tab === 'movimientos' ? String(cur.rows.length) : d.money(cur.rows.reduce((a, r) => a + (r.v || 0), 0));
@@ -81,7 +80,7 @@ class Component extends DCLogic {
     return {
       tabs: Object.entries(TABS).map(([k, t]) => { const on = s.tab === k; return { label: t.label, icon: t.icon, on, go: () => this.setState({ tab: k }), bg: on ? '#A78BFA' : '#FFFFFF', fg: on ? '#FFFFFF' : '#111111' }; }),
       periods: [['hoy', 'Hoy'], ['semana', 'Esta semana'], ['mes', 'Este mes']].map(([k, label]) => { const on = s.period === k; return { label, go: () => this.setState({ period: k }), bg: on ? '#111111' : 'transparent', fg: on ? '#FFFFFF' : '#3A3A3A' }; }),
-      cur: { ...cur, total }, rows: cur.rows, showHead: !narrow,
+      cur: { ...cur, total }, rows: cur.rows.map(r => ({ ...r, hasSub: !!r.sub })), showHead: !narrow,
       heads: cur.heads.map((label, i) => ({ label, align: aligns[i] })),
       cols: narrow ? '76px minmax(0,1fr) auto' : '110px minmax(0,2fr) minmax(0,1fr) 120px',
       print: () => toast('Preparando historial para imprimir…', 'info'),
