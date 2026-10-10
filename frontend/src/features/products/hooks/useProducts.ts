@@ -18,6 +18,16 @@ export function useProducts(filters: ProductFilters) {
 
   const reload = useCallback(() => setReloadKey((key) => key + 1), [])
 
+  /** Applies a product returned by the API without another request (drops it if it no longer matches `active`). */
+  const applyUpdate = useCallback((updated: Product) => {
+    setResult((previous) => ({
+      ...previous,
+      products: active !== undefined && updated.active !== active
+        ? previous.products.filter((product) => product.id !== updated.id)
+        : previous.products.map((product) => (product.id === updated.id ? updated : product)),
+    }))
+  }, [active])
+
   useEffect(() => {
     let cancelled = false
 
@@ -41,5 +51,6 @@ export function useProducts(filters: ProductFilters) {
     loading,
     error: loading ? null : result.error,
     reload,
+    applyUpdate,
   }
 }

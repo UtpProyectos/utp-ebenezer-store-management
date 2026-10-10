@@ -18,11 +18,25 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByBarcode(String barcode);
 
-    Optional<Product> findByBarcodeAndIdNot(String barcode, Long id);
+    boolean existsByBarcodeAndIdNot(String barcode, Long id);
 
     boolean existsByBarcode(String barcode);
 
     long countByCategory_Id(Long categoryId);
+
+    // Loads the category and base unit in the same query: every caller reads them.
+    @Override
+    @EntityGraph(attributePaths = {"category", "baseUnit"})
+    Optional<Product> findById(Long id);
+
+    @Query("select p.category.id as categoryId, count(p) as productCount from Product p group by p.category.id")
+    List<CategoryProductCount> countByCategory();
+
+    interface CategoryProductCount {
+        Long getCategoryId();
+
+        Long getProductCount();
+    }
 
     @EntityGraph(attributePaths = {"category", "baseUnit"})
     List<Product> findByActiveTrueOrderByNameAsc();

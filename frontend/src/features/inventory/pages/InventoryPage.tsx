@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { Button, Spinner } from '@heroui/react'
 import CircleCheckFill from '@gravity-ui/icons/CircleCheckFill'
 import ListCheck from '@gravity-ui/icons/ListCheck'
@@ -27,7 +27,15 @@ export function InventoryPage() {
   const canCreateProduct = user?.role === 'ADMIN'
   const { items, initialLoading, error, reload } = useInventory()
   const [filter, setFilter] = useState<InventoryFilter>('all')
-  const [query, setQuery] = useState('')
+  // ?q= comes from the header search.
+  const [searchParams] = useSearchParams()
+  const urlQuery = searchParams.get('q') ?? ''
+  const [syncedUrlQuery, setSyncedUrlQuery] = useState(urlQuery)
+  const [query, setQuery] = useState(urlQuery)
+  if (urlQuery !== syncedUrlQuery) {
+    setSyncedUrlQuery(urlQuery)
+    setQuery(urlQuery)
+  }
   const [withdrawing, setWithdrawing] = useState<ProductStockResponse | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [creatingProduct, setCreatingProduct] = useState(false)

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.utp.ebenezer.service.product.DemoCatalogSeedService;
+import pe.edu.utp.ebenezer.service.purchase.DemoInventorySeedService;
 import pe.edu.utp.ebenezer.service.supplier.DemoSupplierSeedService;
 import pe.edu.utp.ebenezer.service.user.DemoFamilyUsersSeedService;
 
@@ -25,6 +26,7 @@ public class DemoCatalogInitializer implements ApplicationRunner {
     private final DemoCatalogSeedService demoCatalogSeedService;
     private final DemoSupplierSeedService demoSupplierSeedService;
     private final DemoFamilyUsersSeedService demoFamilyUsersSeedService;
+    private final DemoInventorySeedService demoInventorySeedService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -40,6 +42,11 @@ public class DemoCatalogInitializer implements ApplicationRunner {
             log.info("Missing demo suppliers and product associations added");
         } else {
             log.info("Demo suppliers and product associations already exist");
+        }
+        if (demoInventorySeedService.seedMissingDemoInventory()) {
+            log.info("Demo purchases, lots and promotions added");
+        } else {
+            log.info("Demo purchases, lots and promotions already exist");
         }
         int createdUsers = demoFamilyUsersSeedService.seedMissingFamilyUsers();
         log.info("Created {} missing demo family users", createdUsers);
