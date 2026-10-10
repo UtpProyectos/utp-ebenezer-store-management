@@ -1,2 +1,5 @@
 export { SalePage } from './pages/SalePage'
+export { SalesHistoryPage } from './pages/SalesHistoryPage'
 export type { PaymentMethod, SaleRequest, SaleResponse } from './types/sale.types'
+export { saleApi } from './services/saleApi'
+export { describeItems, formatTime, PAYMENT_METHOD_LABELS } from './utils/saleFormat'

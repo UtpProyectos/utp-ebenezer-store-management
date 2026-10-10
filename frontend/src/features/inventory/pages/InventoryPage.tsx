@@ -21,20 +21,26 @@ import { matchesSearch } from '../utils/inventoryFormat'
 const HEADER_BUTTON =
   'inline-flex h-13 items-center gap-2.5 rounded-full px-5.5 text-[1.0625rem] font-bold outline-none transition-[background-color,transform] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 active:scale-[0.97]'
 
+function toFilter(value: string | null): InventoryFilter {
+  return value === 'restock' || value === 'expiring' ? value : 'all'
+}
+
 export function InventoryPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const canCreateProduct = user?.role === 'ADMIN'
   const { items, initialLoading, error, reload } = useInventory()
-  const [filter, setFilter] = useState<InventoryFilter>('all')
-  // ?q= comes from the header search.
+  // ?q= comes from the header search; ?filter= from the Home summary.
   const [searchParams] = useSearchParams()
   const urlQuery = searchParams.get('q') ?? ''
-  const [syncedUrlQuery, setSyncedUrlQuery] = useState(urlQuery)
+  const urlFilter = toFilter(searchParams.get('filter'))
+  const [syncedUrl, setSyncedUrl] = useState({ query: urlQuery, filter: urlFilter })
   const [query, setQuery] = useState(urlQuery)
-  if (urlQuery !== syncedUrlQuery) {
-    setSyncedUrlQuery(urlQuery)
+  const [filter, setFilter] = useState<InventoryFilter>(urlFilter)
+  if (urlQuery !== syncedUrl.query || urlFilter !== syncedUrl.filter) {
+    setSyncedUrl({ query: urlQuery, filter: urlFilter })
     setQuery(urlQuery)
+    setFilter(urlFilter)
   }
   const [withdrawing, setWithdrawing] = useState<ProductStockResponse | null>(null)
   const [notice, setNotice] = useState<string | null>(null)

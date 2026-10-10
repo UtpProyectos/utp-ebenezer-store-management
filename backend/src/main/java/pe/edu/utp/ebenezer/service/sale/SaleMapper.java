@@ -1,9 +1,11 @@
 package pe.edu.utp.ebenezer.service.sale;
 
 import pe.edu.utp.ebenezer.api.dto.sale.SaleDetailResponse;
+import pe.edu.utp.ebenezer.api.dto.sale.SaleHistoryResponse;
 import pe.edu.utp.ebenezer.api.dto.sale.SaleResponse;
 import pe.edu.utp.ebenezer.domain.entity.Sale;
 import pe.edu.utp.ebenezer.domain.entity.SaleDetail;
+import pe.edu.utp.ebenezer.domain.entity.SaleHistory;
 
 public final class SaleMapper {
 
@@ -39,5 +41,18 @@ public final class SaleMapper {
                 detail.getUnitPrice(),
                 detail.getDiscount(),
                 detail.getSubtotal());
+    }
+
+    public static SaleHistoryResponse toResponse(SaleHistory history) {
+        return new SaleHistoryResponse(
+                history.getId(),
+                history.getSale().getId(),
+                history.getUser().getId(),
+                history.getUser().getName(),
+                history.getAction(),
+                history.getPreviousData(),
+                history.getNewData(),
+                history.getReason(),
+                history.getCreatedAt());
     }
 }
