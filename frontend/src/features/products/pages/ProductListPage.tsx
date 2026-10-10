@@ -108,11 +108,6 @@ export function ProductListPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-350 flex-col gap-4">
-      <header>
-        <h1 className="text-2xl font-bold">Productos</h1>
-        <p className="text-sm text-muted">Administra precios, categorías y datos de lo que vendes.</p>
-      </header>
-
       {supportError && (
         <p role="alert" className="rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger-soft-foreground">
           No se pudieron cargar las categorías y unidades: {supportError}
@@ -213,7 +208,7 @@ export function ProductListPage() {
         <div className="rounded-3xl bg-surface px-5 py-12 text-center text-sm text-muted" role="status">
           Cargando productos…
         </div>
-      ) : (
+      ) : error ? null : (
         <ProductTable products={products} onEdit={openEditForm} onToggleStatus={toggleStatus} />
       )}
     </div>

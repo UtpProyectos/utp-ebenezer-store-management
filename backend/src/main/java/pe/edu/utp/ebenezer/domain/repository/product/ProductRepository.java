@@ -32,17 +32,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                    p.minStock as minStock,
                    p.active as active,
                    p.createdAt as createdAt,
-                   coalesce(sum(m.baseQuantity), :zero) as currentStock
+                   coalesce(
+                       (select sum(m.baseQuantity)
+                        from InventoryMovement m
+                        where m.product.id = p.id),
+                       :zero
+                   ) as currentStock
             from Product p
             join p.category c
             join p.baseUnit u
-            left join InventoryMovement m on m.product.id = p.id
             where (:search is null
                 or lower(p.name) like lower(concat('%', :search, '%'))
                 or lower(coalesce(p.barcode, '')) like lower(concat('%', :search, '%')))
               and (:categoryId is null or c.id = :categoryId)
               and (:active is null or p.active = :active)
-            group by p.id, c.id, c.name, u.id, u.abbreviation
             order by lower(p.name)
             """)
     List<ProductSummary> searchSummaries(
