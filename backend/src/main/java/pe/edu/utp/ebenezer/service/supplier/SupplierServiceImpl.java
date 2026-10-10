@@ -28,13 +28,10 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional(readOnly = true)
     public List<SupplierResponse> findAll(String search, Boolean active) {
-        String normalizedSearch = search == null ? "" : search.trim().toLowerCase(Locale.ROOT);
-        return supplierRepository.findAllByOrderByNameAsc().stream()
-                .filter(supplier -> active == null || supplier.getActive().equals(active))
-                .filter(supplier -> normalizedSearch.isEmpty()
-                        || contains(supplier.getName(), normalizedSearch)
-                        || contains(supplier.getPhone(), normalizedSearch)
-                        || contains(supplier.getContactName(), normalizedSearch))
+        String normalizedSearch = search == null || search.isBlank()
+                ? ""
+                : "%" + search.trim().toLowerCase(Locale.ROOT) + "%";
+        return supplierRepository.search(normalizedSearch, active).stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -82,7 +79,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     private Supplier getSupplier(Long id) {
-        return supplierRepository.findById(id)
+        return supplierRepository.findWithProductsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
     }
 
@@ -136,9 +133,5 @@ public class SupplierServiceImpl implements SupplierService {
 
     private static String normalize(String value) {
         return value == null || value.isBlank() ? null : value.trim();
-    }
-
-    private static boolean contains(String value, String search) {
-        return value != null && value.toLowerCase(Locale.ROOT).contains(search);
     }
 }

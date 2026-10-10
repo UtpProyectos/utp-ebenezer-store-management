@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import pe.edu.utp.ebenezer.api.dto.category.CategoryRequest;
 import pe.edu.utp.ebenezer.domain.entity.Category;
@@ -73,5 +75,41 @@ class CategoryServiceImplTest {
 
         assertThat(response.name()).isEqualTo("bebidas");
         verify(categoryRepository, never()).existsByNameIgnoreCase(any());
+    }
+
+    @Test
+    void findAllUsesGroupedProductCountsAndDefaultsToZero() {
+        Category drinks = category(1L, "Bebidas");
+        Category snacks = category(2L, "Snacks");
+        when(categoryRepository.findByActive(true, Sort.by("name"))).thenReturn(List.of(drinks, snacks));
+        when(productRepository.countByCategory()).thenReturn(List.of(productCount(1L, 5L)));
+
+        var response = categoryService.findAll(true);
+
+        assertThat(response).extracting("name").containsExactly("Bebidas", "Snacks");
+        assertThat(response).extracting("productCount").containsExactly(5L, 0L);
+        verify(productRepository, never()).countByCategory_Id(any());
+    }
+
+    private static Category category(Long id, String name) {
+        Category category = new Category();
+        category.setId(id);
+        category.setName(name);
+        category.setActive(true);
+        return category;
+    }
+
+    private static ProductRepository.CategoryProductCount productCount(Long categoryId, Long count) {
+        return new ProductRepository.CategoryProductCount() {
+            @Override
+            public Long getCategoryId() {
+                return categoryId;
+            }
+
+            @Override
+            public Long getProductCount() {
+                return count;
+            }
+        };
     }
 }

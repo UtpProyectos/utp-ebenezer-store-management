@@ -81,7 +81,7 @@ class SupplierServiceImplTest {
         supplier.setId(5L);
         supplier.setName("Arca Continental");
         supplier.setActive(true);
-        when(supplierRepository.findById(5L)).thenReturn(Optional.of(supplier));
+        when(supplierRepository.findWithProductsById(5L)).thenReturn(Optional.of(supplier));
 
         var response = supplierService.update(5L, new SupplierRequest(
                 " arca continental ", null, null, SupplierType.DISTRIBUTOR, null, null, null, List.of()
@@ -121,5 +121,25 @@ class SupplierServiceImplTest {
         ))).isInstanceOf(BusinessException.class).hasMessage("A supplier can have at most 8 products");
 
         verify(supplierRepository, never()).save(any(Supplier.class));
+    }
+
+    @Test
+    void findAllFiltersInTheDatabaseWithNormalizedSearch() {
+        Supplier supplier = new Supplier();
+        supplier.setId(3L);
+        supplier.setName("Arca Continental");
+        supplier.setActive(true);
+        when(supplierRepository.search("%arca%", true)).thenReturn(List.of(supplier));
+
+        var response = supplierService.findAll("  ARCA ", true);
+
+        assertThat(response).extracting("name").containsExactly("Arca Continental");
+    }
+
+    @Test
+    void findAllWithoutSearchSendsEmptyPattern() {
+        when(supplierRepository.search("", null)).thenReturn(List.of());
+
+        assertThat(supplierService.findAll("   ", null)).isEmpty();
     }
 }

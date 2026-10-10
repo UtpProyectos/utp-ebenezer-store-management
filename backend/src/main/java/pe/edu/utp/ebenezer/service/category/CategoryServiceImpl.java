@@ -1,6 +1,8 @@
 package pe.edu.utp.ebenezer.service.category;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -25,9 +27,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAll(Boolean active) {
-        return categoryRepository.findAll(Sort.by("name")).stream()
-                .filter(category -> active == null || category.getActive().equals(active))
-                .map(this::toResponse)
+        Sort sort = Sort.by("name");
+        List<Category> categories = active == null
+                ? categoryRepository.findAll(sort)
+                : categoryRepository.findByActive(active, sort);
+        // One grouped count instead of one count query per category.
+        Map<Long, Long> productCountByCategory = productRepository.countByCategory().stream()
+                .collect(Collectors.toMap(
+                        ProductRepository.CategoryProductCount::getCategoryId,
+                        ProductRepository.CategoryProductCount::getProductCount));
+        return categories.stream()
+                .map(category -> toResponse(category, productCountByCategory.getOrDefault(category.getId(), 0L)))
                 .toList();
     }
 
@@ -82,12 +92,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private CategoryResponse toResponse(Category category) {
+        return toResponse(category, productRepository.countByCategory_Id(category.getId()));
+    }
+
+    private static CategoryResponse toResponse(Category category, long productCount) {
         return new CategoryResponse(
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
                 category.getActive(),
-                productRepository.countByCategory_Id(category.getId())
+                productCount
         );
     }
 

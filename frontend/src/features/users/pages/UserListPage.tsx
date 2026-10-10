@@ -38,18 +38,6 @@ export function UserListPage() {
   const [saving, setSaving] = useState(false)
   const [busyUserId, setBusyUserId] = useState<number | null>(null)
 
-  async function reload() {
-    setLoading(true)
-    setLoadError(null)
-    try {
-      setUsers(await userApi.getAll())
-    } catch (error: unknown) {
-      setLoadError(messageFromError(error))
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
     let cancelled = false
 
@@ -103,16 +91,18 @@ export function UserListPage() {
         if (editingUser || !input.password) {
           throw new Error('No se pudo validar la información del usuario')
         }
-        await userApi.create({ ...input, password: input.password })
+        const created = await userApi.create({ ...input, password: input.password })
+        // The list is ordered by id, so a new user always goes last.
+        setUsers((previous) => [...previous, created])
       } else {
         if (!editingUser) {
           throw new Error('No se pudo validar la información del usuario')
         }
-        await userApi.update(editingUser.id, input)
+        const updated = await userApi.update(editingUser.id, input)
+        setUsers((previous) => previous.map((item) => (item.id === updated.id ? updated : item)))
       }
       setFormOpen(false)
       setEditingUser(undefined)
-      await reload()
     } catch (error: unknown) {
       setActionError(messageFromError(error))
     } finally {
@@ -124,8 +114,8 @@ export function UserListPage() {
     setBusyUserId(user.id)
     setActionError(null)
     try {
-      await userApi.updateStatus(user.id, !user.active)
-      await reload()
+      const updated = await userApi.updateStatus(user.id, !user.active)
+      setUsers((previous) => previous.map((item) => (item.id === updated.id ? updated : item)))
     } catch (error: unknown) {
       setActionError(messageFromError(error))
     } finally {

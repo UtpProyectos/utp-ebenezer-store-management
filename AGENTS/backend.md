@@ -229,6 +229,11 @@ Endpoints:
 | GET | `/api/inventory` | autenticado (stock y estado por producto activo) |
 | POST | `/api/inventory/movements` | autenticado (retiro `WASTE` / `RETURN`, FEFO si no se indica lote) |
 | POST | `/api/purchases` | autenticado (ingreso: detalle → lote → movimiento `PURCHASE`) |
+| POST | `/api/sales` | autenticado (precio del producto + promoción vigente; FEFO sin lotes vencidos → movimientos `SALE`; `sale_history` `CREATED`) |
+| POST | `/api/internal-consumptions` | autenticado (mismo FEFO que la venta → movimientos `INTERNAL_CONSUMPTION`, sin ingreso) |
+| GET | `/api/promotions` | autenticado (promociones activas y vigentes, la más reciente primero) |
+
+La asignación de lotes de cualquier salida (retiro, venta, consumo) se hace con `service/inventory/StockAllocator`: FEFO, luego lotes sin vencimiento y al final el stock sin lote (ajustes iniciales). Venta y consumo excluyen lotes vencidos; el retiro WASTE/RETURN los incluye. Las conversiones de unidades usan `service/unit/UnitConverter`.
 
 Los usuarios no se eliminan físicamente (están referenciados por ventas/compras): se desactivan.
 
@@ -300,6 +305,8 @@ Archivo principal: `src/main/resources/application.yaml`.
 
 - Carga `backend/.env` automáticamente (`spring.config.import: optional:file:.env[.properties]`). Las variables de entorno reales tienen prioridad.
 - `spring.jpa.open-in-view: false`.
+- La BD es remota (Supabase, ~200 ms por ida y vuelta desde Perú): cada consulta cuenta. HikariCP usa `keepalive-time` y `aliveBypassWindowMs` (fijado en `EbenezerBackendApplication`) para no hacer un ping a la BD en cada request.
+- `hibernate.default_batch_fetch_size: 50`: las relaciones lazy se cargan por lotes. Aun así, si un listado siempre lee una relación, traerla en la misma consulta (`@EntityGraph`, proyección o consulta agregada) en vez de consultar por cada fila.
 - `ddl-auto: update` solo para desarrollo; revisar antes de producción (migraciones con Flyway se evaluarán cuando el modelo se estabilice).
 - `server.error.include-stacktrace: never`.
 
@@ -309,6 +316,7 @@ Variables de entorno (ver `backend/.env.example`):
 |---|---|
 | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Conexión PostgreSQL |
 | `SERVER_PORT` | Puerto (default 8080) |
+| `JPA_SHOW_SQL` | Loguea el SQL de Hibernate (default `true`; usar `false` en producción) |
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend (default `http://localhost:5173`) |
 | `JWT_SECRET`, `JWT_EXPIRATION_MS` | JWT. Secreto Base64 de al menos 256 bits (`openssl rand -base64 32`); sin él la app no arranca |
 | `ADMIN_NAME`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin inicial (solo si no hay usuarios) |

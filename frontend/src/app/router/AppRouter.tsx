@@ -7,6 +7,7 @@ import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
 import { InventoryPage } from '@/features/inventory'
 import { ProductListPage } from '@/features/products/pages/ProductListPage'
 import { PurchaseEntryPage } from '@/features/purchases'
+import { SalePage } from '@/features/sales'
 import { SupplierListPage } from '@/features/suppliers/pages/SupplierListPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { UserListPage } from '@/features/users/pages/UserListPage'
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           page(ROUTES.home, { title: 'Inicio', subtitle: 'Resumen de hoy' }, <DashboardPage />),
-          page(ROUTES.sales, { title: 'Ventas', subtitle: 'Toca los productos y luego presiona Cobrar' }),
+          page(ROUTES.sales, { title: 'Ventas', subtitle: 'Toca los productos y luego presiona Cobrar' }, <SalePage />),
           page(ROUTES.internalConsumption, {
             title: 'Consumo interno',
             subtitle: 'Productos que se usan en la tienda y no se venden',

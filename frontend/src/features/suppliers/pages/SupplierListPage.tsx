@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router'
 import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { SupplierForm } from '../components/SupplierForm'
 import { SupplierList } from '../components/SupplierList'
@@ -19,8 +20,17 @@ export function SupplierListPage() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
-  const [searchText, setSearchText] = useState('')
-  const [appliedSearch, setAppliedSearch] = useState('')
+  // ?q= comes from the header search.
+  const [searchParams] = useSearchParams()
+  const urlQuery = searchParams.get('q') ?? ''
+  const [syncedUrlQuery, setSyncedUrlQuery] = useState(urlQuery)
+  const [searchText, setSearchText] = useState(urlQuery)
+  const [appliedSearch, setAppliedSearch] = useState(urlQuery)
+  if (urlQuery !== syncedUrlQuery) {
+    setSyncedUrlQuery(urlQuery)
+    setSearchText(urlQuery)
+    setAppliedSearch(urlQuery)
+  }
   const [status, setStatus] = useState<StatusFilter>('all')
   const [editingSupplier, setEditingSupplier] = useState<Supplier | undefined>()
   const [formOpen, setFormOpen] = useState(false)
@@ -44,15 +54,9 @@ export function SupplierListPage() {
     let cancelled = false
     const active = status === 'all' ? undefined : status === 'active'
 
-    Promise.all([
-      supplierApi.getAll({ search: appliedSearch, active }),
-      productApi.getAll(),
-    ])
-      .then(([supplierList, productList]) => {
-        if (!cancelled) {
-          setSuppliers(supplierList)
-          setProducts(productList)
-        }
+    supplierApi.getAll({ search: appliedSearch, active })
+      .then((supplierList) => {
+        if (!cancelled) setSuppliers(supplierList)
       })
       .catch((error: unknown) => {
         if (!cancelled) setLoadError(messageFromError(error))
@@ -65,6 +69,23 @@ export function SupplierListPage() {
       cancelled = true
     }
   }, [appliedSearch, status])
+
+  // The product options do not depend on the supplier filters: load them once.
+  useEffect(() => {
+    let cancelled = false
+
+    productApi.getAll()
+      .then((productList) => {
+        if (!cancelled) setProducts(productList)
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) setLoadError(messageFromError(error))
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   function applySearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -106,8 +127,11 @@ export function SupplierListPage() {
     setBusySupplierId(supplier.id)
     setActionError(null)
     try {
-      await supplierApi.updateStatus(supplier.id, !supplier.active)
-      await reload()
+      const updated = await supplierApi.updateStatus(supplier.id, !supplier.active)
+      // Same result as reloading: the supplier leaves the list if it no longer matches the status filter.
+      setSuppliers((previous) => status !== 'all' && updated.active !== (status === 'active')
+        ? previous.filter((item) => item.id !== updated.id)
+        : previous.map((item) => (item.id === updated.id ? updated : item)))
     } catch (error: unknown) {
       setActionError(messageFromError(error))
     } finally {

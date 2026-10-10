@@ -33,7 +33,7 @@ export function ProductListPage() {
     categoryId: categoryId ? Number(categoryId) : undefined,
     active: status === 'all' ? undefined : status === 'active',
   }
-  const { products, loading, error, reload } = useProducts(filters)
+  const { products, loading, error, reload, applyUpdate } = useProducts(filters)
   const {
     categories,
     units,
@@ -83,8 +83,7 @@ export function ProductListPage() {
   async function toggleStatus(product: Product) {
     setActionError(null)
     try {
-      await productApi.updateStatus(product.id, !product.active)
-      reload()
+      applyUpdate(await productApi.updateStatus(product.id, !product.active))
     } catch (statusError: unknown) {
       setActionError(messageFromError(statusError))
     }

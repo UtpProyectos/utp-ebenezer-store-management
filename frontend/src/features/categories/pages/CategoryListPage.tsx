@@ -84,8 +84,8 @@ export function CategoryListPage() {
     setBusyCategoryId(category.id)
     setActionError(null)
     try {
-      await categoryApi.updateStatus(category.id, !category.active)
-      await reload()
+      const updated = await categoryApi.updateStatus(category.id, !category.active)
+      setCategories((previous) => previous.map((item) => (item.id === updated.id ? updated : item)))
     } catch (error: unknown) {
       setActionError(messageFromError(error))
     } finally {

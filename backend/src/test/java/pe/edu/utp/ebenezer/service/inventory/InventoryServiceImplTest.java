@@ -15,9 +15,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -59,8 +59,19 @@ class InventoryServiceImplTest {
     @Mock
     private CurrentUserProvider currentUserProvider;
 
-    @InjectMocks
     private InventoryServiceImpl inventoryService;
+
+    @BeforeEach
+    void setUp() {
+        // Real allocator over the mocked repositories: FEFO is part of what these tests check.
+        inventoryService = new InventoryServiceImpl(
+                inventoryMovementRepository,
+                new StockAllocator(inventoryMovementRepository, lotRepository),
+                productRepository,
+                purchaseDetailRepository,
+                businessSettingsRepository,
+                currentUserProvider);
+    }
 
     @Test
     void findStockResolvesStatusWithPrototypePriority() {
@@ -117,6 +128,26 @@ class InventoryServiceImplTest {
     }
 
     @Test
+    void registerWithdrawalTakesStockWithoutLotAfterEveryLot() {
+        when(productRepository.findById(5L)).thenReturn(Optional.of(product(5L, "6")));
+        when(currentUserProvider.getCurrentUser()).thenReturn(user());
+        when(inventoryMovementRepository.findLotsWithStockByProductId(5L)).thenReturn(List.of(
+                lot(50L, 5L, null, "2")));
+        when(inventoryMovementRepository.sumUnlottedBaseQuantityByProductId(5L)).thenReturn(new BigDecimal("4"));
+        when(lotRepository.getReferenceById(50L)).thenReturn(lotEntity(50L));
+        when(inventoryMovementRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<InventoryMovementResponse> movements = inventoryService.registerWithdrawal(new InventoryMovementRequest(
+                5L, null, InventoryMovementType.WASTE, new BigDecimal("5"), "DAMAGED", null));
+
+        assertThat(movements).hasSize(2);
+        assertThat(movements.get(0).lotId()).isEqualTo(50L);
+        assertThat(movements.get(0).baseQuantity()).isEqualByComparingTo("-2");
+        assertThat(movements.get(1).lotId()).isNull();
+        assertThat(movements.get(1).baseQuantity()).isEqualByComparingTo("-3");
+    }
+
+    @Test
     void registerWithdrawalRejectsQuantityAboveStock() {
         when(productRepository.findById(5L)).thenReturn(Optional.of(product(5L, "6")));
         when(inventoryMovementRepository.findLotsWithStockByProductId(5L)).thenReturn(List.of(
@@ -125,7 +156,7 @@ class InventoryServiceImplTest {
         assertThatThrownBy(() -> inventoryService.registerWithdrawal(new InventoryMovementRequest(
                 5L, null, InventoryMovementType.RETURN, new BigDecimal("3"), "EXPIRED", null)))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("Not enough stock");
+                .hasMessage("Not enough stock for Product 5");
         verify(inventoryMovementRepository, never()).saveAll(anyList());
     }
 

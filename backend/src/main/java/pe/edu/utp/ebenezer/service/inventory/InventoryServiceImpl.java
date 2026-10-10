@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,14 +21,12 @@ import pe.edu.utp.ebenezer.api.dto.inventory.ProductStockResponse;
 import pe.edu.utp.ebenezer.api.dto.inventory.StockStatus;
 import pe.edu.utp.ebenezer.domain.entity.BusinessSettings;
 import pe.edu.utp.ebenezer.domain.entity.InventoryMovement;
-import pe.edu.utp.ebenezer.domain.entity.Lot;
 import pe.edu.utp.ebenezer.domain.entity.Product;
 import pe.edu.utp.ebenezer.domain.entity.PurchaseDetail;
 import pe.edu.utp.ebenezer.domain.entity.User;
 import pe.edu.utp.ebenezer.domain.enums.InventoryMovementType;
 import pe.edu.utp.ebenezer.domain.enums.PurchaseStatus;
 import pe.edu.utp.ebenezer.domain.repository.inventory.InventoryMovementRepository;
-import pe.edu.utp.ebenezer.domain.repository.inventory.LotRepository;
 import pe.edu.utp.ebenezer.domain.repository.inventory.LotStockView;
 import pe.edu.utp.ebenezer.domain.repository.inventory.ProductStockView;
 import pe.edu.utp.ebenezer.domain.repository.product.ProductRepository;
@@ -48,7 +45,7 @@ public class InventoryServiceImpl implements InventoryService {
     private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
     private final InventoryMovementRepository inventoryMovementRepository;
-    private final LotRepository lotRepository;
+    private final StockAllocator stockAllocator;
     private final ProductRepository productRepository;
     private final PurchaseDetailRepository purchaseDetailRepository;
     private final BusinessSettingsRepository businessSettingsRepository;
@@ -89,9 +86,10 @@ public class InventoryServiceImpl implements InventoryService {
                 .filter(Product::getActive)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        List<LotAllocation> allocations = request.lotId() != null
-                ? allocateFromLot(product, request.lotId(), request.quantity())
-                : allocateFefo(product, request.quantity());
+        // Expired lots are included: withdrawing them is the point of WASTE / RETURN.
+        List<StockAllocation> allocations = request.lotId() != null
+                ? stockAllocator.allocateFromLot(product, request.lotId(), request.quantity())
+                : stockAllocator.allocate(product, request.quantity(), true);
 
         User user = currentUserProvider.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();
@@ -172,39 +170,6 @@ public class InventoryServiceImpl implements InventoryService {
         return StockStatus.OK;
     }
 
-    private List<LotAllocation> allocateFromLot(Product product, Long lotId, BigDecimal quantity) {
-        Lot lot = lotRepository.findById(lotId)
-                .orElseThrow(() -> new ResourceNotFoundException("Lot not found"));
-        if (!Objects.equals(lot.getProduct().getId(), product.getId())) {
-            throw new BusinessException("Lot does not belong to the product");
-        }
-        if (quantity.compareTo(inventoryMovementRepository.sumBaseQuantityByLotId(lotId)) > 0) {
-            throw new BusinessException("Not enough stock");
-        }
-        return List.of(new LotAllocation(lot, quantity));
-    }
-
-    // FEFO: lots come ordered by expiration date, so expired lots are withdrawn first.
-    private List<LotAllocation> allocateFefo(Product product, BigDecimal quantity) {
-        List<LotStockView> lots = inventoryMovementRepository.findLotsWithStockByProductId(product.getId());
-        BigDecimal available = lots.stream().map(LotStockView::getStock).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (quantity.compareTo(available) > 0) {
-            throw new BusinessException("Not enough stock");
-        }
-
-        List<LotAllocation> allocations = new ArrayList<>();
-        BigDecimal remaining = quantity;
-        for (LotStockView lot : lots) {
-            if (remaining.signum() == 0) {
-                break;
-            }
-            BigDecimal taken = remaining.min(lot.getStock());
-            allocations.add(new LotAllocation(lotRepository.getReferenceById(lot.getLotId()), taken));
-            remaining = remaining.subtract(taken);
-        }
-        return allocations;
-    }
-
     private int expirationWarningDays() {
         return businessSettingsRepository.findAll().stream()
                 .findFirst()
@@ -216,6 +181,4 @@ public class InventoryServiceImpl implements InventoryService {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    private record LotAllocation(Lot lot, BigDecimal quantity) {
-    }
 }

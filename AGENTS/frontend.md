@@ -48,7 +48,7 @@ src/
 └── main.tsx
 ```
 
-Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/pages/`, `features/inventory/` (stock y retiro de vencidos), `features/purchases/` (ingreso de mercadería), `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
+Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/pages/`, `features/inventory/` (stock y retiro de vencidos), `features/purchases/` (ingreso de mercadería), `features/sales/` (POS: venta y consumo interno con promociones), `features/consumption/` y `features/promotions/` (solo types + api), `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
 
 **No crear carpetas vacías.** Crear la estructura progresivamente según se implemente cada módulo.
 
@@ -203,6 +203,7 @@ El token se inyecta automáticamente en `apiClient` (configurado por `AuthProvid
 - `useAuth()` → `{ status, user, login, logout }` (`status`: `loading | authenticated | anonymous`). `user.role` es `ADMIN | CASHIER`.
 - Sesión (`token` + `expiresAt`) en `sessionStore`: `localStorage` si se marca "Recordar sesión", si no `sessionStorage`. Al recargar se valida con `GET /auth/me`.
 - Rutas: envolver páginas privadas en `ProtectedRoute` (opcional `roles={['ADMIN']}`); el login usa `GuestRoute`, que redirige a la ruta de origen tras autenticarse.
+- Búsqueda global del header: `shared/components/layout/GlobalSearch.tsx` (+ `shared/hooks/useGlobalSearch.ts`), Ctrl/⌘+K; los productos abren Inventario y los proveedores (solo ADMIN) abren Proveedores con `?q=`.
 - Menú lateral: se define en `shared/constants/navigation.ts` (`NAV_GROUPS`, `ADMIN_ITEMS`). Cada ítem puede llevar `roles`; `ADMIN` ve todo, `CASHIER` todo excepto Administración. Las rutas de `/admin/*` van dentro de `ProtectedRoute roles={['ADMIN']}` en `AppRouter`.
 - Cada ruta declara `handle: { title, subtitle, parent? }`; `AppHeader` lo usa para el título y el botón "volver". Los módulos sin implementar usan `PagePlaceholder`: al crear la página real, reemplazar el `element` de su ruta.
 - Tamaño de letra (Configuración): preferencia por dispositivo en `localStorage` (`shared/utils/textSize.ts`, `useTextSize`). Escala el `font-size` raíz (Pequeño 76 %, Normal 86 %, Grande 100 %, Muy grande 112 %), así que **usar siempre unidades rem** (utilidades de Tailwind) y no `px` fijos para tamaños y espaciados.

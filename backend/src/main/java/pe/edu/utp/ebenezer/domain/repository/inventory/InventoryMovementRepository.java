@@ -18,6 +18,10 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
     @Query("select coalesce(sum(m.baseQuantity), 0) from InventoryMovement m where m.lot.id = :lotId")
     BigDecimal sumBaseQuantityByLotId(@Param("lotId") Long lotId);
 
+    // Stock that entered without a lot (e.g. initial adjustments); consumed after every lot.
+    @Query("select coalesce(sum(m.baseQuantity), 0) from InventoryMovement m where m.product.id = :productId and m.lot is null")
+    BigDecimal sumUnlottedBaseQuantityByProductId(@Param("productId") Long productId);
+
     @Query("""
             select m.product.id as productId, sum(m.baseQuantity) as stock
             from InventoryMovement m

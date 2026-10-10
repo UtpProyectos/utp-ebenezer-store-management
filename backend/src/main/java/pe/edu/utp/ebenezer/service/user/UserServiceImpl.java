@@ -3,7 +3,6 @@ package pe.edu.utp.ebenezer.service.user;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> findAll() {
-        return userRepository.findAll(Sort.by("id")).stream()
+        return userRepository.findAllByOrderByIdAsc().stream()
                 .map(UserMapper::toResponse)
                 .toList();
     }

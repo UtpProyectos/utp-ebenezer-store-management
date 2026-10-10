@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
         if (barcode != null) {
             boolean barcodeInUse = currentId == null
                     ? productRepository.existsByBarcode(barcode)
-                    : productRepository.findByBarcodeAndIdNot(barcode, currentId).isPresent();
+                    : productRepository.existsByBarcodeAndIdNot(barcode, currentId);
             if (barcodeInUse) {
                 throw new BusinessException("Barcode is already in use");
             }
