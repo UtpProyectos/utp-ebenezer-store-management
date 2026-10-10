@@ -145,12 +145,12 @@ export function ProductListPage() {
       <section className="flex flex-col gap-4 rounded-3xl bg-surface p-4">
         <div className="flex flex-col gap-3 xl:flex-row">
           <form className="flex min-w-0 flex-1 gap-2" onSubmit={applySearch}>
-            <label className="sr-only" htmlFor="product-search">Buscar producto o código</label>
+            <label className="sr-only" htmlFor="product-search">Buscar producto</label>
             <input
               id="product-search"
               className="min-h-11 min-w-0 flex-1 rounded-full border border-separator bg-background px-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
               type="search"
-              placeholder="Buscar producto o código"
+              placeholder="Buscar producto"
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
             />

@@ -39,7 +39,6 @@ export function ProductTable({ products, onEdit, onToggleStatus }: ProductTableP
               <tr key={product.id} className="border-b border-separator last:border-0">
                 <th scope="row" className="px-4 py-4 font-semibold sm:px-5">
                   <span className="block">{product.name}</span>
-                  {product.barcode && <span className="mt-1 block text-xs font-normal text-muted">{product.barcode}</span>}
                 </th>
                 <td className="px-4 py-4 text-sm text-muted">{product.categoryName}</td>
                 <td className="px-4 py-4 text-right text-sm font-semibold">{priceFormatter.format(product.salePrice)}</td>
@@ -59,8 +58,8 @@ export function ProductTable({ products, onEdit, onToggleStatus }: ProductTableP
                   >
                     <span
                       aria-hidden="true"
-                      className={`size-5 rounded-full bg-background transition-transform duration-150 ease-out ${
-                        product.active ? 'translate-x-6' : 'translate-x-1'
+                      className={`absolute top-1 size-5 rounded-full bg-background transition-[left] duration-150 ease-out ${
+                        product.active ? 'left-6' : 'left-1'
                       }`}
                     />
                   </button>

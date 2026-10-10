@@ -49,13 +49,13 @@ export function CategoryCard({ category, busy, onEdit, onToggleStatus }: Categor
           <span>{busy ? 'Guardando…' : category.active ? 'Activa' : 'Inactiva'}</span>
           <span
             aria-hidden="true"
-            className={`relative h-5 w-9 rounded-full transition-colors duration-150 ease-out ${
+            className={`relative h-6 w-10 shrink-0 rounded-full transition-colors duration-150 ease-out ${
               category.active ? 'bg-accent' : 'bg-default'
             }`}
           >
             <span
-              className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-transform duration-150 ease-out ${
-                category.active ? 'translate-x-4' : 'translate-x-0.5'
+              className={`absolute top-1 h-4 w-4 rounded-full bg-background transition-[left] duration-150 ease-out ${
+                category.active ? 'left-5' : 'left-1'
               }`}
             />
           </span>
