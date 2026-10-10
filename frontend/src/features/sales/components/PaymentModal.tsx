@@ -5,6 +5,7 @@ import QrCode from '@gravity-ui/icons/QrCode'
 import Wallet from '@gravity-ui/icons/Wallet'
 import { formatMoney } from '@/shared/utils/money'
 import type { PaymentMethod } from '../types/sale.types'
+import { PAYMENT_METHOD_LABELS } from '../utils/saleFormat'
 
 interface PaymentModalProps {
   total: number
@@ -14,10 +15,10 @@ interface PaymentModalProps {
   onClose: () => void
 }
 
-const METHODS: { id: PaymentMethod; label: string; icon: typeof Wallet }[] = [
-  { id: 'CASH', label: 'Efectivo', icon: Wallet },
-  { id: 'YAPE_PLIN', label: 'Yape / Plin', icon: QrCode },
-  { id: 'CARD', label: 'Tarjeta', icon: CreditCard },
+const METHODS: { id: PaymentMethod; icon: typeof Wallet }[] = [
+  { id: 'CASH', icon: Wallet },
+  { id: 'YAPE_PLIN', icon: QrCode },
+  { id: 'CARD', icon: CreditCard },
 ]
 
 const QUICK_AMOUNTS = [10, 20, 50, 100]
@@ -48,7 +49,7 @@ export function PaymentModal({ total, isPending, error, onConfirm, onClose }: Pa
             </div>
 
             <div role="radiogroup" aria-label="Método de pago" className="grid grid-cols-3 gap-2">
-              {METHODS.map(({ id, label, icon: Icon }) => {
+              {METHODS.map(({ id, icon: Icon }) => {
                 const selected = id === method
                 return (
                   <button
@@ -62,7 +63,7 @@ export function PaymentModal({ total, isPending, error, onConfirm, onClose }: Pa
                     }`}
                   >
                     <Icon aria-hidden="true" className={`size-5.5 ${selected ? 'text-foreground' : 'text-muted'}`} />
-                    {label}
+                    {PAYMENT_METHOD_LABELS[id]}
                   </button>
                 )
               })}

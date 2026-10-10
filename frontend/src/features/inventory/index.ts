@@ -1,4 +1,6 @@
 export { InventoryPage } from './pages/InventoryPage'
 export { useInventory } from './hooks/useInventory'
 export type { ProductStockResponse, StockStatus, UnitType } from './types/inventory.types'
-export { formatQuantity, formatStock, matchesSearch, unitLabel } from './utils/inventoryFormat'
+export { TruckIcon } from './components/TruckIcon'
+export { daysUntil, formatQuantity, formatStock, matchesSearch, unitLabel } from './utils/inventoryFormat'
+export { matchesFilter, type InventoryFilter } from './utils/inventoryFilter'

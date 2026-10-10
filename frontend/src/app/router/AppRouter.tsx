@@ -7,7 +7,7 @@ import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
 import { InventoryPage } from '@/features/inventory'
 import { ProductListPage } from '@/features/products/pages/ProductListPage'
 import { PurchaseEntryPage } from '@/features/purchases'
-import { SalePage } from '@/features/sales'
+import { SalePage, SalesHistoryPage } from '@/features/sales'
 import { SupplierListPage } from '@/features/suppliers/pages/SupplierListPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { UserListPage } from '@/features/users/pages/UserListPage'
@@ -52,7 +52,7 @@ const router = createBrowserRouter([
             parent: INVENTORY,
           }, <PurchaseEntryPage />),
           page(ROUTES.shoppingList, { title: 'Lista de compra', subtitle: 'Productos por agotarse que debes comprar' }),
-          page(ROUTES.salesHistory, { title: 'Historial de ventas', subtitle: 'Corrige o anula ventas. Todo queda anotado.' }),
+          page(ROUTES.salesHistory, { title: 'Historial de ventas', subtitle: 'Corrige o anula ventas. Todo queda anotado.' }, <SalesHistoryPage />),
           page(ROUTES.assistant, { title: 'Asistente', subtitle: 'Pregunta lo que quieras sobre tu tienda' }),
           {
             // Administration: admin only. The backend enforces the same rule.

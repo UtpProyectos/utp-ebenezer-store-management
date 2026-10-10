@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,14 +23,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import pe.edu.utp.ebenezer.api.dto.sale.SaleCancelRequest;
 import pe.edu.utp.ebenezer.api.dto.sale.SaleDetailRequest;
+import pe.edu.utp.ebenezer.api.dto.sale.SaleDetailUpdateRequest;
 import pe.edu.utp.ebenezer.api.dto.sale.SaleRequest;
 import pe.edu.utp.ebenezer.api.dto.sale.SaleResponse;
+import pe.edu.utp.ebenezer.api.dto.sale.SaleUpdateRequest;
 import pe.edu.utp.ebenezer.domain.entity.InventoryMovement;
 import pe.edu.utp.ebenezer.domain.entity.Lot;
 import pe.edu.utp.ebenezer.domain.entity.Product;
 import pe.edu.utp.ebenezer.domain.entity.Promotion;
 import pe.edu.utp.ebenezer.domain.entity.Sale;
+import pe.edu.utp.ebenezer.domain.entity.SaleDetail;
 import pe.edu.utp.ebenezer.domain.entity.SaleHistory;
 import pe.edu.utp.ebenezer.domain.entity.UnitOfMeasure;
 import pe.edu.utp.ebenezer.domain.entity.User;
@@ -187,6 +192,136 @@ class SaleServiceImplTest {
                 .hasMessage("Not enough stock for Gaseosa");
         verify(saleRepository, never()).save(any());
         verify(inventoryMovementRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    void cancelReversesTheNetQuantityOfEachLotAndRecordsHistory() {
+        Sale sale = registeredSale();
+        SaleDetail cookies = sale.getDetails().get(0);
+        when(saleRepository.findWithDetailsById(99L)).thenReturn(Optional.of(sale));
+        when(currentUserProvider.getCurrentUser()).thenReturn(user());
+        when(inventoryMovementRepository.findBySaleId(99L)).thenReturn(List.of(
+                movement(cookies, lot(10L), "-5"), movement(cookies, null, "-2"),
+                movement(sale.getDetails().get(1), lot(20L), "-2")));
+        when(saleRepository.save(any(Sale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        SaleResponse response = saleService.cancel(99L, new SaleCancelRequest("  Cliente devolvió todo "));
+
+        assertThat(response.status()).isEqualTo(SaleStatus.CANCELLED);
+        assertThat(response.cancellationReason()).isEqualTo("Cliente devolvió todo");
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<InventoryMovement>> reversals = ArgumentCaptor.forClass(List.class);
+        verify(inventoryMovementRepository).saveAll(reversals.capture());
+        assertThat(reversals.getValue()).hasSize(3)
+                .allMatch(movement -> movement.getMovementType() == InventoryMovementType.REVERSAL
+                        && movement.getBaseQuantity().signum() > 0);
+        assertThat(reversals.getValue().get(0).getBaseQuantity()).isEqualByComparingTo("5");
+        assertThat(reversals.getValue().get(1).getLot()).isNull();
+
+        ArgumentCaptor<SaleHistory> history = ArgumentCaptor.forClass(SaleHistory.class);
+        verify(saleHistoryRepository).save(history.capture());
+        assertThat(history.getValue().getAction()).isEqualTo(SaleHistoryAction.CANCELLED);
+        assertThat(history.getValue().getPreviousData()).contains("CONFIRMED");
+        assertThat(history.getValue().getReason()).isEqualTo("Cliente devolvió todo");
+    }
+
+    @Test
+    void cancelRejectsAnAlreadyCancelledSale() {
+        Sale sale = registeredSale();
+        sale.setStatus(SaleStatus.CANCELLED);
+        when(saleRepository.findWithDetailsById(99L)).thenReturn(Optional.of(sale));
+
+        assertThatThrownBy(() -> saleService.cancel(99L, new SaleCancelRequest("x")))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("The sale is cancelled");
+    }
+
+    @Test
+    void updateReversesOnlyChangedLinesAndAllocatesThemAgain() {
+        Sale sale = registeredSale();
+        SaleDetail cookies = sale.getDetails().get(0);
+        when(saleRepository.findWithDetailsById(99L)).thenReturn(Optional.of(sale));
+        when(currentUserProvider.getCurrentUser()).thenReturn(user());
+        when(inventoryMovementRepository.findBySaleId(99L)).thenReturn(List.of(
+                movement(cookies, lot(10L), "-7"), movement(sale.getDetails().get(1), lot(20L), "-2")));
+        when(promotionService.findCurrentByProduct(any(LocalDateTime.class)))
+                .thenReturn(Map.of(1L, promotion(und, "3", "2.00")));
+        when(stockAllocator.allocate(cookies.getProduct(), new BigDecimal("4.000"), false)).thenReturn(List.of(
+                new StockAllocation(lot(10L), new BigDecimal("4"))));
+        when(saleRepository.save(any(Sale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        SaleResponse response = saleService.update(99L, new SaleUpdateRequest(PaymentMethod.YAPE_PLIN,
+                "Se llevó menos galletas", List.of(new SaleDetailUpdateRequest(11L, new BigDecimal("4")))));
+
+        assertThat(response.status()).isEqualTo(SaleStatus.EDITED);
+        assertThat(response.paymentMethod()).isEqualTo(PaymentMethod.YAPE_PLIN);
+        // 4 cookies with 3 x S/ 2.00 = 2.00 + 0.80; the soda line keeps S/ 5.00.
+        assertThat(response.details().get(0).subtotal()).isEqualByComparingTo("2.80");
+        assertThat(response.total()).isEqualByComparingTo("7.80");
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<InventoryMovement>> saved = ArgumentCaptor.forClass(List.class);
+        verify(inventoryMovementRepository, times(2)).saveAll(saved.capture());
+        assertThat(saved.getAllValues().get(0)).singleElement().satisfies(reversal -> {
+            assertThat(reversal.getMovementType()).isEqualTo(InventoryMovementType.REVERSAL);
+            assertThat(reversal.getBaseQuantity()).isEqualByComparingTo("7");
+        });
+        assertThat(saved.getAllValues().get(1)).singleElement().satisfies(movement -> {
+            assertThat(movement.getMovementType()).isEqualTo(InventoryMovementType.SALE);
+            assertThat(movement.getBaseQuantity()).isEqualByComparingTo("-4");
+        });
+        ArgumentCaptor<SaleHistory> history = ArgumentCaptor.forClass(SaleHistory.class);
+        verify(saleHistoryRepository).save(history.capture());
+        assertThat(history.getValue().getAction()).isEqualTo(SaleHistoryAction.EDITED);
+        assertThat(history.getValue().getReason()).isEqualTo("Se llevó menos galletas");
+    }
+
+    @Test
+    void updateRejectsRemovingEveryProduct() {
+        when(saleRepository.findWithDetailsById(99L)).thenReturn(Optional.of(registeredSale()));
+
+        assertThatThrownBy(() -> saleService.update(99L, new SaleUpdateRequest(PaymentMethod.CASH, "x", List.of(
+                new SaleDetailUpdateRequest(11L, BigDecimal.ZERO), new SaleDetailUpdateRequest(12L, BigDecimal.ZERO)))))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("A sale needs at least one product; cancel it instead");
+        verify(inventoryMovementRepository, never()).saveAll(anyList());
+    }
+
+    // Sale #99: 7 cookies at S/ 0.80 (S/ 4.80 with promotion) and 2 sodas at S/ 2.50.
+    private Sale registeredSale() {
+        Sale sale = new Sale();
+        sale.setId(99L);
+        sale.setUser(user());
+        sale.setSaleDate(LocalDateTime.now());
+        sale.setPaymentMethod(PaymentMethod.CASH);
+        sale.setStatus(SaleStatus.CONFIRMED);
+        sale.getDetails().add(detail(sale, 11L, product(1L, "Galletas", "0.80", und), "7", "0.80", "4.80"));
+        sale.getDetails().add(detail(sale, 12L, product(2L, "Gaseosa", "2.50", und), "2", "2.50", "5.00"));
+        sale.setSubtotal(new BigDecimal("9.80"));
+        sale.setTotal(new BigDecimal("9.80"));
+        return sale;
+    }
+
+    private SaleDetail detail(Sale sale, Long id, Product product, String quantity, String unitPrice, String subtotal) {
+        SaleDetail detail = new SaleDetail();
+        detail.setId(id);
+        detail.setSale(sale);
+        detail.setProduct(product);
+        detail.setUnitOfMeasure(und);
+        detail.setQuantity(new BigDecimal(quantity));
+        detail.setBaseQuantity(new BigDecimal(quantity));
+        detail.setUnitPrice(new BigDecimal(unitPrice));
+        detail.setSubtotal(new BigDecimal(subtotal));
+        return detail;
+    }
+
+    private static InventoryMovement movement(SaleDetail detail, Lot lot, String quantity) {
+        InventoryMovement movement = new InventoryMovement();
+        movement.setSaleDetail(detail);
+        movement.setLot(lot);
+        movement.setMovementType(InventoryMovementType.SALE);
+        movement.setBaseQuantity(new BigDecimal(quantity));
+        return movement;
     }
 
     private void stubProducts(Product... products) {

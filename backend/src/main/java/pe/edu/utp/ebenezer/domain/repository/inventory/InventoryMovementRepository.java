@@ -46,4 +46,8 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
             having sum(m.baseQuantity) > 0
             order by l.expirationDate asc nulls last, l.id asc""")
     List<LotStockView> findLotsWithStockByProductId(@Param("productId") Long productId);
+
+    // Every movement of a sale (SALE and REVERSAL), used to undo it when the sale is edited or cancelled.
+    @Query("select m from InventoryMovement m where m.saleDetail.sale.id = :saleId")
+    List<InventoryMovement> findBySaleId(@Param("saleId") Long saleId);
 }

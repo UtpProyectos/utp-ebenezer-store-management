@@ -1,27 +1,13 @@
 import { useState } from 'react'
 import { consumptionApi } from '@/features/consumption/services/consumptionApi'
-import { ApiClientError } from '@/shared/services/apiClient'
 import { saleApi } from '../services/saleApi'
 import type { PaymentMethod, SaleResponse } from '../types/sale.types'
+import { saleErrorMessage } from '../utils/saleErrors'
 import type { CartLine } from './useCart'
 
 export type CheckoutResult =
   | { kind: 'sale'; sale: SaleResponse; change: number }
   | { kind: 'consumption'; itemCount: number; cost: number }
-
-const NOT_ENOUGH_STOCK = 'Not enough stock for '
-
-function toErrorMessage(error: unknown): string {
-  if (error instanceof ApiClientError) {
-    const message = error.payload?.message ?? ''
-    if (message.startsWith(NOT_ENOUGH_STOCK)) {
-      return `Ya no hay stock suficiente de ${message.slice(NOT_ENOUGH_STOCK.length)}. Revisa la cantidad.`
-    }
-    if (error.status === 404) return 'Uno de los productos ya no está disponible. Recarga la pantalla.'
-    return 'No se pudo registrar. Intenta de nuevo.'
-  }
-  return 'No hay conexión con el servidor.'
-}
 
 // Quantities go in the product base unit, which is what the cart keeps.
 function toDetails(lines: CartLine[]) {
@@ -41,7 +27,7 @@ export function useCheckout(onRegistered: () => void) {
       onRegistered()
       return true
     } catch (caught) {
-      setError(toErrorMessage(caught))
+      setError(saleErrorMessage(caught))
       return false
     } finally {
       setIsPending(false)
