@@ -319,6 +319,7 @@ Variables de entorno (ver `backend/.env.example`):
 | Variable | Uso |
 |---|---|
 | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Conexión PostgreSQL |
+| `DB_POOL_MAX_SIZE`, `DB_POOL_MIN_IDLE` | Conexiones por instancia (default 4 / 1). El pooler de Supabase en session mode admite 15 en total para Render + todos los backends locales |
 | `SERVER_PORT` | Puerto (default 8080) |
 | `JPA_SHOW_SQL` | Loguea el SQL de Hibernate (default `true`; usar `false` en producción) |
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend (default `http://localhost:5173`) |
