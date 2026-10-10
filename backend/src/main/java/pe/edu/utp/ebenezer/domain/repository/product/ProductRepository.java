@@ -13,6 +13,8 @@ import pe.edu.utp.ebenezer.domain.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    Optional<Product> findByNameIgnoreCase(String name);
+
     Optional<Product> findByBarcode(String barcode);
 
     Optional<Product> findByBarcodeAndIdNot(String barcode, Long id);

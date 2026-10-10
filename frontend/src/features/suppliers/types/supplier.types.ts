@@ -16,6 +16,12 @@ export interface Supplier {
   address: string | null
   notes: string | null
   active: boolean
+  products: SupplierProduct[]
+}
+
+export interface SupplierProduct {
+  id: number
+  name: string
 }
 
 export interface SupplierInput {
@@ -26,4 +32,5 @@ export interface SupplierInput {
   contactName: string | null
   address: string | null
   notes: string | null
+  productIds: number[]
 }

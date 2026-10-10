@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import pe.edu.utp.ebenezer.service.product.DemoCatalogSeedService;
 import pe.edu.utp.ebenezer.service.supplier.DemoSupplierSeedService;
+import pe.edu.utp.ebenezer.service.user.DemoFamilyUsersSeedService;
 
 @Component
 @RequiredArgsConstructor
@@ -23,21 +24,24 @@ public class DemoCatalogInitializer implements ApplicationRunner {
     private final DemoCatalogProperties properties;
     private final DemoCatalogSeedService demoCatalogSeedService;
     private final DemoSupplierSeedService demoSupplierSeedService;
+    private final DemoFamilyUsersSeedService demoFamilyUsersSeedService;
 
     @Override
     public void run(ApplicationArguments args) {
         if (!properties.enabled()) {
             return;
         }
-        if (demoCatalogSeedService.seedIfCatalogIsEmpty()) {
-            log.info("Demo catalog loaded with initial stock");
+        if (demoCatalogSeedService.seedMissingDemoProducts()) {
+            log.info("Missing demo catalog products added");
         } else {
-            log.info("Demo catalog seed skipped because products already exist");
+            log.info("Demo catalog already contains all configured products");
         }
-        if (demoSupplierSeedService.seedIfSuppliersAreEmpty()) {
-            log.info("Demo suppliers loaded");
+        if (demoSupplierSeedService.seedMissingSuppliersAndProducts()) {
+            log.info("Missing demo suppliers and product associations added");
         } else {
-            log.info("Demo supplier seed skipped because suppliers already exist");
+            log.info("Demo suppliers and product associations already exist");
         }
+        int createdUsers = demoFamilyUsersSeedService.seedMissingFamilyUsers();
+        log.info("Created {} missing demo family users", createdUsers);
     }
 }

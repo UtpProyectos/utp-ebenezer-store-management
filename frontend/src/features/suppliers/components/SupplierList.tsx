@@ -78,38 +78,25 @@ export function SupplierList({ suppliers, busySupplierId, onEdit, onToggleStatus
               </div>
             </dl>
 
-            <p className="self-start rounded-2xl bg-surface px-4 py-3 text-sm text-muted">
-              El historial de compras y los productos asociados estarán disponibles cuando se implemente el ingreso de
-              mercadería.
-            </p>
+            <section className="self-start rounded-2xl bg-surface px-4 py-3">
+              <h3 className="text-sm font-semibold">Productos que vende</h3>
+              {supplier.products.length > 0 ? (
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {supplier.products.map((product) => (
+                    <li key={product.id} className="rounded-full bg-surface-secondary px-3 py-1 text-xs text-foreground">
+                      {product.name}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1 text-sm text-muted">Sin productos asociados</p>
+              )}
+            </section>
 
             <div className="flex flex-wrap items-start gap-2 sm:justify-end">
-              {supplier.phone ? (
-                <a
-                  href={`tel:${supplier.phone.replace(/[^\d+]/g, '')}`}
-                  className="grid size-10 place-items-center rounded-full bg-surface text-foreground hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
-                  aria-label={`Llamar a ${supplier.name}`}
-                  title={`Llamar a ${supplier.name}`}
-                >
-                  <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4 fill-none stroke-current" strokeWidth="1.7">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.2 2.8h2.4l1.2 3.6-1.5 1.5a12 12 0 0 0 4.8 4.8l1.5-1.5 3.6 1.2v2.4a1.4 1.4 0 0 1-1.5 1.4A13.7 13.7 0 0 1 3.8 4.3a1.4 1.4 0 0 1 1.4-1.5Z" />
-                  </svg>
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  className="grid size-10 place-items-center rounded-full bg-surface text-muted"
-                  aria-label="No hay teléfono registrado"
-                  disabled
-                >
-                  <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4 fill-none stroke-current" strokeWidth="1.7">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.2 2.8h2.4l1.2 3.6-1.5 1.5a12 12 0 0 0 4.8 4.8l1.5-1.5 3.6 1.2v2.4a1.4 1.4 0 0 1-1.5 1.4A13.7 13.7 0 0 1 3.8 4.3a1.4 1.4 0 0 1 1.4-1.5Z" />
-                  </svg>
-                </button>
-              )}
               <button
                 type="button"
-                className="min-h-10 rounded-full bg-default px-4 text-sm font-semibold text-muted"
+                className="min-h-10 rounded-full bg-accent px-4 text-sm font-semibold text-background opacity-60"
                 disabled
                 title="El ingreso de mercadería aún no está habilitado"
               >

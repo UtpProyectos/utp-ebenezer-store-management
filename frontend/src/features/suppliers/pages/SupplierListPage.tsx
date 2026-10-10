@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { SupplierForm } from '../components/SupplierForm'
 import { SupplierList } from '../components/SupplierList'
+import { productApi } from '@/features/products/services/productApi'
+import type { Product } from '@/features/products/types/product.types'
 import { supplierApi } from '../services/supplierApi'
 import type { Supplier, SupplierInput } from '../types/supplier.types'
 
@@ -12,6 +14,7 @@ function messageFromError(error: unknown) {
 
 export function SupplierListPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -40,9 +43,15 @@ export function SupplierListPage() {
     let cancelled = false
     const active = status === 'all' ? undefined : status === 'active'
 
-    supplierApi.getAll({ search: appliedSearch, active })
-      .then((result) => {
-        if (!cancelled) setSuppliers(result)
+    Promise.all([
+      supplierApi.getAll({ search: appliedSearch, active }),
+      productApi.getAll(),
+    ])
+      .then(([supplierList, productList]) => {
+        if (!cancelled) {
+          setSuppliers(supplierList)
+          setProducts(productList)
+        }
       })
       .catch((error: unknown) => {
         if (!cancelled) setLoadError(messageFromError(error))
@@ -170,6 +179,7 @@ export function SupplierListPage() {
         <SupplierForm
           key={editingSupplier?.id ?? 'new'}
           supplier={editingSupplier}
+          products={products}
           saving={saving}
           error={actionError}
           onSubmit={saveSupplier}

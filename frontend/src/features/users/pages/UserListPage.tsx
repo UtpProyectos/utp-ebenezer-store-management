@@ -147,6 +147,8 @@ export function UserListPage() {
   }
 
   const activeCount = users.filter((item) => item.active).length
+  const adminCount = users.filter((item) => item.role === 'ADMIN').length
+  const cashierCount = users.filter((item) => item.role === 'CASHIER').length
 
   return (
     <div className="mx-auto flex w-full max-w-350 flex-col gap-4">
@@ -162,6 +164,19 @@ export function UserListPage() {
           + Nuevo usuario
         </button>
       </div>
+
+      <section className="grid gap-3 sm:grid-cols-2">
+        <article className="rounded-3xl border border-accent/30 bg-accent/10 p-5">
+          <p className="text-sm font-semibold text-muted">Administradores</p>
+          <p className="mt-2 text-3xl font-bold">{adminCount}</p>
+          <p className="mt-1 text-sm text-muted">Acceso a la configuración y gestión del negocio</p>
+        </article>
+        <article className="rounded-3xl border border-separator bg-surface-secondary p-5">
+          <p className="text-sm font-semibold text-muted">Cajeros</p>
+          <p className="mt-2 text-3xl font-bold">{cashierCount}</p>
+          <p className="mt-1 text-sm text-muted">Acceso a las tareas diarias de venta</p>
+        </article>
+      </section>
 
       <section className="flex flex-col gap-3 rounded-3xl bg-surface p-4 sm:flex-row">
         <label className="sr-only" htmlFor="user-search">Buscar usuario</label>
@@ -235,81 +250,88 @@ export function UserListPage() {
           <p className="mt-1 text-sm text-muted">Prueba otra búsqueda o crea un usuario nuevo.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-3xl border border-separator bg-surface">
-          <table className="w-full min-w-[780px] border-collapse text-left">
-            <thead className="text-xs text-muted">
-              <tr className="border-b border-separator">
-                <th scope="col" className="px-4 py-3 font-medium sm:px-5">Usuario</th>
-                <th scope="col" className="px-4 py-3 font-medium">Rol</th>
-                <th scope="col" className="px-4 py-3 font-medium">Último acceso</th>
-                <th scope="col" className="px-4 py-3 text-center font-medium">Estado</th>
-                <th scope="col" className="px-4 py-3 text-right font-medium">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleUsers.map((item) => {
-                const isCurrentUser = item.id === currentUser?.id
-                return (
-                  <tr key={item.id} className="border-b border-separator last:border-0">
-                    <th scope="row" className="px-4 py-4 font-semibold sm:px-5">
-                      <span className="block">{item.name}{isCurrentUser ? ' (tú)' : ''}</span>
-                      <span className="mt-0.5 block text-xs font-normal text-muted">@{item.username}</span>
-                      {item.email && <span className="mt-0.5 block text-xs font-normal text-muted">{item.email}</span>}
-                    </th>
-                    <td className="px-4 py-4 text-sm">{ROLE_LABELS[item.role]}</td>
-                    <td className="px-4 py-4 text-sm text-muted">
-                      {item.lastLoginAt ? dateFormatter.format(new Date(item.lastLoginAt)) : 'Nunca'}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={item.active}
-                        aria-label={`${item.active ? 'Desactivar' : 'Activar'} ${item.name}`}
-                        className={`relative inline-flex h-7 w-12 items-center rounded-full focus-visible:outline-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50 ${
-                          item.active ? 'bg-accent' : 'bg-default'
+        <div className="grid gap-3">
+          {visibleUsers.map((item) => {
+            const isCurrentUser = item.id === currentUser?.id
+            const initials = item.name
+              .split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((part) => part[0]?.toLocaleUpperCase('es') ?? '')
+              .join('')
+            return (
+              <article key={item.id} className="rounded-3xl border border-separator bg-surface p-4 sm:p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className={`grid size-12 shrink-0 place-items-center rounded-2xl text-sm font-bold ${
+                      item.role === 'ADMIN' ? 'bg-accent/10 text-accent' : 'bg-surface-secondary text-foreground'
+                    }`}>
+                      {initials}
+                    </span>
+                    <div className="min-w-0">
+                      <h2 className="truncate font-bold">{item.name}{isCurrentUser ? ' · Tú' : ''}</h2>
+                      <p className="truncate text-sm text-muted">@{item.username}</p>
+                      {item.email && <p className="truncate text-xs text-muted">{item.email}</p>}
+                    </div>
+                  </div>
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    item.role === 'ADMIN' ? 'bg-accent text-background' : 'bg-surface-secondary text-foreground'
+                  }`}>
+                    {ROLE_LABELS[item.role]}
+                  </span>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-separator pt-4">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                    <span className="text-muted">
+                      Último acceso: {item.lastLoginAt ? dateFormatter.format(new Date(item.lastLoginAt)) : 'Nunca'}
+                    </span>
+                    <span className={`font-medium ${item.active ? 'text-success' : 'text-muted'}`}>
+                      {item.active ? 'Activo' : 'Inactivo'}
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={item.active}
+                      aria-label={`${item.active ? 'Desactivar' : 'Activar'} ${item.name}`}
+                      className={`relative inline-flex h-7 w-12 items-center rounded-full focus-visible:outline-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50 ${
+                        item.active ? 'bg-accent' : 'bg-default'
+                      }`}
+                      onClick={() => void toggleStatus(item)}
+                      disabled={busyUserId === item.id || isCurrentUser}
+                      title={isCurrentUser ? 'No puedes desactivar tu propia cuenta' : undefined}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`absolute top-1 size-5 rounded-full bg-background transition-[left] duration-150 ease-out ${
+                          item.active ? 'left-6' : 'left-1'
                         }`}
-                        onClick={() => void toggleStatus(item)}
-                        disabled={busyUserId === item.id || isCurrentUser}
-                        title={isCurrentUser ? 'No puedes desactivar tu propia cuenta' : undefined}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={`absolute top-1 size-5 rounded-full bg-background transition-[left] duration-150 ease-out ${
-                            item.active ? 'left-6' : 'left-1'
-                          }`}
-                        />
-                      </button>
-                      <span className={`ml-2 text-xs ${item.active ? 'text-success' : 'text-muted'}`}>
-                        {item.active ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          className="min-h-10 rounded-full bg-surface-secondary px-3 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
-                          onClick={() => openEditForm(item)}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="min-h-10 rounded-full bg-surface-secondary px-3 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
-                          onClick={() => {
-                            setActionError(null)
-                            setPasswordUser(item)
-                          }}
-                        >
-                          Contraseña
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                      />
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className="min-h-10 rounded-full bg-surface-secondary px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
+                      onClick={() => openEditForm(item)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="min-h-10 rounded-full bg-surface-secondary px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
+                      onClick={() => {
+                        setActionError(null)
+                        setPasswordUser(item)
+                      }}
+                    >
+                      Contraseña
+                    </button>
+                  </div>
+                </div>
+              </article>
+            )
+          })}
         </div>
       )}
     </div>

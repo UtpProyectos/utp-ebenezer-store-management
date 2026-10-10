@@ -39,26 +39,35 @@ public class DemoCatalogSeedService {
     private final UserRepository userRepository;
 
     @Transactional
-    public boolean seedIfCatalogIsEmpty() {
-        if (productRepository.count() > 0) {
+    public boolean seedMissingDemoProducts() {
+        Map<String, Category> categories = getOrCreateCategories();
+        List<SeedProduct> missingProducts = DEMO_PRODUCTS.stream()
+                .filter(seed -> productRepository.findByNameIgnoreCase(seed.name()).isEmpty())
+                .toList();
+        if (missingProducts.isEmpty()) {
             return false;
         }
 
-        User admin = userRepository.findFirstByRole_NameAndActiveTrueOrderByIdAsc(RoleName.ADMIN)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Demo catalog requires an active ADMIN user before it can be loaded"));
-
         UnitOfMeasure baseUnit = getOrCreateUnit();
-        Map<String, Category> categories = getOrCreateCategories();
-        List<Product> products = DEMO_PRODUCTS.stream()
+        boolean needsInitialStock = missingProducts.stream().anyMatch(seed -> seed.stock() > 0);
+        User admin = needsInitialStock
+                ? userRepository.findFirstByRole_NameAndActiveTrueOrderByIdAsc(RoleName.ADMIN)
+                        .orElseThrow(() -> new IllegalStateException(
+                                "Demo catalog requires an active ADMIN user before initial stock can be loaded"))
+                : null;
+
+        List<Product> products = missingProducts.stream()
                 .map(seed -> createProduct(seed, categories.get(seed.category()), baseUnit))
                 .toList();
         List<Product> savedProducts = productRepository.saveAll(products);
 
-        List<InventoryMovement> initialMovements = new ArrayList<>(savedProducts.size());
+        List<InventoryMovement> initialMovements = new ArrayList<>();
         for (int i = 0; i < savedProducts.size(); i++) {
+            SeedProduct seed = missingProducts.get(i);
+            if (seed.stock() == 0) {
+                continue;
+            }
             Product product = savedProducts.get(i);
-            SeedProduct seed = DEMO_PRODUCTS.get(i);
             InventoryMovement movement = new InventoryMovement();
             movement.setProduct(product);
             movement.setUser(admin);
@@ -69,7 +78,9 @@ public class DemoCatalogSeedService {
             movement.setNotes(SEED_VERSION);
             initialMovements.add(movement);
         }
-        inventoryMovementRepository.saveAll(initialMovements);
+        if (!initialMovements.isEmpty()) {
+            inventoryMovementRepository.saveAll(initialMovements);
+        }
         return true;
     }
 
@@ -131,7 +142,8 @@ public class DemoCatalogSeedService {
             "Limpieza e Higiene",
             "Snacks y Golosinas",
             "Librería y Escolares",
-            "Regalos y Tecnología"
+            "Regalos y Tecnología",
+            "Embutidos"
     );
 
     private static final List<SeedProduct> DEMO_PRODUCTS = List.of(
@@ -174,6 +186,11 @@ public class DemoCatalogSeedService {
             new SeedProduct("Ciento de Papel bond A4 Report", "5.00", 7, "Librería y Escolares"),
             new SeedProduct("Audífonos genéricos con cable", "15.00", 4, "Regalos y Tecnología"),
             new SeedProduct("Crema corporal Nivea Milk 250 ml", "18.00", 3, "Regalos y Tecnología"),
-            new SeedProduct("Desodorante Rexona Clinical Mujer 48 g", "16.50", 5, "Regalos y Tecnología")
+            new SeedProduct("Desodorante Rexona Clinical Mujer 48 g", "16.50", 5, "Regalos y Tecnología"),
+            new SeedProduct("Hot Dog San Fernando x3", "1.70", 0, "Embutidos"),
+            new SeedProduct("Hot Dog San Fernando x6", "3.20", 0, "Embutidos"),
+            new SeedProduct("Jamonada San Fernando", "1.70", 0, "Embutidos"),
+            new SeedProduct("Chicharrón de prensa San Fernando", "1.60", 0, "Embutidos"),
+            new SeedProduct("Chorizo San Fernando", "1.60", 0, "Embutidos")
     );
 }

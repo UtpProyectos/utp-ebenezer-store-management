@@ -20,12 +20,32 @@ const ROLE_LABELS: Record<RoleOption['name'], string> = {
   CASHIER: 'Cajero',
 }
 
+function suggestedUsername(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length < 2) return ''
+  const normalize = (part: string) =>
+    part.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es')
+  return `${normalize(parts[0])}.${normalize(parts[parts.length - 1])}`
+}
+
 export function UserForm({ user, roles, isCurrentUser, saving, error, onSubmit, onCancel }: UserFormProps) {
   const [name, setName] = useState(user?.name ?? '')
   const [username, setUsername] = useState(user?.username ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
-  const [role, setRole] = useState(user?.role ?? roles[0]?.name ?? 'CASHIER')
+  const [role, setRole] = useState(
+    user?.role ?? roles.find((option) => option.name === 'CASHIER')?.name ?? roles[0]?.name ?? 'CASHIER',
+  )
   const [password, setPassword] = useState('')
+  const [usernameEdited, setUsernameEdited] = useState(Boolean(user))
+  const [passwordEdited, setPasswordEdited] = useState(false)
+
+  function updateName(value: string) {
+    setName(value)
+    if (user || usernameEdited) return
+    const suggested = suggestedUsername(value)
+    setUsername(suggested)
+    if (!passwordEdited) setPassword(suggested)
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -79,7 +99,7 @@ export function UserForm({ user, roles, isCurrentUser, saving, error, onSubmit, 
                 className={fieldClassName}
                 autoFocus
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => updateName(event.target.value)}
                 required
                 maxLength={120}
               />
@@ -92,7 +112,11 @@ export function UserForm({ user, roles, isCurrentUser, saving, error, onSubmit, 
                   className={fieldClassName}
                   autoComplete="username"
                   value={username}
-                  onChange={(event) => setUsername(event.target.value)}
+                  onChange={(event) => {
+                    setUsernameEdited(true)
+                    setUsername(event.target.value)
+                    if (!passwordEdited) setPassword(event.target.value)
+                  }}
                   required
                   minLength={3}
                   maxLength={80}
@@ -120,35 +144,42 @@ export function UserForm({ user, roles, isCurrentUser, saving, error, onSubmit, 
                   type="password"
                   autoComplete="new-password"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  onChange={(event) => {
+                    setPasswordEdited(true)
+                    setPassword(event.target.value)
+                  }}
                   required
                   minLength={8}
                   maxLength={100}
                 />
-                <span className="text-xs font-normal text-muted">Debe tener al menos 8 caracteres.</span>
+                <span className="text-xs font-normal text-muted">Sugerencia: usar el mismo formato nombre.apellido del usuario. Debe tener al menos 8 caracteres.</span>
               </label>
             )}
 
-            <label className="flex flex-col gap-1.5 text-sm font-medium">
-              Rol
-              <select
-                className={fieldClassName}
-                value={role}
-                onChange={(event) => {
-                  const selectedRole = roles.find((option) => option.name === event.target.value)
-                  if (selectedRole) setRole(selectedRole.name)
-                }}
-                disabled={isCurrentUser}
-                required
-              >
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">Rol</legend>
+              <div className="grid grid-cols-2 gap-2">
                 {roles.map((option) => (
-                  <option key={option.id} value={option.name}>{ROLE_LABELS[option.name]}</option>
+                  <button
+                    key={option.id}
+                    type="button"
+                    aria-pressed={role === option.name}
+                    className={`min-h-14 rounded-2xl border px-4 text-left text-sm font-semibold transition-colors duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 ${
+                      role === option.name
+                        ? 'border-accent bg-accent/10 text-foreground'
+                        : 'border-separator bg-background hover:bg-surface-secondary'
+                    }`}
+                    onClick={() => setRole(option.name)}
+                    disabled={isCurrentUser}
+                  >
+                    {ROLE_LABELS[option.name]}
+                  </button>
                 ))}
-              </select>
+              </div>
               {isCurrentUser && (
                 <span className="text-xs font-normal text-muted">No puedes cambiar tu propio rol.</span>
               )}
-            </label>
+            </fieldset>
           </div>
 
           <footer className="flex justify-end gap-2 border-t border-separator px-5 py-4">

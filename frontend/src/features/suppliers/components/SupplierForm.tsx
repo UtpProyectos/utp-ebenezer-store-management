@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
+import type { Product } from '@/features/products/types/product.types'
 import type { Supplier, SupplierInput, SupplierType } from '../types/supplier.types'
 
 interface SupplierFormProps {
   supplier?: Supplier
+  products: Product[]
   saving: boolean
   error: string | null
   onSubmit: (input: SupplierInput) => Promise<void>
@@ -21,13 +23,16 @@ const SUPPLIER_TYPES: Array<[SupplierType, string]> = [
   ['OTHER', 'Otro'],
 ]
 
-export function SupplierForm({ supplier, saving, error, onSubmit, onCancel }: SupplierFormProps) {
+export function SupplierForm({ supplier, products, saving, error, onSubmit, onCancel }: SupplierFormProps) {
   const [name, setName] = useState(supplier?.name ?? '')
   const [contactName, setContactName] = useState(supplier?.contactName ?? '')
   const [phone, setPhone] = useState(supplier?.phone ?? '')
   const [type, setType] = useState<SupplierType | ''>(supplier?.type ?? '')
   const [address, setAddress] = useState(supplier?.address ?? '')
   const [notes, setNotes] = useState(supplier?.notes ?? '')
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>(
+    supplier?.products.map((product) => product.id) ?? [],
+  )
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -39,6 +44,7 @@ export function SupplierForm({ supplier, saving, error, onSubmit, onCancel }: Su
       address: address.trim() || null,
       notes: notes.trim() || null,
       documentNumber: supplier?.documentNumber ?? null,
+      productIds: selectedProductIds,
     })
   }
 
@@ -145,6 +151,36 @@ export function SupplierForm({ supplier, saving, error, onSubmit, onCancel }: Su
                 maxLength={500}
               />
             </label>
+
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">Productos que vende <span className="font-normal text-muted">(máximo 8)</span></legend>
+              <div className="max-h-48 space-y-1 overflow-y-auto rounded-2xl border border-separator bg-background p-3">
+                {products.length === 0 ? (
+                  <p className="text-sm text-muted">No hay productos disponibles.</p>
+                ) : products.map((product) => {
+                  const selected = selectedProductIds.includes(product.id)
+                  const limitReached = selectedProductIds.length >= 8
+                  return (
+                    <label key={product.id} className="flex min-h-10 items-center gap-3 rounded-xl px-2 text-sm hover:bg-surface-secondary">
+                      <input
+                        type="checkbox"
+                        className="size-4 accent-accent"
+                        checked={selected}
+                        disabled={!selected && limitReached}
+                        onChange={(event) => {
+                          setSelectedProductIds((current) => event.target.checked
+                            ? [...current, product.id]
+                            : current.filter((id) => id !== product.id))
+                        }}
+                      />
+                      <span className="min-w-0 flex-1 truncate">{product.name}</span>
+                      {!product.active && <span className="text-xs text-muted">Inactivo</span>}
+                    </label>
+                  )
+                })}
+              </div>
+              <p className="text-xs text-muted">{selectedProductIds.length} de 8 productos seleccionados</p>
+            </fieldset>
           </div>
 
           <footer className="flex justify-end gap-2 border-t border-separator px-5 py-4">

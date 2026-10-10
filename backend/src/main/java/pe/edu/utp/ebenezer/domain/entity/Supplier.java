@@ -1,5 +1,8 @@
 package pe.edu.utp.ebenezer.domain.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +10,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
@@ -51,4 +57,12 @@ public class Supplier {
 
     @Column(name = "active", nullable = false)
     private Boolean active = true;
+
+    @ManyToMany
+    @JoinTable(
+            name = "supplier_product",
+            joinColumns = @JoinColumn(name = "supplier_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products = new HashSet<>();
 }

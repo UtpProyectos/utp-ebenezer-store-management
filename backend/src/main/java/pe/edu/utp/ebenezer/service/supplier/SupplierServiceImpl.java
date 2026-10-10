@@ -2,15 +2,18 @@ package pe.edu.utp.ebenezer.service.supplier;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.HashSet;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.utp.ebenezer.api.dto.supplier.SupplierRequest;
 import pe.edu.utp.ebenezer.api.dto.supplier.SupplierResponse;
+import pe.edu.utp.ebenezer.api.dto.supplier.SupplierProductResponse;
+import pe.edu.utp.ebenezer.domain.entity.Product;
 import pe.edu.utp.ebenezer.domain.entity.Supplier;
+import pe.edu.utp.ebenezer.domain.repository.product.ProductRepository;
 import pe.edu.utp.ebenezer.domain.repository.supplier.SupplierRepository;
 import pe.edu.utp.ebenezer.exception.BusinessException;
 import pe.edu.utp.ebenezer.exception.ResourceNotFoundException;
@@ -20,18 +23,19 @@ import pe.edu.utp.ebenezer.exception.ResourceNotFoundException;
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional(readOnly = true)
     public List<SupplierResponse> findAll(String search, Boolean active) {
         String normalizedSearch = search == null ? "" : search.trim().toLowerCase(Locale.ROOT);
-        return supplierRepository.findAll(Sort.by("name")).stream()
+        return supplierRepository.findAllByOrderByNameAsc().stream()
                 .filter(supplier -> active == null || supplier.getActive().equals(active))
                 .filter(supplier -> normalizedSearch.isEmpty()
                         || contains(supplier.getName(), normalizedSearch)
                         || contains(supplier.getPhone(), normalizedSearch)
                         || contains(supplier.getContactName(), normalizedSearch))
-                .map(SupplierServiceImpl::toResponse)
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -82,7 +86,7 @@ public class SupplierServiceImpl implements SupplierService {
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
     }
 
-    private static void applyRequest(Supplier supplier, SupplierRequest request) {
+    private void applyRequest(Supplier supplier, SupplierRequest request) {
         supplier.setName(request.name().trim());
         supplier.setDocumentNumber(normalize(request.documentNumber()));
         supplier.setPhone(normalize(request.phone()));
@@ -90,12 +94,29 @@ public class SupplierServiceImpl implements SupplierService {
         supplier.setContactName(normalize(request.contactName()));
         supplier.setAddress(normalize(request.address()));
         supplier.setNotes(normalize(request.notes()));
+        List<Long> productIds = request.productIds() == null ? List.of() : request.productIds();
+        if (productIds.size() > 8) {
+            throw new BusinessException("A supplier can have at most 8 products");
+        }
+        if (new HashSet<>(productIds).size() != productIds.size()) {
+            throw new BusinessException("Supplier product selection contains duplicates");
+        }
+        if (!productIds.isEmpty()) {
+            List<Product> products = productRepository.findAllById(productIds);
+            if (products.size() != productIds.size()) {
+                throw new ResourceNotFoundException("One or more products were not found");
+            }
+            supplier.getProducts().clear();
+            supplier.getProducts().addAll(products);
+        } else {
+            supplier.getProducts().clear();
+        }
         if (supplier.getActive() == null) {
             supplier.setActive(true);
         }
     }
 
-    private static SupplierResponse toResponse(Supplier supplier) {
+    private SupplierResponse toResponse(Supplier supplier) {
         return new SupplierResponse(
                 supplier.getId(),
                 supplier.getName(),
@@ -105,7 +126,11 @@ public class SupplierServiceImpl implements SupplierService {
                 supplier.getContactName(),
                 supplier.getAddress(),
                 supplier.getNotes(),
-                supplier.getActive()
+                supplier.getActive(),
+                supplier.getProducts().stream()
+                        .map(product -> new SupplierProductResponse(product.getId(), product.getName()))
+                        .sorted((left, right) -> left.name().compareToIgnoreCase(right.name()))
+                        .toList()
         );
     }
 
