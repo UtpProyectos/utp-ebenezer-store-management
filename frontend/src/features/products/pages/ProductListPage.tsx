@@ -113,6 +113,12 @@ export function ProductListPage() {
           No se pudieron cargar las categorías y unidades: {supportError}
         </p>
       )}
+      {!supportLoading && !supportError && (categories.length === 0 || units.length === 0) && (
+        <p role="status" className="rounded-2xl bg-warning-soft px-4 py-3 text-sm text-warning-soft-foreground">
+          Para crear productos primero se necesita al menos una categoría activa y una unidad de medida. Configura esos
+          datos y vuelve a cargar esta página.
+        </p>
+      )}
       {actionError && (
         <p role="alert" className="rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger-soft-foreground">
           {actionError}
