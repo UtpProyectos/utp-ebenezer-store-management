@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Link } from 'react-router'
+import { ROUTES } from '@/app/router/routes'
 import { ProductForm } from '../components/ProductForm'
 import { ProductTable } from '../components/ProductTable'
 import { productApi } from '../services/productApi'
@@ -115,8 +117,10 @@ export function ProductListPage() {
       )}
       {!supportLoading && !supportError && (categories.length === 0 || units.length === 0) && (
         <p role="status" className="rounded-2xl bg-warning-soft px-4 py-3 text-sm text-warning-soft-foreground">
-          Para crear productos primero se necesita al menos una categoría activa y una unidad de medida. Configura esos
-          datos y vuelve a cargar esta página.
+          Para crear productos se necesita una categoría activa y una unidad de medida. Puedes administrar categorías en{' '}
+          <Link className="font-semibold underline" to={ROUTES.categories}>Administración → Categorías</Link>. Para cargar
+          la lista inicial de 40 productos junto con sus categorías y la unidad UND, sigue el paso «Cargar el catálogo de
+          demostración» de docs\INICIO-LOCAL.txt después de verificar que la base configurada sea local.
         </p>
       )}
       {actionError && (

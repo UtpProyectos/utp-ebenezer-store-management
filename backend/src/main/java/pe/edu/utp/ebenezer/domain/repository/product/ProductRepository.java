@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     boolean existsByBarcode(String barcode);
 
+    long countByCategory_Id(Long categoryId);
+
     @Query("""
             select p.id as id,
                    c.id as categoryId,

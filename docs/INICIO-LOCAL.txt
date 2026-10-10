@@ -63,6 +63,10 @@ backend\.env antes de iniciar el backend:
 
    DEMO_CATALOG_ENABLED=true
 
+Antes de hacerlo, verifica dentro de backend\.env que DB_URL use localhost o
+127.0.0.1. Si apunta a un servidor remoto o no estas seguro, no actives la
+carga. No compartas el contenido de backend\.env: contiene datos privados.
+
 La carga crea las 7 categorias, la unidad UND, los 40 productos y sus
 movimientos de stock inicial. Solo se ejecuta si la tabla de productos esta
 vacia. No se repite en los siguientes inicios y no se ejecuta por defecto.
