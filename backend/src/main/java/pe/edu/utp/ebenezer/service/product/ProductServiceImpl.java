@@ -31,7 +31,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public List<ProductResponse> findAll(String search, Long categoryId, Boolean active) {
-        String normalizedSearch = search == null || search.isBlank() ? null : search.trim();
+        String normalizedSearch = search == null || search.isBlank()
+                ? ""
+                : "%" + search.trim().toLowerCase(java.util.Locale.ROOT) + "%";
         return productRepository.searchSummaries(normalizedSearch, categoryId, active, BigDecimal.ZERO).stream()
                 .map(this::toResponse)
                 .toList();

@@ -41,9 +41,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             from Product p
             join p.category c
             join p.baseUnit u
-            where (:search is null
-                or lower(p.name) like lower(concat('%', :search, '%'))
-                or lower(coalesce(p.barcode, '')) like lower(concat('%', :search, '%')))
+            where (:search = ''
+                or lower(p.name) like :search
+                or lower(coalesce(p.barcode, '')) like :search)
               and (:categoryId is null or c.id = :categoryId)
               and (:active is null or p.active = :active)
             order by lower(p.name)
