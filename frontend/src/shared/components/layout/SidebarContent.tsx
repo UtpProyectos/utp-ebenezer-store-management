@@ -32,7 +32,7 @@ export function SidebarContent({ collapsed = false, onToggleCollapsed, onNavigat
 
       <nav aria-label="Menú principal" className="flex flex-1 flex-col gap-3">
         {groups.map((group) => (
-          <div key={group[0].path} className="flex flex-col gap-1.5 rounded-[2.25rem] bg-surface p-3.5">
+          <div key={group[0].path} className="flex flex-col gap-1.5 rounded-3xl bg-surface p-3.5">
             {group.map((item) => (
               <SidebarNavLink key={item.path} item={item} collapsed={collapsed} onNavigate={onNavigate} />
             ))}
@@ -41,7 +41,7 @@ export function SidebarContent({ collapsed = false, onToggleCollapsed, onNavigat
       </nav>
 
       {onToggleCollapsed && (
-        <div className="rounded-[2.25rem] bg-surface p-3.5">
+        <div className="rounded-3xl bg-surface p-3.5">
           <button
             type="button"
             onClick={onToggleCollapsed}

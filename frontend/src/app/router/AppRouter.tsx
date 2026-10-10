@@ -4,7 +4,9 @@ import { AdminPage } from '@/features/admin/pages/AdminPage'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { CategoryListPage } from '@/features/categories/pages/CategoryListPage'
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
+import { InventoryPage } from '@/features/inventory'
 import { ProductListPage } from '@/features/products/pages/ProductListPage'
+import { PurchaseEntryPage } from '@/features/purchases'
 import { SupplierListPage } from '@/features/suppliers/pages/SupplierListPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { UserListPage } from '@/features/users/pages/UserListPage'
@@ -42,12 +44,12 @@ const router = createBrowserRouter([
             subtitle: 'Productos que se usan en la tienda y no se venden',
             parent: SALES,
           }),
-          page(ROUTES.inventory, { title: 'Inventario', subtitle: 'Cuánto tienes de cada producto' }),
+          page(ROUTES.inventory, { title: 'Inventario', subtitle: 'Cuánto tienes de cada producto' }, <InventoryPage />),
           page(ROUTES.purchases, {
             title: 'Ingreso de mercadería',
-            subtitle: 'Anota lo que llegó a la tienda',
+            subtitle: 'Anota lo que llegó a la tienda en 3 pasos',
             parent: INVENTORY,
-          }),
+          }, <PurchaseEntryPage />),
           page(ROUTES.shoppingList, { title: 'Lista de compra', subtitle: 'Productos por agotarse que debes comprar' }),
           page(ROUTES.salesHistory, { title: 'Historial de ventas', subtitle: 'Corrige o anula ventas. Todo queda anotado.' }),
           page(ROUTES.assistant, { title: 'Asistente', subtitle: 'Pregunta lo que quieras sobre tu tienda' }),

@@ -20,7 +20,8 @@ export interface ProductInput {
   name: string
   description: string | null
   barcode: string | null
-  salePrice: number
+  /** Omitted: the sale price is set on each purchase entry. */
+  salePrice?: number
   minStock: number
 }
 

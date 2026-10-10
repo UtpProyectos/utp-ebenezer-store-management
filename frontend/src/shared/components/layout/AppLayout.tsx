@@ -30,7 +30,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-default">
+    <div className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
       <aside
         className={`sticky top-0 hidden h-screen shrink-0 overflow-x-hidden overflow-y-auto transition-[width] duration-200 ease-out lg:block ${

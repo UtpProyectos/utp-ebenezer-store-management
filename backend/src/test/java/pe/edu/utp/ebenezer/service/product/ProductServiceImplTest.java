@@ -76,6 +76,23 @@ class ProductServiceImplTest {
     }
 
     @Test
+    void createWithoutSalePriceStartsAtZero() {
+        Category category = new Category();
+        category.setId(1L);
+        category.setActive(true);
+        UnitOfMeasure unit = new UnitOfMeasure();
+        unit.setId(1L);
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(unitOfMeasureRepository.findById(1L)).thenReturn(Optional.of(unit));
+        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = productService.create(new ProductRequest(1L, 1L, "Gaseosa", null, null, null, null));
+
+        assertThat(response.salePrice()).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
     void createRejectsDuplicateBarcode() {
         Category category = new Category();
         category.setActive(true);

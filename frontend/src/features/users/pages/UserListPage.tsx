@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { ResetPasswordForm } from '../components/ResetPasswordForm'
 import { UserForm } from '../components/UserForm'
@@ -179,14 +180,12 @@ export function UserListPage() {
       </section>
 
       <section className="flex flex-col gap-3 rounded-3xl bg-surface p-4 sm:flex-row">
-        <label className="sr-only" htmlFor="user-search">Buscar usuario</label>
-        <input
-          id="user-search"
-          className="min-h-11 min-w-0 flex-1 rounded-full border border-separator bg-background px-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          type="search"
+        <SearchInput
+          label="Buscar usuario"
           placeholder="Buscar por nombre, usuario o correo"
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={setSearch}
+          className="min-w-0 flex-1"
         />
         <div className="flex gap-1 rounded-full bg-surface-secondary p-1" role="group" aria-label="Filtrar usuarios por estado">
           {([

@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { SupplierForm } from '../components/SupplierForm'
 import { SupplierList } from '../components/SupplierList'
 import { productApi } from '@/features/products/services/productApi'
@@ -120,18 +121,10 @@ export function SupplierListPage() {
     <div className="mx-auto flex w-full max-w-350 flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <form className="flex w-full max-w-md gap-2" onSubmit={applySearch}>
-          <label className="sr-only" htmlFor="supplier-search">Buscar proveedor</label>
-          <input
-            id="supplier-search"
-            className="min-h-11 min-w-0 flex-1 rounded-full border border-separator bg-background px-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            type="search"
-            placeholder="Buscar proveedor"
-            value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
-          />
+          <SearchInput label="Buscar proveedor" value={searchText} onChange={setSearchText} className="min-w-0 flex-1" />
           <button
             type="submit"
-            className="min-h-11 rounded-full bg-surface-secondary px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
+            className="h-13 rounded-full bg-surface-secondary px-5 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
           >
             Buscar
           </button>

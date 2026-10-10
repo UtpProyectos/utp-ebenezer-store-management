@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Label, ListBox, Select } from '@heroui/react'
 import type { Product } from '@/features/products/types/product.types'
 import type { Supplier, SupplierInput, SupplierType } from '../types/supplier.types'
 
@@ -116,20 +117,30 @@ export function SupplierForm({ supplier, products, saving, error, onSubmit, onCa
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1.5 text-sm font-medium">
-                Tipo
-                <select
-                  className={fieldClassName}
-                  value={type}
-                  onChange={(event) => {
-                    const selectedType = SUPPLIER_TYPES.find(([value]) => value === event.target.value)?.[0] ?? ''
-                    setType(selectedType)
-                  }}
-                >
-                  <option value="">Selecciona un tipo</option>
-                  {SUPPLIER_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
-              </label>
+              <Select
+                placeholder="Selecciona un tipo"
+                value={type || null}
+                onChange={(key) => {
+                  const selectedType = SUPPLIER_TYPES.find(([value]) => value === key)?.[0] ?? ''
+                  setType(selectedType)
+                }}
+              >
+                <Label className="text-sm font-medium">Tipo</Label>
+                <Select.Trigger className="min-h-11">
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    {SUPPLIER_TYPES.map(([value, label]) => (
+                      <ListBox.Item key={value} id={value} textValue={label}>
+                        {label}
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                    ))}
+                  </ListBox>
+                </Select.Popover>
+              </Select>
               <label className="flex flex-col gap-1.5 text-sm font-medium">
                 Dirección <span className="font-normal text-muted">(opcional)</span>
                 <input
