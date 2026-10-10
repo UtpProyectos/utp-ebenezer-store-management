@@ -68,10 +68,13 @@ Antes de hacerlo, verifica dentro de backend\.env que DB_URL use localhost o
 carga. No compartas el contenido de backend\.env: contiene datos privados.
 
 La carga crea las 7 categorias, la unidad UND, los 40 productos y sus
-movimientos de stock inicial. Solo se ejecuta si la tabla de productos esta
-vacia. No se repite en los siguientes inicios y no se ejecuta por defecto.
-El archivo no incluye lotes ni fechas de vencimiento, asi que la carga no los
-inventa.
+movimientos de stock inicial cuando la tabla de productos esta vacia. Tambien
+agrega los 5 proveedores del archivo entregado cuando la tabla de proveedores
+esta vacia. En cada inicio se comprueba si esas tablas siguen vacias; los datos
+existentes no se reemplazan. La opcion esta desactivada por defecto.
+El archivo de productos no incluye lotes ni fechas de vencimiento, asi que la
+carga no los inventa. La informacion de productos principales y el historial
+de compras de proveedores se incorporara cuando exista el modulo de compras.
 Para cargar los datos en una base compartida mas adelante, coordina primero
 con el equipo y haz una copia de seguridad; usa la misma opcion solo cuando
 todos hayan confirmado que esa base no tiene productos que deban preservarse.

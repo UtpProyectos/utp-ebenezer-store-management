@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.utp.ebenezer.service.product.DemoCatalogSeedService;
+import pe.edu.utp.ebenezer.service.supplier.DemoSupplierSeedService;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class DemoCatalogInitializer implements ApplicationRunner {
 
     private final DemoCatalogProperties properties;
     private final DemoCatalogSeedService demoCatalogSeedService;
+    private final DemoSupplierSeedService demoSupplierSeedService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -31,6 +33,11 @@ public class DemoCatalogInitializer implements ApplicationRunner {
             log.info("Demo catalog loaded with initial stock");
         } else {
             log.info("Demo catalog seed skipped because products already exist");
+        }
+        if (demoSupplierSeedService.seedIfSuppliersAreEmpty()) {
+            log.info("Demo suppliers loaded");
+        } else {
+            log.info("Demo supplier seed skipped because suppliers already exist");
         }
     }
 }
