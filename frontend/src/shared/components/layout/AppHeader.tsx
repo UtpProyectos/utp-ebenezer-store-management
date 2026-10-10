@@ -18,7 +18,7 @@ export function AppHeader({ onOpenMenu }: AppHeaderProps) {
     .at(-1)
 
   return (
-    <header className="sticky top-0 z-30 flex h-20 shrink-0 items-center gap-3 bg-default/85 px-4 backdrop-blur-md sm:px-7">
+    <header className="sticky top-0 z-30 flex h-20 shrink-0 items-center gap-3 bg-background/90 px-4 backdrop-blur-md sm:px-7">
       <Button isIconOnly variant="secondary" aria-label="Abrir menú" onPress={onOpenMenu} className="lg:hidden">
         <Bars className="size-5" />
       </Button>

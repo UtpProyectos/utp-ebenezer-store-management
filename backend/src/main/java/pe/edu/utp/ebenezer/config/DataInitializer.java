@@ -9,11 +9,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import pe.edu.utp.ebenezer.service.unit.UnitOfMeasureService;
 import pe.edu.utp.ebenezer.service.user.RoleService;
 import pe.edu.utp.ebenezer.service.user.UserService;
 
 /**
- * Seeds the roles and the initial admin on startup. Only delegates to services.
+ * Seeds the roles, the base units of measure and the initial admin on startup. Only delegates to services.
  */
 @Component
 @RequiredArgsConstructor
@@ -25,11 +26,13 @@ public class DataInitializer implements ApplicationRunner {
 
     private final RoleService roleService;
     private final UserService userService;
+    private final UnitOfMeasureService unitOfMeasureService;
     private final BootstrapAdminProperties adminProperties;
 
     @Override
     public void run(ApplicationArguments args) {
         roleService.ensureDefaultRoles();
+        unitOfMeasureService.ensureDefaultUnits();
 
         if (isBlank(adminProperties.username()) || isBlank(adminProperties.password())) {
             log.warn("ADMIN_USERNAME/ADMIN_PASSWORD not configured: initial admin user will not be created");

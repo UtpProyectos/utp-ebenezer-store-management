@@ -44,21 +44,21 @@ export function UserMenu() {
         </span>
         <ChevronDown className="hidden size-4 text-muted md:block" />
       </Dropdown.Trigger>
-      <Dropdown.Popover placement="bottom end" className="min-w-56">
-        <div className="flex flex-col gap-0.5 border-b border-separator px-3 pt-2.5 pb-3">
+      <Dropdown.Popover placement="bottom end" className="min-w-64 p-2">
+        <div className="mb-1 flex flex-col gap-0.5 border-b border-separator px-4 pt-3 pb-3.5">
           <span className="font-semibold">{user.name}</span>
           <span className="text-sm text-muted">
             {user.username} · {ROLE_LABELS[user.role]}
           </span>
         </div>
-        <Dropdown.Menu aria-label="Opciones de usuario" onAction={handleAction}>
+        <Dropdown.Menu aria-label="Opciones de usuario" onAction={handleAction} className="p-0">
           {user.role === 'ADMIN' ? (
-            <Dropdown.Item id="settings" textValue="Configuración">
+            <Dropdown.Item id="settings" textValue="Configuración" className="gap-3 px-4 py-2.5">
               <Sliders className="size-4 text-muted" />
               <Label>Configuración</Label>
             </Dropdown.Item>
           ) : null}
-          <Dropdown.Item id="logout" textValue="Cerrar sesión" variant="danger">
+          <Dropdown.Item id="logout" textValue="Cerrar sesión" variant="danger" className="gap-3 px-4 py-2.5">
             <ArrowRightFromSquare className="size-4" />
             <Label>Cerrar sesión</Label>
           </Dropdown.Item>

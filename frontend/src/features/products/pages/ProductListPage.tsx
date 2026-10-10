@@ -1,25 +1,23 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
-import { ROUTES } from '@/app/router/routes'
+import { useState, type FormEvent } from 'react'
+import { Button, ListBox, Select } from '@heroui/react'
+import Plus from '@gravity-ui/icons/Plus'
+import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { ProductForm } from '../components/ProductForm'
 import { ProductTable } from '../components/ProductTable'
 import { productApi } from '../services/productApi'
-import { productOptionsApi } from '../services/productOptionsApi'
+import { useProductOptions } from '../hooks/useProductOptions'
 import { useProducts } from '../hooks/useProducts'
-import type { CategoryOption, Product, ProductInput, UnitOption } from '../types/product.types'
+import type { Product, ProductInput } from '../types/product.types'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
+
+const ALL_CATEGORIES = 'all'
 
 function messageFromError(error: unknown) {
   return error instanceof Error ? error.message : 'Ocurrió un error. Inténtalo nuevamente.'
 }
 
 export function ProductListPage() {
-  const [supportData, setSupportData] = useState<{
-    categories: CategoryOption[]
-    units: UnitOption[]
-    error: string | null
-  } | null>(null)
   const [searchText, setSearchText] = useState('')
   const [appliedSearch, setAppliedSearch] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -36,29 +34,13 @@ export function ProductListPage() {
     active: status === 'all' ? undefined : status === 'active',
   }
   const { products, loading, error, reload } = useProducts(filters)
-  const categories = supportData?.categories ?? []
-  const units = supportData?.units ?? []
-  const supportLoading = supportData === null
-  const supportError = supportData?.error ?? null
-
-  useEffect(() => {
-    let cancelled = false
-
-    Promise.all([productOptionsApi.getCategories(), productOptionsApi.getUnits()])
-      .then(([categoryOptions, unitOptions]) => {
-        if (cancelled) return
-        setSupportData({ categories: categoryOptions, units: unitOptions, error: null })
-      })
-      .catch((loadError: unknown) => {
-        if (!cancelled) {
-          setSupportData({ categories: [], units: [], error: messageFromError(loadError) })
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const {
+    categories,
+    units,
+    loading: supportLoading,
+    error: supportError,
+    createCategory,
+  } = useProductOptions()
 
   function applySearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -115,12 +97,9 @@ export function ProductListPage() {
           No se pudieron cargar las categorías y unidades: {supportError}
         </p>
       )}
-      {!supportLoading && !supportError && (categories.length === 0 || units.length === 0) && (
+      {!supportLoading && !supportError && units.length === 0 && (
         <p role="status" className="rounded-2xl bg-warning-soft px-4 py-3 text-sm text-warning-soft-foreground">
-          Para crear productos se necesita una categoría activa y una unidad de medida. Puedes administrar categorías en{' '}
-          <Link className="font-semibold underline" to={ROUTES.categories}>Administración → Categorías</Link>. Para cargar
-          la lista inicial de 40 productos junto con sus categorías y la unidad UND, sigue el paso «Cargar el catálogo de
-          demostración» de docs\INICIO-LOCAL.txt después de verificar que la base configurada sea local.
+          No hay unidades de medida registradas. Reinicia el backend para que se creen las unidades base.
         </p>
       )}
       {actionError && (
@@ -138,6 +117,7 @@ export function ProductListPage() {
           saving={saving}
           error={formError}
           onSubmit={saveProduct}
+          onCreateCategory={createCategory}
           onCancel={() => setShowForm(false)}
         />
       )}
@@ -145,46 +125,44 @@ export function ProductListPage() {
       <section className="flex flex-col gap-4 rounded-3xl bg-surface p-4">
         <div className="flex flex-col gap-3 xl:flex-row">
           <form className="flex min-w-0 flex-1 gap-2" onSubmit={applySearch}>
-            <label className="sr-only" htmlFor="product-search">Buscar producto</label>
-            <input
-              id="product-search"
-              className="min-h-11 min-w-0 flex-1 rounded-full border border-separator bg-background px-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              type="search"
-              placeholder="Buscar producto"
-              value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
-            />
-            <button
-              className="min-h-11 rounded-full bg-surface-secondary px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
-              type="submit"
-            >
+            <SearchInput label="Buscar producto" value={searchText} onChange={setSearchText} className="min-w-0 flex-1" />
+            <Button type="submit" variant="secondary" className="h-13 px-5">
               Buscar
-            </button>
+            </Button>
           </form>
 
           <div className="flex flex-wrap gap-2">
-            <label className="sr-only" htmlFor="product-category">Filtrar por categoría</label>
-            <select
-              id="product-category"
-              className="min-h-11 rounded-full border border-separator bg-background px-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              value={categoryId}
-              onChange={(event) => setCategoryId(event.target.value)}
-              disabled={supportLoading}
+            <Select
+              aria-label="Filtrar por categoría"
+              className="w-56"
+              value={categoryId || ALL_CATEGORIES}
+              onChange={(key) => setCategoryId(key === null || key === ALL_CATEGORIES ? '' : String(key))}
+              isDisabled={supportLoading}
             >
-              <option value="">Todas las categorías</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>{category.name}</option>
-              ))}
-            </select>
+              <Select.Trigger className="h-13 px-4">
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  <ListBox.Item id={ALL_CATEGORIES} textValue="Todas las categorías">
+                    Todas las categorías
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  {categories.map((category) => (
+                    <ListBox.Item key={category.id} id={String(category.id)} textValue={category.name}>
+                      {category.name}
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
 
-            <button
-              type="button"
-              className="min-h-11 rounded-full bg-accent px-5 text-sm font-semibold text-background hover:opacity-90 focus-visible:outline-2 focus-visible:outline-focus disabled:opacity-60"
-              onClick={openCreateForm}
-              disabled={supportLoading || categories.length === 0 || units.length === 0}
-            >
-              + Nuevo producto
-            </button>
+            <Button className="h-13 px-5" onPress={openCreateForm} isDisabled={supportLoading || units.length === 0}>
+              <Plus aria-hidden="true" className="size-4" />
+              Nuevo producto
+            </Button>
           </div>
         </div>
 

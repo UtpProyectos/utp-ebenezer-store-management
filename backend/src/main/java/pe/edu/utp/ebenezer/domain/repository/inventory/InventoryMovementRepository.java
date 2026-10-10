@@ -1,6 +1,7 @@
 package pe.edu.utp.ebenezer.domain.repository.inventory;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,29 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
 
     @Query("select coalesce(sum(m.baseQuantity), 0) from InventoryMovement m where m.lot.id = :lotId")
     BigDecimal sumBaseQuantityByLotId(@Param("lotId") Long lotId);
+
+    @Query("""
+            select m.product.id as productId, sum(m.baseQuantity) as stock
+            from InventoryMovement m
+            group by m.product.id""")
+    List<ProductStockView> findStockByProduct();
+
+    @Query("""
+            select l.id as lotId, l.product.id as productId, l.expirationDate as expirationDate,
+                   sum(m.baseQuantity) as stock
+            from InventoryMovement m join m.lot l
+            group by l.id, l.product.id, l.expirationDate
+            having sum(m.baseQuantity) > 0""")
+    List<LotStockView> findLotsWithStock();
+
+    // FEFO order: earliest expiration first, lots without expiration last.
+    @Query("""
+            select l.id as lotId, l.product.id as productId, l.expirationDate as expirationDate,
+                   sum(m.baseQuantity) as stock
+            from InventoryMovement m join m.lot l
+            where l.product.id = :productId
+            group by l.id, l.product.id, l.expirationDate
+            having sum(m.baseQuantity) > 0
+            order by l.expirationDate asc nulls last, l.id asc""")
+    List<LotStockView> findLotsWithStockByProductId(@Param("productId") Long productId);
 }

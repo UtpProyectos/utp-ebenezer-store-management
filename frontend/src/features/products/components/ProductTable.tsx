@@ -1,3 +1,5 @@
+import { Button, Switch } from '@heroui/react'
+import Pencil from '@gravity-ui/icons/Pencil'
 import type { Product } from '../types/product.types'
 
 interface ProductTableProps {
@@ -8,6 +10,10 @@ interface ProductTableProps {
 
 const priceFormatter = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' })
 const stockFormatter = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 })
+
+function unitLabel(abbreviation: string) {
+  return abbreviation === 'UND' ? 'unid.' : abbreviation.toLowerCase()
+}
 
 export function ProductTable({ products, onEdit, onToggleStatus }: ProductTableProps) {
   if (products.length === 0) {
@@ -21,61 +27,63 @@ export function ProductTable({ products, onEdit, onToggleStatus }: ProductTableP
 
   return (
     <div className="overflow-x-auto rounded-3xl bg-surface">
-      <table className="w-full min-w-[760px] border-collapse text-left">
-        <thead className="text-xs text-muted">
-          <tr className="border-b border-separator">
-            <th scope="col" className="px-4 py-4 font-medium sm:px-5">Producto</th>
-            <th scope="col" className="px-4 py-4 font-medium">Categoría</th>
-            <th scope="col" className="px-4 py-4 text-right font-medium">Precio</th>
-            <th scope="col" className="px-4 py-4 text-right font-medium">Stock</th>
-            <th scope="col" className="px-4 py-4 text-center font-medium">Estado</th>
-            <th scope="col" className="px-4 py-4 text-right font-medium">Acción</th>
+      <table className="w-full min-w-180 border-collapse text-left">
+        <thead className="text-sm text-muted">
+          <tr>
+            <th scope="col" className="px-5 pt-4 pb-2 font-medium">Producto</th>
+            <th scope="col" className="w-32 px-3 pt-4 pb-2 text-right font-medium">Precio</th>
+            <th scope="col" className="w-32 px-3 pt-4 pb-2 text-right font-medium">Cantidad</th>
+            <th scope="col" className="w-48 px-3 pt-4 pb-2 font-medium">¿Se vende?</th>
+            <th scope="col" className="w-20 px-5 pt-4 pb-2"><span className="sr-only">Acción</span></th>
           </tr>
         </thead>
         <tbody>
           {products.map((product) => {
             const lowStock = product.minStock > 0 && product.currentStock <= product.minStock
             return (
-              <tr key={product.id} className="border-b border-separator last:border-0">
-                <th scope="row" className="px-4 py-4 font-semibold sm:px-5">
-                  <span className="block">{product.name}</span>
+              <tr key={product.id} className="border-t border-separator">
+                <th scope="row" className="px-5 py-3.5 text-left">
+                  <span className="block text-[1.0625rem] font-semibold">{product.name}</span>
+                  <span className="block text-sm font-normal text-muted">{product.categoryName}</span>
                 </th>
-                <td className="px-4 py-4 text-sm text-muted">{product.categoryName}</td>
-                <td className="px-4 py-4 text-right text-sm font-semibold">{priceFormatter.format(product.salePrice)}</td>
-                <td className={`px-4 py-4 text-right text-sm ${lowStock ? 'font-semibold text-warning' : ''}`}>
-                  {stockFormatter.format(product.currentStock)} {product.baseUnitAbbreviation}
+                <td className="px-3 py-3.5 text-right text-[1.0625rem] tabular-nums">
+                  {product.salePrice > 0 ? (
+                    <span className="font-bold">{priceFormatter.format(product.salePrice)}</span>
+                  ) : (
+                    <span className="text-sm text-muted">Sin precio</span>
+                  )}
                 </td>
-                <td className="px-4 py-4 text-center">
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={product.active}
+                <td className="px-3 py-3.5 text-right tabular-nums">
+                  <span className={`text-[1.0625rem] font-bold ${lowStock ? 'text-danger' : ''}`}>
+                    {stockFormatter.format(product.currentStock)}
+                  </span>{' '}
+                  <span className="text-sm text-muted">{unitLabel(product.baseUnitAbbreviation)}</span>
+                </td>
+                <td className="px-3 py-3.5">
+                  <Switch
+                    isSelected={product.active}
+                    onChange={() => onToggleStatus(product)}
                     aria-label={`${product.active ? 'Desactivar' : 'Activar'} ${product.name}`}
-                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-focus active:scale-[0.98] ${
-                      product.active ? 'bg-accent' : 'bg-default'
-                    }`}
-                    onClick={() => onToggleStatus(product)}
                   >
-                    <span
-                      aria-hidden="true"
-                      className={`absolute top-1 size-5 rounded-full bg-background transition-[left] duration-150 ease-out ${
-                        product.active ? 'left-6' : 'left-1'
-                      }`}
-                    />
-                  </button>
-                  <span className={`ml-2 text-xs ${product.active ? 'text-success' : 'text-muted'}`}>
-                    {product.active ? 'Activo' : 'Inactivo'}
-                  </span>
+                    <Switch.Content>
+                      <Switch.Control>
+                        <Switch.Thumb />
+                      </Switch.Control>
+                      <span className={`font-semibold ${product.active ? 'text-success' : 'text-muted'}`}>
+                        {product.active ? 'Sí, activo' : 'No, oculto'}
+                      </span>
+                    </Switch.Content>
+                  </Switch>
                 </td>
-                <td className="px-4 py-4 text-right">
-                  <button
-                    type="button"
-                    className="min-h-10 rounded-full bg-surface-secondary px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
-                    onClick={() => onEdit(product)}
+                <td className="px-5 py-3.5 text-right">
+                  <Button
+                    isIconOnly
+                    variant="secondary"
                     aria-label={`Editar ${product.name}`}
+                    onPress={() => onEdit(product)}
                   >
-                    Editar
-                  </button>
+                    <Pencil className="size-4" />
+                  </Button>
                 </td>
               </tr>
             )

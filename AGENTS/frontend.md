@@ -48,7 +48,7 @@ src/
 └── main.tsx
 ```
 
-Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/pages/`, `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
+Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/pages/`, `features/inventory/` (stock y retiro de vencidos), `features/purchases/` (ingreso de mercadería), `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
 
 **No crear carpetas vacías.** Crear la estructura progresivamente según se implemente cada módulo.
 
