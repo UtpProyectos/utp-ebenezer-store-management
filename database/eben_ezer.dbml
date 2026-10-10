@@ -109,6 +109,11 @@ Table supplier {
   active boolean [not null, default: true]
 }
 
+Table supplier_product {
+  supplier_id bigint [pk, not null]
+  product_id bigint [pk, not null]
+}
+
 Table purchase {
   purchase_id bigint [pk, increment]
 
@@ -345,6 +350,8 @@ Ref: promotion.unit_of_measure_id > unit_of_measure.unit_of_measure_id
 
 Ref: purchase.supplier_id > supplier.supplier_id
 Ref: purchase.user_id > users.user_id
+Ref: supplier_product.supplier_id > supplier.supplier_id
+Ref: supplier_product.product_id > product.product_id
 
 Ref: purchase_detail.purchase_id > purchase.purchase_id
 Ref: purchase_detail.product_id > product.product_id

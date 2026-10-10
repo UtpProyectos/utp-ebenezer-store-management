@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import pe.edu.utp.ebenezer.domain.entity.User;
+import pe.edu.utp.ebenezer.domain.enums.RoleName;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -15,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByEmailAndIdNot(String email, Long id);
+
+    Optional<User> findFirstByRole_NameAndActiveTrueOrderByIdAsc(RoleName roleName);
 }
