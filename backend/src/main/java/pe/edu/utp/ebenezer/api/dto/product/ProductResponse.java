@@ -15,6 +15,7 @@ public record ProductResponse(
         BigDecimal salePrice,
         BigDecimal minStock,
         Boolean active,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        BigDecimal currentStock
 ) {
 }
