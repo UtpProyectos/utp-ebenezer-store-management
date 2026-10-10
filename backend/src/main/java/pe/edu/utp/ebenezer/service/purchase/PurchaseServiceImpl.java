@@ -30,9 +30,9 @@ import pe.edu.utp.ebenezer.domain.repository.product.ProductRepository;
 import pe.edu.utp.ebenezer.domain.repository.purchase.PurchaseRepository;
 import pe.edu.utp.ebenezer.domain.repository.supplier.SupplierRepository;
 import pe.edu.utp.ebenezer.domain.repository.unit.UnitOfMeasureRepository;
-import pe.edu.utp.ebenezer.exception.BusinessException;
 import pe.edu.utp.ebenezer.exception.ResourceNotFoundException;
 import pe.edu.utp.ebenezer.security.CurrentUserProvider;
+import pe.edu.utp.ebenezer.service.unit.UnitConverter;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +59,8 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setStatus(PurchaseStatus.REGISTERED);
         purchase.setNotes(trimToNull(request.notes()));
 
+        prefetchProductsAndUnits(request.details());
+
         List<LotData> lotData = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
         for (PurchaseDetailRequest detailRequest : request.details()) {
@@ -76,6 +78,14 @@ public class PurchaseServiceImpl implements PurchaseService {
         return PurchaseMapper.toResponse(saved);
     }
 
+    // Loads every product and unit of the purchase in two queries; the per-line findById calls in
+    // buildDetail are then served from the persistence context, keeping the same validation order.
+    private void prefetchProductsAndUnits(List<PurchaseDetailRequest> details) {
+        productRepository.findAllById(details.stream().map(PurchaseDetailRequest::productId).distinct().toList());
+        unitOfMeasureRepository.findAllById(
+                details.stream().map(PurchaseDetailRequest::unitOfMeasureId).distinct().toList());
+    }
+
     private PurchaseDetail buildDetail(PurchaseDetailRequest request) {
         Product product = productRepository.findById(request.productId())
                 .filter(Product::getActive)
@@ -83,7 +93,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         UnitOfMeasure unit = unitOfMeasureRepository.findById(request.unitOfMeasureId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unit of measure not found"));
 
-        BigDecimal baseQuantity = toBaseQuantity(request.quantity(), unit, product.getBaseUnit());
+        BigDecimal baseQuantity = UnitConverter.toBaseQuantity(request.quantity(), unit, product.getBaseUnit());
         if (request.salePrice() != null) {
             product.setSalePrice(request.salePrice());
         }
@@ -96,20 +106,6 @@ public class PurchaseServiceImpl implements PurchaseService {
         detail.setUnitCost(request.subtotal().divide(request.quantity(), 4, RoundingMode.HALF_UP));
         detail.setSubtotal(request.subtotal().setScale(2, RoundingMode.HALF_UP));
         return detail;
-    }
-
-    // Unit conversions belong to services (AGENTS/database.md §21): quantity × factor(unit) / factor(base unit).
-    private static BigDecimal toBaseQuantity(BigDecimal quantity, UnitOfMeasure unit, UnitOfMeasure baseUnit) {
-        if (unit.getType() != baseUnit.getType()) {
-            throw new BusinessException("Unit " + unit.getAbbreviation()
-                    + " is not compatible with product base unit " + baseUnit.getAbbreviation());
-        }
-        BigDecimal baseQuantity = quantity.multiply(unit.getConversionFactor())
-                .divide(baseUnit.getConversionFactor(), 3, RoundingMode.HALF_UP);
-        if (baseQuantity.signum() <= 0) {
-            throw new BusinessException("Quantity is too small for the product base unit");
-        }
-        return baseQuantity;
     }
 
     private void registerLotsAndMovements(List<LotData> lotData, User user, LocalDateTime purchaseDate) {

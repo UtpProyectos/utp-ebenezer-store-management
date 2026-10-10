@@ -3,6 +3,7 @@ import ArrowLeft from '@gravity-ui/icons/ArrowLeft'
 import Bars from '@gravity-ui/icons/Bars'
 import { useMatches, useNavigate } from 'react-router'
 import { isRouteHandle } from '@/app/router/routeHandle'
+import { GlobalSearch } from './GlobalSearch'
 import { UserMenu } from './UserMenu'
 
 type AppHeaderProps = {
@@ -41,6 +42,7 @@ export function AppHeader({ onOpenMenu }: AppHeaderProps) {
         {handle?.subtitle && <p className="hidden truncate text-muted sm:block">{handle.subtitle}</p>}
       </div>
 
+      <GlobalSearch />
       <UserMenu />
     </header>
   )
