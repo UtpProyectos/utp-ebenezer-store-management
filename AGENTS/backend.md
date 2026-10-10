@@ -230,6 +230,10 @@ Endpoints:
 | POST | `/api/inventory/movements` | autenticado (retiro `WASTE` / `RETURN`, FEFO si no se indica lote) |
 | POST | `/api/purchases` | autenticado (ingreso: detalle → lote → movimiento `PURCHASE`) |
 | POST | `/api/sales` | autenticado (precio del producto + promoción vigente; FEFO sin lotes vencidos → movimientos `SALE`; `sale_history` `CREATED`) |
+| GET | `/api/sales?date=yyyy-MM-dd` | autenticado (ventas del día, hoy por defecto; todos los estados) |
+| GET | `/api/sales/changes?date=yyyy-MM-dd` | autenticado (ediciones y anulaciones del día desde `sale_history`) |
+| PUT | `/api/sales/{id}` | autenticado (corrige método de pago y cantidades con motivo: `REVERSAL` de las líneas cambiadas + FEFO de nuevo; estado `EDITED`) |
+| PATCH | `/api/sales/{id}/cancel` | autenticado (anula con motivo: `REVERSAL` por lote, estado `CANCELLED`; nunca se borra) |
 | POST | `/api/internal-consumptions` | autenticado (mismo FEFO que la venta → movimientos `INTERNAL_CONSUMPTION`, sin ingreso) |
 | GET | `/api/promotions` | autenticado (promociones activas y vigentes, la más reciente primero) |
 
