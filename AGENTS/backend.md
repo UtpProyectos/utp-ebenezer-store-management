@@ -226,6 +226,9 @@ Endpoints:
 | PATCH | `/api/users/{id}/status` | ADMIN (no puede desactivarse a sí mismo) |
 | PUT | `/api/users/{id}/password` | ADMIN (reset) |
 | GET | `/api/roles` | ADMIN |
+| GET | `/api/inventory` | autenticado (stock y estado por producto activo) |
+| POST | `/api/inventory/movements` | autenticado (retiro `WASTE` / `RETURN`, FEFO si no se indica lote) |
+| POST | `/api/purchases` | autenticado (ingreso: detalle → lote → movimiento `PURCHASE`) |
 
 Los usuarios no se eliminan físicamente (están referenciados por ventas/compras): se desactivan.
 

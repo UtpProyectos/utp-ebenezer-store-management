@@ -717,6 +717,8 @@ motivo = VENCIDO
 
 El costo de la pérdida puede derivarse del lote y su detalle de compra.
 
+La devolución al proveedor (`DEVOLUCION` / `RETURN`) también es una salida: `cantidad_base` negativa, con el mismo motivo (por ejemplo `VENCIDO` / `EXPIRED`). Si no se indica el lote, el servicio descuenta por FEFO.
+
 ---
 
 # 14. Lista de compra

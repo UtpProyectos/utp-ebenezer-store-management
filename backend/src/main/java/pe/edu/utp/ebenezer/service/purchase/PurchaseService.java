@@ -1,5 +1,10 @@
 package pe.edu.utp.ebenezer.service.purchase;
 
-// TODO(team): declare the Purchase use cases here (request/response DTOs from api.dto.purchase).
+import pe.edu.utp.ebenezer.api.dto.purchase.PurchaseRequest;
+import pe.edu.utp.ebenezer.api.dto.purchase.PurchaseResponse;
+
 public interface PurchaseService {
+
+    /** Registers a purchase: details, one lot per detail and a positive PURCHASE movement per lot. */
+    PurchaseResponse create(PurchaseRequest request);
 }

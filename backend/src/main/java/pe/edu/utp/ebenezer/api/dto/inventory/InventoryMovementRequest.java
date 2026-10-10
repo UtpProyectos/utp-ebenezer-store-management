@@ -9,7 +9,8 @@ import jakarta.validation.constraints.Size;
 
 import pe.edu.utp.ebenezer.domain.enums.InventoryMovementType;
 
-// Manual movements (WASTE, ADJUSTMENT_IN, ADJUSTMENT_OUT). quantity is in the product base unit; the service applies the sign.
+// Manual withdrawals (WASTE, RETURN to supplier). quantity is in the product base unit; the service applies the sign.
+// Without lotId the quantity is taken from the lots with stock using FEFO.
 public record InventoryMovementRequest(
         @NotNull Long productId,
         Long lotId,

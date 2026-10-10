@@ -94,7 +94,12 @@ public class ProductServiceImpl implements ProductService {
         product.setName(request.name().trim());
         product.setDescription(normalize(request.description()));
         product.setBarcode(barcode);
-        product.setSalePrice(request.salePrice());
+        if (request.salePrice() != null) {
+            product.setSalePrice(request.salePrice());
+        } else if (product.getSalePrice() == null) {
+            // No price until the first purchase entry sets it.
+            product.setSalePrice(BigDecimal.ZERO);
+        }
         product.setMinStock(request.minStock() == null ? BigDecimal.ZERO : request.minStock());
         if (product.getActive() == null) {
             product.setActive(true);

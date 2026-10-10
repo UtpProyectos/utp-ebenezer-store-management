@@ -1,196 +1,279 @@
-import { useState, type FormEvent } from 'react'
-import type { Product } from '../types/product.types'
-import type { CategoryOption, ProductInput, UnitOption } from '../types/product.types'
+import { useState, type FormEvent, type KeyboardEvent } from 'react'
+import { Button, Input, Label, ListBox, Modal, Select, TextArea, TextField } from '@heroui/react'
+import ChevronDown from '@gravity-ui/icons/ChevronDown'
+import Plus from '@gravity-ui/icons/Plus'
+import type { CategoryOption, Product, ProductInput, UnitOption } from '../types/product.types'
 
 interface ProductFormProps {
   product?: Product
+  /** Prefills the name when creating (e.g. from a search with no results). */
+  initialName?: string
   categories: CategoryOption[]
   units: UnitOption[]
   saving: boolean
   error: string | null
   onSubmit: (input: ProductInput) => Promise<void>
+  onCreateCategory: (name: string) => Promise<CategoryOption>
   onCancel: () => void
 }
 
-const fieldClassName =
-  'min-h-11 w-full rounded-xl border border-separator bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-focus'
+const decimalsOnly = (value: string) => value.replace(/[^0-9.]/g, '')
 
-export function ProductForm({ product, categories, units, saving, error, onSubmit, onCancel }: ProductFormProps) {
+function messageFromError(error: unknown) {
+  return error instanceof Error ? error.message : 'No se pudo crear la categoría.'
+}
+
+export function ProductForm({
+  product,
+  initialName,
+  categories,
+  units,
+  saving,
+  error,
+  onSubmit,
+  onCreateCategory,
+  onCancel,
+}: ProductFormProps) {
   const defaultUnit = units.find((unit) => unit.abbreviation === 'UND') ?? units[0]
-  const [name, setName] = useState(product?.name ?? '')
+  const [name, setName] = useState(product?.name ?? initialName ?? '')
   const [categoryId, setCategoryId] = useState(String(product?.categoryId ?? categories[0]?.id ?? ''))
   const [baseUnitId, setBaseUnitId] = useState(String(product?.baseUnitId ?? defaultUnit?.id ?? ''))
+  const [barcode, setBarcode] = useState(product?.barcode ?? '')
   const [description, setDescription] = useState(product?.description ?? '')
-  const [salePrice, setSalePrice] = useState(String(product?.salePrice ?? ''))
   const [minStock, setMinStock] = useState(String(product?.minStock ?? 0))
+  const [showDetails, setShowDetails] = useState(Boolean(product?.barcode || product?.description))
+  const [creatingCategory, setCreatingCategory] = useState(categories.length === 0)
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [categorySaving, setCategorySaving] = useState(false)
+  const [categoryError, setCategoryError] = useState<string | null>(null)
+  const categoryInactive = product !== undefined && !categories.some((category) => category.id === product.categoryId)
+  const busy = saving || categorySaving
+
+  async function createCategory() {
+    const categoryName = newCategoryName.trim()
+    if (!categoryName) return
+    setCategorySaving(true)
+    setCategoryError(null)
+    try {
+      const category = await onCreateCategory(categoryName)
+      setCategoryId(String(category.id))
+      setNewCategoryName('')
+      setCreatingCategory(false)
+    } catch (createError: unknown) {
+      setCategoryError(messageFromError(createError))
+    } finally {
+      setCategorySaving(false)
+    }
+  }
+
+  function handleCategoryKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    // Enter creates the category instead of submitting the product form.
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      void createCategory()
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (creatingCategory || !categoryId || (categoryInactive && Number(categoryId) === product?.categoryId)) {
+      setCategoryError('Crea o elige una categoría antes de guardar.')
+      return
+    }
     await onSubmit({
       name: name.trim(),
       categoryId: Number(categoryId),
       baseUnitId: Number(baseUnitId),
-      barcode: product?.barcode ?? null,
+      barcode: barcode.trim() || null,
       description: description.trim() || null,
-      salePrice: Number(salePrice),
-      minStock: Number(minStock),
+      minStock: Number(minStock) || 0,
     })
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/40"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !saving) onCancel()
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Escape' && !saving) onCancel()
-      }}
-    >
-      <form
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="product-form-title"
-        className="ml-auto flex h-full w-full max-w-md flex-col border-l border-separator bg-surface shadow-xl"
-        onSubmit={handleSubmit}
-      >
-        <header className="flex items-start justify-between border-b border-separator px-5 py-4">
-          <div>
-            <p className="text-xs text-muted">Catálogo</p>
-            <h2 id="product-form-title" className="text-lg font-bold">
-              {product ? 'Editar producto' : 'Nuevo producto'}
-            </h2>
-          </div>
-          <button
-            type="button"
-            className="rounded-full p-2 text-muted hover:bg-surface-secondary hover:text-foreground focus-visible:outline-2 focus-visible:outline-focus"
-            aria-label="Cerrar formulario"
-            onClick={onCancel}
-            disabled={saving}
-          >
-            <svg aria-hidden="true" viewBox="0 0 20 20" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.7">
-              <path strokeLinecap="round" d="m5 5 10 10M15 5 5 15" />
-            </svg>
-          </button>
-        </header>
+    <Modal.Backdrop isOpen isDismissable={!busy} isKeyboardDismissDisabled={busy} onOpenChange={(open) => !open && onCancel()}>
+      <Modal.Container size="md">
+        <Modal.Dialog className="rounded-3xl" aria-labelledby="product-form-title">
+          <Modal.CloseTrigger aria-label="Cerrar formulario" />
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <Modal.Header>
+              <Modal.Heading id="product-form-title" className="text-lg font-bold">
+                {product ? 'Editar producto' : 'Nuevo producto'}
+              </Modal.Heading>
+            </Modal.Header>
 
-        <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            <span>Nombre <span className="text-danger">*</span></span>
-            <input
-              className={fieldClassName}
-              autoFocus
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Ej. Galletas de vainilla 6 unid."
-              required
-              maxLength={150}
-            />
-          </label>
+            <Modal.Body className="flex flex-col gap-4">
+              <TextField value={name} onChange={setName} isRequired maxLength={150} autoFocus>
+                <Label>Nombre</Label>
+                <Input placeholder="Ej. Galletas de vainilla 6 unid." />
+              </TextField>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5 text-sm font-medium">
-              Categoría
-              <select
-                className={fieldClassName}
-                value={categoryId}
-                onChange={(event) => setCategoryId(event.target.value)}
-                required
+              <div className="flex flex-col gap-1.5">
+                {creatingCategory ? (
+                  <>
+                    <TextField value={newCategoryName} onChange={setNewCategoryName} maxLength={100} isDisabled={categorySaving}>
+                      <Label>Nueva categoría</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          className="min-w-0 flex-1"
+                          placeholder="Ej. Bebidas"
+                          onKeyDown={handleCategoryKeyDown}
+                          autoFocus={categories.length > 0}
+                        />
+                        <Button
+                          isPending={categorySaving}
+                          isDisabled={!newCategoryName.trim()}
+                          onPress={() => void createCategory()}
+                        >
+                          Crear
+                        </Button>
+                        {categories.length > 0 && (
+                          <Button
+                            variant="tertiary"
+                            isDisabled={categorySaving}
+                            onPress={() => {
+                              setCategoryError(null)
+                              setCreatingCategory(false)
+                            }}
+                          >
+                            Cancelar
+                          </Button>
+                        )}
+                      </div>
+                    </TextField>
+                    {categories.length === 0 && (
+                      <p className="text-xs text-muted">Aún no hay categorías: escribe el nombre de la primera.</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                  {/* Kept outside <Select>: any Button inside it is taken over as the select trigger. */}
+                  <div className="flex items-center justify-between">
+                    <Label id="product-category-label" isRequired>Categoría</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      isDisabled={busy}
+                      onPress={() => {
+                        setCategoryError(null)
+                        setCreatingCategory(true)
+                      }}
+                    >
+                      <Plus aria-hidden="true" className="size-4" />
+                      Nueva categoría
+                    </Button>
+                  </div>
+                  <Select
+                    aria-labelledby="product-category-label"
+                    placeholder="Selecciona una categoría"
+                    value={categoryId || null}
+                    onChange={(key) => setCategoryId(key === null ? '' : String(key))}
+                    isRequired
+                  >
+                    <Select.Trigger>
+                      <Select.Value />
+                      <Select.Indicator />
+                    </Select.Trigger>
+                    <Select.Popover>
+                      <ListBox>
+                        {categories.map((category) => (
+                          <ListBox.Item key={category.id} id={String(category.id)} textValue={category.name}>
+                            {category.name}
+                            <ListBox.ItemIndicator />
+                          </ListBox.Item>
+                        ))}
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
+                  </>
+                )}
+
+                {categoryInactive && !creatingCategory && (
+                  <p className="text-xs text-danger">La categoría actual está desactivada; elige otra.</p>
+                )}
+                {categoryError && <p role="alert" className="text-xs text-danger">{categoryError}</p>}
+              </div>
+
+              <Button
+                variant="tertiary"
+                fullWidth
+                aria-expanded={showDetails}
+                className="justify-between"
+                onPress={() => setShowDetails((open) => !open)}
               >
-                <option value="" disabled>Selecciona una categoría</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-medium">
-              Presentación
-              <select
-                className={fieldClassName}
-                value={baseUnitId}
-                onChange={(event) => setBaseUnitId(event.target.value)}
-                required
-              >
-                <option value="" disabled>Selecciona una presentación</option>
-                {units.map((unit) => (
-                  <option key={unit.id} value={unit.id}>{unit.name} ({unit.abbreviation})</option>
-                ))}
-              </select>
-            </label>
-          </div>
+                <span>Más detalles <span className="font-normal text-muted">(opcional)</span></span>
+                <ChevronDown
+                  aria-hidden="true"
+                  className={`size-4 transition-transform duration-150 ease-out ${showDetails ? 'rotate-180' : ''}`}
+                />
+              </Button>
 
-          <div className="rounded-2xl bg-surface-secondary p-3">
-            <p className="text-sm font-semibold">Control de inventario</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted">
-              El stock se mide en la presentación elegida y se actualiza desde los movimientos de inventario.
-            </p>
-          </div>
+              {showDetails && (
+                <div className="flex flex-col gap-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Select
+                      value={baseUnitId || null}
+                      onChange={(key) => setBaseUnitId(key === null ? '' : String(key))}
+                      isRequired
+                    >
+                      <Label>Se vende por</Label>
+                      <Select.Trigger>
+                        <Select.Value />
+                        <Select.Indicator />
+                      </Select.Trigger>
+                      <Select.Popover>
+                        <ListBox>
+                          {units.map((unit) => (
+                            <ListBox.Item key={unit.id} id={String(unit.id)} textValue={unit.name}>
+                              {unit.name} ({unit.abbreviation})
+                              <ListBox.ItemIndicator />
+                            </ListBox.Item>
+                          ))}
+                        </ListBox>
+                      </Select.Popover>
+                    </Select>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5 text-sm font-medium">
-              Stock mínimo
-              <input
-                className={fieldClassName}
-                type="number"
-                min="0"
-                step="0.001"
-                value={minStock}
-                onChange={(event) => setMinStock(event.target.value)}
-                required
-              />
-              <span className="text-xs font-normal text-muted">Recibirás una alerta al llegar a este nivel.</span>
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-medium">
-              <span>Precio de venta (S/) <span className="text-danger">*</span></span>
-              <input
-                className={fieldClassName}
-                type="number"
-                min="0"
-                step="0.01"
-                value={salePrice}
-                onChange={(event) => setSalePrice(event.target.value)}
-                placeholder="0.00"
-                required
-              />
-            </label>
-          </div>
+                    <TextField value={minStock} onChange={(value) => setMinStock(decimalsOnly(value))}>
+                      <Label>Avisar cuando queden</Label>
+                      <Input inputMode="decimal" placeholder="0" />
+                    </TextField>
+                  </div>
 
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            Descripción <span className="font-normal text-muted">(opcional)</span>
-            <textarea
-              className={`${fieldClassName} min-h-24 resize-y rounded-2xl py-3`}
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="Agrega detalles que ayuden a identificar el producto"
-              maxLength={300}
-            />
-          </label>
+                  <TextField value={barcode} onChange={setBarcode} maxLength={100}>
+                    <Label>Código de barras</Label>
+                    <Input placeholder="Ej. 7751234567890" />
+                  </TextField>
 
-          {error && (
-            <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger-soft-foreground">
-              {error}
-            </p>
-          )}
-        </div>
+                  <TextField value={description} onChange={setDescription} maxLength={300}>
+                    <Label>Descripción</Label>
+                    <TextArea placeholder="Detalles que ayuden a identificar el producto" rows={3} />
+                  </TextField>
+                </div>
+              )}
 
-        <footer className="flex justify-end gap-2 border-t border-separator bg-surface px-5 py-4">
-          <button
-            type="button"
-            className="min-h-11 rounded-full border border-separator px-5 text-sm font-semibold hover:bg-surface-secondary focus-visible:outline-2 focus-visible:outline-focus disabled:opacity-60"
-            onClick={onCancel}
-            disabled={saving}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="min-h-11 rounded-full bg-accent px-5 text-sm font-semibold text-background hover:opacity-90 focus-visible:outline-2 focus-visible:outline-focus disabled:opacity-60"
-            disabled={saving || categories.length === 0 || units.length === 0}
-          >
-            {saving ? 'Guardando…' : product ? 'Guardar cambios' : 'Crear producto'}
-          </button>
-        </footer>
-      </form>
-    </div>
+              <p className="rounded-2xl bg-surface-secondary px-4 py-3 text-sm text-muted">
+                El precio de venta se define en cada <span className="font-semibold text-foreground">Ingreso de mercadería</span>,
+                así puedes cambiarlo cuando cambie el costo.
+              </p>
+
+              {error && (
+                <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger-soft-foreground">
+                  {error}
+                </p>
+              )}
+            </Modal.Body>
+
+            <Modal.Footer className="flex justify-end gap-2">
+              <Button variant="tertiary" isDisabled={busy} onPress={onCancel}>
+                Cancelar
+              </Button>
+              <Button type="submit" isPending={saving} isDisabled={busy || units.length === 0}>
+                {saving ? 'Guardando…' : product ? 'Guardar cambios' : 'Crear producto'}
+              </Button>
+            </Modal.Footer>
+          </form>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   )
 }

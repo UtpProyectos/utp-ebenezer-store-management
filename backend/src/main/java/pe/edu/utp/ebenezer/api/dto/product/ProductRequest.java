@@ -14,7 +14,8 @@ public record ProductRequest(
         @NotBlank @Size(max = 150) String name,
         @Size(max = 300) String description,
         @Size(max = 100) String barcode,
-        @NotNull @PositiveOrZero @Digits(integer = 10, fraction = 2) BigDecimal salePrice,
+        // Optional: the sale price is normally set on each purchase entry (Ingreso de mercadería).
+        @PositiveOrZero @Digits(integer = 10, fraction = 2) BigDecimal salePrice,
         @PositiveOrZero @Digits(integer = 12, fraction = 3) BigDecimal minStock
 ) {
 }
