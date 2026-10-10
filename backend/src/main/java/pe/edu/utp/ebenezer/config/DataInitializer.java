@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import pe.edu.utp.ebenezer.service.user.UserService;
 @Component
 @RequiredArgsConstructor
 @EnableConfigurationProperties(BootstrapAdminProperties.class)
+@Order(1)
 public class DataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);

@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router/dom'
 import { AdminPage } from '@/features/admin/pages/AdminPage'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
+import { ProductListPage } from '@/features/products/pages/ProductListPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { AppLayout } from '@/shared/components/layout/AppLayout'
 import { PagePlaceholder } from '@/shared/components/ui/PagePlaceholder'
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
             element: <ProtectedRoute roles={['ADMIN']} />,
             children: [
               page(ROUTES.admin, { title: 'Administración', subtitle: 'Datos de la tienda, usuarios y reportes' }, <AdminPage />),
-              page(ROUTES.products, { title: 'Productos', subtitle: 'Precios y datos de lo que vendes', parent: ADMIN }),
+              page(ROUTES.products, { title: 'Productos', subtitle: 'Precios y datos de lo que vendes', parent: ADMIN }, <ProductListPage />),
               page(ROUTES.categories, { title: 'Categorías', subtitle: 'Grupos para ordenar tus productos', parent: ADMIN }),
               page(ROUTES.suppliers, { title: 'Proveedores', subtitle: 'A quién le compras', parent: ADMIN }),
               page(ROUTES.users, { title: 'Usuarios', subtitle: 'Quién puede entrar al sistema', parent: ADMIN }),

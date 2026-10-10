@@ -41,3 +41,5 @@ app:
       name: ${ADMIN_NAME:Administrator}
       username: ${ADMIN_USERNAME:admin}
       password: ${ADMIN_PASSWORD:}
+  demo-catalog:
+    enabled: ${DEMO_CATALOG_ENABLED:false}
