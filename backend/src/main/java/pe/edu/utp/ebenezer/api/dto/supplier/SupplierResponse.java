@@ -1,5 +1,7 @@
 package pe.edu.utp.ebenezer.api.dto.supplier;
 
+import java.util.List;
+
 import pe.edu.utp.ebenezer.domain.enums.SupplierType;
 
 public record SupplierResponse(
@@ -11,6 +13,7 @@ public record SupplierResponse(
         String contactName,
         String address,
         String notes,
-        Boolean active
+        Boolean active,
+        List<SupplierProductResponse> products
 ) {
 }

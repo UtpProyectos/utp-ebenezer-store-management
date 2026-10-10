@@ -64,6 +64,8 @@ cp .env.example .env      # completar DB_URL, DB_USERNAME, DB_PASSWORD
 
 El archivo `backend/.env` se carga automáticamente y **nunca** se commitea.
 
+Para cargar el catálogo, los proveedores, sus productos principales y las cuatro cuentas de la familia en una base de prueba, agrega `DEMO_CATALOG_ENABLED=true` a `backend/.env` y reinicia el backend. La carga agrega solo productos y usuarios faltantes; no reemplaza registros existentes. Las cuentas demo nuevas usan como contraseña inicial el mismo formato `nombre.apellido` del usuario.
+
 ### Frontend
 
 ```bash

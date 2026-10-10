@@ -1,5 +1,10 @@
 package pe.edu.utp.ebenezer.service.unit;
 
-// TODO(team): declare the UnitOfMeasure use cases here (request/response DTOs from api.dto.unit).
+import java.util.List;
+
+import pe.edu.utp.ebenezer.api.dto.unit.UnitOfMeasureResponse;
+
 public interface UnitOfMeasureService {
+
+    List<UnitOfMeasureResponse> findAll();
 }

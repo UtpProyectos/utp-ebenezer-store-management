@@ -1,0 +1,167 @@
+GUIA RAPIDA PARA INICIAR EL SISTEMA EN WINDOWS
+Eben-Ezer Store Management - uso local para revisar o exponer
+
+Esta guia es para iniciar el proyecto que ya esta instalado. No incluye la
+instalacion de Java, Node.js, PostgreSQL ni otras herramientas.
+
+IMPORTANTE
+- Se necesitan tres partes: PostgreSQL (base de datos), backend (API) y
+  frontend (pagina web).
+- No es obligatorio abrir Visual Studio, Visual Studio Code ni IntelliJ para
+  ejecutar la pagina. Solo necesitas PowerShell y un navegador. Un editor sirve
+  para explorar o modificar el codigo.
+- El backend y el frontend deben quedar ejecutandose en dos ventanas distintas
+  de PowerShell. No cierres esas ventanas mientras uses el sistema.
+- El backend debe conectarse a la base PostgreSQL local. No cambies la
+  configuracion para apuntar a la base compartida del equipo.
+- No compartas ni subas los archivos backend\.env o frontend\.env.local:
+  pueden contener contrasenas y configuracion privada.
+- No ejecutes "npm install" para el inicio normal. Solo se usa al instalar o
+  restaurar dependencias.
+
+1. PREPARAR EL PROYECTO
+
+1) Abre GitHub Desktop y selecciona el repositorio
+   utp-ebenezer-store-management.
+2) Verifica que la rama seleccionada sea feat/cristian.
+3) Si necesitas traer cambios nuevos del equipo, pulsa "Fetch origin" y luego
+   "Pull origin" si aparece. Si GitHub Desktop muestra cambios locales que no
+   reconoces, no los confirmes ni los descartes; pide ayuda antes.
+4) Para ejecutar la pagina, puedes continuar directamente con PowerShell; no
+   hace falta abrir un editor. Si quieres revisar o cambiar codigo, abre la
+   carpeta del proyecto en Visual Studio Code o IntelliJ. No necesitas abrir
+   ambos. Visual Studio (el IDE grande de Microsoft) no es lo mismo que Visual
+   Studio Code y tampoco es necesario para este procedimiento.
+
+   La carpeta local usada durante la configuracion fue:
+   C:\Users\PC\Documents\GitHub\utp-ebenezer-store-management
+
+   Si guardaste el repositorio en otra ubicacion, usa esa ubicacion en los
+   comandos de las siguientes secciones.
+
+2. INICIAR POSTGRESQL
+
+pgAdmin es una herramienta para administrar PostgreSQL; abrir pgAdmin no siempre
+inicia el servidor de base de datos. Comprueba el servidor en Windows:
+
+1) Abre el menu Inicio, escribe "Servicios" y abre la aplicacion Servicios.
+   Tambien puedes presionar Win+R, escribir services.msc y pulsar Enter.
+2) Busca el servicio llamado "postgresql" (puede incluir el numero de version,
+   por ejemplo PostgreSQL 17).
+3) Si su estado dice "En ejecucion", no hagas nada. Si esta detenido, haz
+   clic derecho sobre el servicio y selecciona "Iniciar".
+4) Cierra la ventana de Servicios. Puedes dejar pgAdmin abierto o cerrarlo;
+   no es necesario para que la aplicacion web funcione.
+
+La base de datos debe estar creada y configurada previamente. No borres,
+restaures ni recrees la base para iniciar el sistema. El backend lee su
+configuracion local desde backend\.env; no es necesario abrir ni editar ese
+archivo si ya funcionaba.
+
+Para cargar el catalogo de demostracion la primera vez, agrega esta linea a
+backend\.env antes de iniciar el backend:
+
+   DEMO_CATALOG_ENABLED=true
+
+Antes de hacerlo, verifica dentro de backend\.env que DB_URL use localhost o
+127.0.0.1. Si apunta a un servidor remoto o no estas seguro, no actives la
+carga. No compartas el contenido de backend\.env: contiene datos privados.
+
+La carga crea las 7 categorias, la unidad UND, los 40 productos y sus
+movimientos de stock inicial cuando la tabla de productos esta vacia. Tambien
+agrega los 5 proveedores del archivo entregado cuando la tabla de proveedores
+esta vacia. En cada inicio se comprueba si esas tablas siguen vacias; los datos
+existentes no se reemplazan. La opcion esta desactivada por defecto.
+El archivo de productos no incluye lotes ni fechas de vencimiento, asi que la
+carga no los inventa. La informacion de productos principales y el historial
+de compras de proveedores se incorporara cuando exista el modulo de compras.
+Para cargar los datos en una base compartida mas adelante, coordina primero
+con el equipo y haz una copia de seguridad; usa la misma opcion solo cuando
+todos hayan confirmado que esa base no tiene productos que deban preservarse.
+
+3. INICIAR EL BACKEND (API)
+
+1) Abre una ventana de PowerShell.
+2) Copia y ejecuta:
+
+   cd "C:\Users\PC\Documents\GitHub\utp-ebenezer-store-management\backend"
+   .\mvnw.cmd spring-boot:run
+
+3) Espera a que Spring Boot indique que inicio correctamente. Deja esta
+   ventana abierta.
+4) Para comprobar la API, abre en el navegador:
+
+   http://localhost:8080/api/health
+
+   Debe responder con un estado "UP". Si no responde, revisa que la ventana del
+   backend siga ejecutandose y que PostgreSQL este iniciado.
+
+4. INICIAR EL FRONTEND (PAGINA WEB)
+
+1) Abre una segunda ventana de PowerShell; no detengas la del backend.
+2) Copia y ejecuta:
+
+   cd "C:\Users\PC\Documents\GitHub\utp-ebenezer-store-management\frontend"
+   npm.cmd run dev
+
+3) Espera a que Vite muestre una direccion local, normalmente:
+
+   http://localhost:5173
+
+4) Deja tambien esta ventana abierta.
+5) Abre el navegador en:
+
+   http://localhost:5173
+
+   Para ir directamente a la pantalla principal de Administracion:
+
+   http://localhost:5173/admin
+
+Si solicita iniciar sesion, usa la cuenta local que ya configuraste. La ruta
+/admin requiere un usuario con rol ADMIN. No se incluye ninguna contrasena en
+esta guia.
+
+5. ORDEN DE INICIO EN UNA EXPOSICION
+
+1) Iniciar o comprobar PostgreSQL en Servicios.
+2) Iniciar el backend y esperar a que arranque.
+3) Iniciar el frontend y esperar la direccion local de Vite.
+4) Abrir el navegador y entrar a http://localhost:5173/admin.
+5) Iniciar sesion si se solicita.
+
+El orden importa: el backend necesita la base de datos, y el frontend envia
+sus solicitudes a la API del backend.
+
+6. APAGAR EL SISTEMA
+
+1) En la ventana del frontend, presiona Ctrl+C y confirma si PowerShell lo
+   solicita.
+2) En la ventana del backend, presiona Ctrl+C.
+3) No es necesario detener PostgreSQL; puede permanecer iniciado para otros
+   programas. Si deseas detenerlo, hazlo desde Servicios y solo si sabes que
+   ninguna otra aplicacion lo esta usando.
+
+7. SI ALGO NO FUNCIONA
+
+- "No se puede acceder a localhost:5173": comprueba que la ventana del
+  frontend siga abierta y que Vite haya mostrado esa direccion.
+- La pagina abre, pero no carga datos o muestra error de conexion: comprueba
+  que el backend siga abierto y que
+  http://localhost:8080/api/health responda "UP".
+- El backend muestra un error de conexion a PostgreSQL: vuelve a Servicios y
+  comprueba PostgreSQL. Si sigue fallando, la configuracion local o la base
+  de datos requiere revision; no publiques ni compartas backend\.env.
+- "Address already in use" o puerto ocupado: puede haber otra instancia
+  usando el puerto 8080 o 5173. Busca las ventanas de PowerShell anteriores y
+  detenlas con Ctrl+C antes de volver a iniciar.
+- No aparece Administracion o se deniega el acceso: inicia sesion con una
+  cuenta que tenga rol ADMIN y abre de nuevo /admin.
+- Si GitHub Desktop muestra archivos modificados que no esperabas, no los
+  confirmes ni los descartes sin revisarlos.
+
+NOTA SOBRE LA PANTALLA DE ADMINISTRACION
+
+La pantalla principal presenta accesos a Productos, Categorias, Proveedores,
+Usuarios, Historiales y Configuracion. Algunas paginas de destino todavia
+pueden estar en construccion; que aparezca una tarjeta no significa que toda
+la funcionalidad de ese modulo ya este implementada.
