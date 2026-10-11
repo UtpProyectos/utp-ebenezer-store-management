@@ -77,6 +77,19 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<InventoryMovementResponse> findMovements(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new BusinessException("The start date must not be after the end date");
+        }
+        return inventoryMovementRepository
+                .findByMovementDateGreaterThanEqualAndMovementDateLessThanOrderByMovementDateDescIdDesc(
+                        from.atStartOfDay(), to.plusDays(1).atStartOfDay()).stream()
+                .map(InventoryMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     @Transactional
     public List<InventoryMovementResponse> registerWithdrawal(InventoryMovementRequest request) {
         if (!WITHDRAWAL_TYPES.contains(request.movementType())) {

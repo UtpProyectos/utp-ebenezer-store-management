@@ -42,9 +42,9 @@ public class SupplierController {
         return supplierService.findById(id);
     }
 
+    // Any authenticated user can create it (a cashier may need it before the admin registers it).
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
     public SupplierResponse create(@Valid @RequestBody SupplierRequest request) {
         return supplierService.create(request);
     }

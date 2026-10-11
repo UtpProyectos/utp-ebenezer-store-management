@@ -37,17 +37,18 @@ export const NAV_GROUPS: NavItem[][] = [
     { label: 'Historial', path: ROUTES.salesHistory, icon: Receipt },
     { label: 'Asistente', path: ROUTES.assistant, icon: Sparkles },
   ],
-  [{ label: 'Administración', path: ROUTES.admin, icon: Gear, roles: ADMIN_ONLY }],
+  // Every role enters Configuración; each tile below declares who can see it.
+  [{ label: 'Configuración', path: ROUTES.admin, icon: Gear }],
 ]
 
-/** Tiles of the Administration hub (admin only). */
+/** Tiles of the Configuración hub. Cashiers see the catalog (create only) and their preferences. */
 export const ADMIN_ITEMS: NavItem[] = [
   { label: 'Productos', path: ROUTES.products, icon: Box, description: 'Precios, códigos y datos completos' },
   { label: 'Categorías', path: ROUTES.categories, icon: Tag, description: 'Grupos para ordenar lo que vendes' },
   { label: 'Proveedores', path: ROUTES.suppliers, icon: Handset, description: 'A quién le compras y sus teléfonos' },
-  { label: 'Usuarios', path: ROUTES.users, icon: Persons, description: 'Quién entra al sistema y con qué rol' },
-  { label: 'Historiales', path: ROUTES.history, icon: ClockArrowRotateLeft, description: 'Ventas, ingresos, movimientos y consumo' },
-  { label: 'Configuración', path: ROUTES.settings, icon: Sliders, description: 'Nombre de la tienda, moneda y avisos' },
+  { label: 'Usuarios', path: ROUTES.users, icon: Persons, description: 'Quién entra al sistema y con qué rol', roles: ADMIN_ONLY },
+  { label: 'Historiales', path: ROUTES.history, icon: ClockArrowRotateLeft, description: 'Ventas, ingresos, movimientos y consumo', roles: ADMIN_ONLY },
+  { label: 'Preferencias', path: ROUTES.settings, icon: Sliders, description: 'Tamaño de letra y datos de la tienda' },
 ]
 
 export function canSee(item: NavItem, role: RoleName | undefined): boolean {

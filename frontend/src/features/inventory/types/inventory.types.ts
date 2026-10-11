@@ -38,14 +38,26 @@ export interface InventoryMovementRequest {
   notes?: string | null
 }
 
+export type InventoryMovementType =
+  | 'PURCHASE'
+  | 'SALE'
+  | 'INTERNAL_CONSUMPTION'
+  | 'WASTE'
+  | 'ADJUSTMENT_IN'
+  | 'ADJUSTMENT_OUT'
+  | 'RETURN'
+  | 'REVERSAL'
+
 export interface InventoryMovementResponse {
   id: number
   productId: number
   productName: string
+  baseUnitAbbreviation: string
   lotId: number | null
   userId: number
   userName: string
-  movementType: string
+  movementType: InventoryMovementType
+  /** Signed: positive entries, negative withdrawals. In the product base unit. */
   baseQuantity: number
   purchaseDetailId: number | null
   saleDetailId: number | null

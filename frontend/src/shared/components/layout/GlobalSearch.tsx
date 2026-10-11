@@ -4,14 +4,12 @@ import Magnifier from '@gravity-ui/icons/Magnifier'
 import ShoppingBag from '@gravity-ui/icons/ShoppingBag'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/app/router/routes'
-import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useGlobalSearch, type GlobalSearchResult } from '@/shared/hooks/useGlobalSearch'
 
-// Header search of the prototype: products go to Inventory, suppliers to Suppliers (admin only).
+// Header search of the prototype: products go to Inventory, suppliers to Suppliers.
 export function GlobalSearch() {
-  const { user } = useAuth()
   const navigate = useNavigate()
-  const { load, search } = useGlobalSearch(user?.role === 'ADMIN')
+  const { load, search } = useGlobalSearch()
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -69,7 +67,7 @@ export function GlobalSearch() {
         aria-controls="global-search-results"
         aria-autocomplete="list"
         value={query}
-        placeholder={user?.role === 'ADMIN' ? 'Buscar producto, proveedor…' : 'Buscar producto…'}
+        placeholder="Buscar producto, proveedor…"
         onChange={(event) => {
           setQuery(event.target.value)
           setActive(0)

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Button, Spinner } from '@heroui/react'
 import { ROUTES } from '@/app/router/routes'
-import { useAuth } from '@/features/auth'
 import { useInventory } from '@/features/inventory'
 import { CreateProductModal } from '@/features/products'
 import { MoreDetailsSection } from '../components/MoreDetailsSection'
@@ -16,7 +15,6 @@ import { useSupplierOptions } from '../hooks/useSupplierOptions'
 
 export function PurchaseEntryPage() {
   const navigate = useNavigate()
-  const { user } = useAuth()
   const [newProductName, setNewProductName] = useState<string | null>(null)
   const [searchParams] = useSearchParams()
   const initialProductId = Number(searchParams.get('productId')) || null
@@ -69,18 +67,14 @@ export function PurchaseEntryPage() {
           invalid={entry.errors.product}
           onSelect={entry.selectProduct}
           onClear={entry.clearProduct}
-          onCreateProduct={user?.role === 'ADMIN' ? setNewProductName : undefined}
+          onCreateProduct={setNewProductName}
         />
         <QuantityStep entry={entry} />
         <SalePriceStep entry={entry} />
         <MoreDetailsSection
           entry={entry}
           suppliers={suppliers}
-          onCreateSupplier={
-            user?.role === 'ADMIN'
-              ? (name) => createSupplier(name, entry.product?.productId ?? null)
-              : undefined
-          }
+          onCreateSupplier={(name) => createSupplier(name, entry.product?.productId ?? null)}
         />
       </div>
 

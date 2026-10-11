@@ -13,6 +13,7 @@ public final class InventoryMapper {
                 movement.getId(),
                 movement.getProduct().getId(),
                 movement.getProduct().getName(),
+                movement.getProduct().getBaseUnit().getAbbreviation(),
                 movement.getLot() == null ? null : movement.getLot().getId(),
                 movement.getUser().getId(),
                 movement.getUser().getName(),

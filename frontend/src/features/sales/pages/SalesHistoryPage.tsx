@@ -131,7 +131,7 @@ export function SalesHistoryPage() {
 
       <SaleChangesPanel
         changes={changes}
-        onShowMovements={user?.role === 'ADMIN' ? () => navigate(ROUTES.history) : undefined}
+        onShowMovements={user?.role === 'ADMIN' ? () => navigate(`${ROUTES.history}?tab=movements`) : undefined}
       />
 
       {correction?.kind === 'edit' && (

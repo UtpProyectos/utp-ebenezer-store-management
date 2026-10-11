@@ -226,15 +226,23 @@ Endpoints:
 | PATCH | `/api/users/{id}/status` | ADMIN (no puede desactivarse a sí mismo) |
 | PUT | `/api/users/{id}/password` | ADMIN (reset) |
 | GET | `/api/roles` | ADMIN |
+| POST | `/api/products`, `/api/categories`, `/api/suppliers` | autenticado (el cajero puede crear; editar y activar/desactivar sigue siendo ADMIN) |
 | GET | `/api/inventory` | autenticado (stock y estado por producto activo) |
+| GET | `/api/inventory/movements?from=&to=` | ADMIN (kardex del período, ambos días incluidos; hoy por defecto) |
 | POST | `/api/inventory/movements` | autenticado (retiro `WASTE` / `RETURN`, FEFO si no se indica lote) |
 | POST | `/api/purchases` | autenticado (ingreso: detalle → lote → movimiento `PURCHASE`) |
+| GET | `/api/purchases?from=&to=` | ADMIN (compras del período) |
 | POST | `/api/sales` | autenticado (precio del producto + promoción vigente; FEFO sin lotes vencidos → movimientos `SALE`; `sale_history` `CREATED`) |
-| GET | `/api/sales?date=yyyy-MM-dd` | autenticado (ventas del día, hoy por defecto; todos los estados) |
+| GET | `/api/sales?date=yyyy-MM-dd` o `?from=&to=` | autenticado (ventas del día o del período, hoy por defecto; todos los estados) |
 | GET | `/api/sales/changes?date=yyyy-MM-dd` | autenticado (ediciones y anulaciones del día desde `sale_history`) |
 | PUT | `/api/sales/{id}` | autenticado (corrige método de pago y cantidades con motivo: `REVERSAL` de las líneas cambiadas + FEFO de nuevo; estado `EDITED`) |
 | PATCH | `/api/sales/{id}/cancel` | autenticado (anula con motivo: `REVERSAL` por lote, estado `CANCELLED`; nunca se borra) |
 | POST | `/api/internal-consumptions` | autenticado (mismo FEFO que la venta → movimientos `INTERNAL_CONSUMPTION`, sin ingreso) |
+| GET | `/api/internal-consumptions?from=&to=` | ADMIN (consumos del período) |
+| GET | `/api/shopping-lists/current` | autenticado (última lista; 204 si no hay o está `CANCELLED`) |
+| POST | `/api/shopping-lists/generate` | autenticado (`{ productIds? }`: agrega a la lista abierta —`PENDING`/`PARTIAL`— o crea una: los productos indicados (`MANUAL`) o los activos con stock ≤ mínimo (`SYSTEM`); cantidad sugerida = 2 × mínimo − stock, mín. 1; proveedor y costo de la última compra) |
+| PATCH | `/api/shopping-lists/details/{id}` | autenticado (`{ suggestedQuantity?, purchased? }`; recalcula costo y estado `PENDING` / `PARTIAL` / `COMPLETED`) |
+| DELETE | `/api/shopping-lists/details/{id}` | autenticado (quita el ítem; una lista vacía pasa a `CANCELLED`) |
 | GET | `/api/promotions` | autenticado (promociones activas y vigentes, la más reciente primero) |
 
 La asignación de lotes de cualquier salida (retiro, venta, consumo) se hace con `service/inventory/StockAllocator`: FEFO, luego lotes sin vencimiento y al final el stock sin lote (ajustes iniciales). Venta y consumo excluyen lotes vencidos; el retiro WASTE/RETURN los incluye. Las conversiones de unidades usan `service/unit/UnitConverter`.

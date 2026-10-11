@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/features/auth'
 import { CategoryCard } from '../components/CategoryCard'
 import { CategoryForm } from '../components/CategoryForm'
 import { categoryApi } from '../services/categoryApi'
@@ -9,6 +10,8 @@ function messageFromError(error: unknown) {
 }
 
 export function CategoryListPage() {
+  // Cashiers can create categories; only admins edit or deactivate them.
+  const canManage = useAuth().user?.role === 'ADMIN'
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -149,8 +152,8 @@ export function CategoryListPage() {
               key={category.id}
               category={category}
               busy={busyCategoryId === category.id}
-              onEdit={openEditForm}
-              onToggleStatus={toggleStatus}
+              onEdit={canManage ? openEditForm : undefined}
+              onToggleStatus={canManage ? toggleStatus : undefined}
             />
           ))}
         </div>

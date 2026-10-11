@@ -33,12 +33,15 @@ public class SaleController {
 
     private final SaleService saleService;
 
-    /** Sales of a day (today when no date is given). */
+    /** Sales of a day (date, today by default) or of a period (from / to, both included). */
     @GetMapping
-    public List<SaleResponse> findByDate(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    public List<SaleResponse> findByPeriod(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
-        return saleService.findByDate(date != null ? date : LocalDate.now());
+        LocalDate start = from != null ? from : date != null ? date : LocalDate.now();
+        return saleService.findByPeriod(start, to != null ? to : start);
     }
 
     /** Edits and cancellations made on a day (today when no date is given). */
