@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router'
+import { useAuth } from '@/features/auth'
 import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { SupplierForm } from '../components/SupplierForm'
 import { SupplierList } from '../components/SupplierList'
@@ -15,6 +16,8 @@ function messageFromError(error: unknown) {
 }
 
 export function SupplierListPage() {
+  // Cashiers can create suppliers; only admins edit or deactivate them.
+  const canManage = useAuth().user?.role === 'ADMIN'
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -216,8 +219,8 @@ export function SupplierListPage() {
         <SupplierList
           suppliers={suppliers}
           busySupplierId={busySupplierId}
-          onEdit={openEditForm}
-          onToggleStatus={toggleStatus}
+          onEdit={canManage ? openEditForm : undefined}
+          onToggleStatus={canManage ? toggleStatus : undefined}
         />
       )}
     </div>

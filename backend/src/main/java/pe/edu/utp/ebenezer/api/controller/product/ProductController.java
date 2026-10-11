@@ -44,8 +44,8 @@ public class ProductController {
         return productService.findById(id);
     }
 
+    // Any authenticated user can create it (a cashier may need it before the admin registers it).
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest request) {
         ProductResponse product = productService.create(request);
         return ResponseEntity.created(URI.create("/api/products/" + product.id())).body(product);

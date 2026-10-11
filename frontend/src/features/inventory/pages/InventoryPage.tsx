@@ -5,7 +5,6 @@ import CircleCheckFill from '@gravity-ui/icons/CircleCheckFill'
 import ListCheck from '@gravity-ui/icons/ListCheck'
 import Magnifier from '@gravity-ui/icons/Magnifier'
 import { ROUTES } from '@/app/router/routes'
-import { useAuth } from '@/features/auth'
 import { CreateProductModal } from '@/features/products'
 import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { InventoryFilterTabs } from '../components/InventoryFilterTabs'
@@ -27,8 +26,6 @@ function toFilter(value: string | null): InventoryFilter {
 
 export function InventoryPage() {
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const canCreateProduct = user?.role === 'ADMIN'
   const { items, initialLoading, error, reload } = useInventory()
   // ?q= comes from the header search; ?filter= from the Home summary.
   const [searchParams] = useSearchParams()
@@ -112,16 +109,11 @@ export function InventoryPage() {
             {items.length === 0 ? 'Aún no hay productos activos' : 'No encontramos ese producto'}
           </p>
           <div className="flex flex-wrap justify-center gap-2">
-            {canCreateProduct && (
-              <Button onPress={() => setCreatingProduct(true)}>
-                {query.trim() ? `Crear “${query.trim()}”` : 'Crear producto'}
-              </Button>
-            )}
+            <Button onPress={() => setCreatingProduct(true)}>
+              {query.trim() ? `Crear “${query.trim()}”` : 'Crear producto'}
+            </Button>
             {items.length > 0 && <Button variant="outline" onPress={showAll}>Mostrar todos</Button>}
           </div>
-          {!canCreateProduct && items.length === 0 && (
-            <p className="text-sm text-muted">Pídele al administrador que registre los productos.</p>
-          )}
         </div>
       ) : (
         <InventoryTable items={visibleItems} onRestock={goToEntry} onWithdraw={setWithdrawing} />

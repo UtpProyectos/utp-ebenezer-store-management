@@ -10,6 +10,7 @@ public record ShoppingListDetailResponse(
         String supplierName,
         Long unitOfMeasureId,
         String unitOfMeasureAbbreviation,
+        BigDecimal currentStock,
         BigDecimal suggestedQuantity,
         BigDecimal purchasedQuantity,
         BigDecimal estimatedCost,

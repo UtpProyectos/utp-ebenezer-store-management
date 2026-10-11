@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button, ListBox, Select } from '@heroui/react'
 import Plus from '@gravity-ui/icons/Plus'
+import { useAuth } from '@/features/auth'
 import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { ProductForm } from '../components/ProductForm'
 import { ProductTable } from '../components/ProductTable'
@@ -18,6 +19,8 @@ function messageFromError(error: unknown) {
 }
 
 export function ProductListPage() {
+  // Cashiers can create products; only admins edit or hide them.
+  const canManage = useAuth().user?.role === 'ADMIN'
   const [searchText, setSearchText] = useState('')
   const [appliedSearch, setAppliedSearch] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -196,7 +199,11 @@ export function ProductListPage() {
           Cargando productos…
         </div>
       ) : error ? null : (
-        <ProductTable products={products} onEdit={openEditForm} onToggleStatus={toggleStatus} />
+        <ProductTable
+          products={products}
+          onEdit={canManage ? openEditForm : undefined}
+          onToggleStatus={canManage ? toggleStatus : undefined}
+        />
       )}
     </div>
   )

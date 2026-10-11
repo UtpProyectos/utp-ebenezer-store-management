@@ -17,8 +17,8 @@ public interface SaleService {
      */
     SaleResponse create(SaleRequest request);
 
-    /** Sales of a day (every status), newest first. */
-    List<SaleResponse> findByDate(LocalDate date);
+    /** Sales between two days, both included (every status), newest first. */
+    List<SaleResponse> findByPeriod(LocalDate from, LocalDate to);
 
     /** Edits and cancellations made on a day, newest first (CREATED entries are left out). */
     List<SaleHistoryResponse> findChanges(LocalDate date);

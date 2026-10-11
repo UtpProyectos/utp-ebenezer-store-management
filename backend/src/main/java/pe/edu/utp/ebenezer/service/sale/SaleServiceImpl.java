@@ -109,9 +109,12 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleResponse> findByDate(LocalDate date) {
+    public List<SaleResponse> findByPeriod(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new BusinessException("The start date must not be after the end date");
+        }
         return saleRepository.findBySaleDateGreaterThanEqualAndSaleDateLessThanOrderBySaleDateDesc(
-                        date.atStartOfDay(), date.plusDays(1).atStartOfDay()).stream()
+                        from.atStartOfDay(), to.plusDays(1).atStartOfDay()).stream()
                 .map(SaleMapper::toResponse)
                 .toList();
     }

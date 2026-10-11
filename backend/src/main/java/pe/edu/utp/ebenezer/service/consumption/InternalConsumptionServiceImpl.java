@@ -1,6 +1,7 @@
 package pe.edu.utp.ebenezer.service.consumption;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,6 +43,19 @@ public class InternalConsumptionServiceImpl implements InternalConsumptionServic
     private final UnitOfMeasureRepository unitOfMeasureRepository;
     private final StockAllocator stockAllocator;
     private final CurrentUserProvider currentUserProvider;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InternalConsumptionResponse> findByPeriod(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new BusinessException("The start date must not be after the end date");
+        }
+        return internalConsumptionRepository
+                .findByConsumptionDateGreaterThanEqualAndConsumptionDateLessThanOrderByConsumptionDateDesc(
+                        from.atStartOfDay(), to.plusDays(1).atStartOfDay()).stream()
+                .map(InternalConsumptionMapper::toResponse)
+                .toList();
+    }
 
     @Override
     @Transactional

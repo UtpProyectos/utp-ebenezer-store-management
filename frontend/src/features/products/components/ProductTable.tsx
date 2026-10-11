@@ -4,8 +4,9 @@ import type { Product } from '../types/product.types'
 
 interface ProductTableProps {
   products: Product[]
-  onEdit: (product: Product) => void
-  onToggleStatus: (product: Product) => void
+  /** Omitted for cashiers: they can create products but not change them. */
+  onEdit?: (product: Product) => void
+  onToggleStatus?: (product: Product) => void
 }
 
 const priceFormatter = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' })
@@ -60,30 +61,38 @@ export function ProductTable({ products, onEdit, onToggleStatus }: ProductTableP
                   <span className="text-sm text-muted">{unitLabel(product.baseUnitAbbreviation)}</span>
                 </td>
                 <td className="px-3 py-3.5">
-                  <Switch
-                    isSelected={product.active}
-                    onChange={() => onToggleStatus(product)}
-                    aria-label={`${product.active ? 'Desactivar' : 'Activar'} ${product.name}`}
-                  >
-                    <Switch.Content>
-                      <Switch.Control>
-                        <Switch.Thumb />
-                      </Switch.Control>
-                      <span className={`font-semibold ${product.active ? 'text-success' : 'text-muted'}`}>
-                        {product.active ? 'Sí, activo' : 'No, oculto'}
-                      </span>
-                    </Switch.Content>
-                  </Switch>
+                  {onToggleStatus ? (
+                    <Switch
+                      isSelected={product.active}
+                      onChange={() => onToggleStatus(product)}
+                      aria-label={`${product.active ? 'Desactivar' : 'Activar'} ${product.name}`}
+                    >
+                      <Switch.Content>
+                        <Switch.Control>
+                          <Switch.Thumb />
+                        </Switch.Control>
+                        <span className={`font-semibold ${product.active ? 'text-success' : 'text-muted'}`}>
+                          {product.active ? 'Sí, activo' : 'No, oculto'}
+                        </span>
+                      </Switch.Content>
+                    </Switch>
+                  ) : (
+                    <span className={`font-semibold ${product.active ? 'text-success' : 'text-muted'}`}>
+                      {product.active ? 'Sí, activo' : 'No, oculto'}
+                    </span>
+                  )}
                 </td>
                 <td className="px-5 py-3.5 text-right">
-                  <Button
-                    isIconOnly
-                    variant="secondary"
-                    aria-label={`Editar ${product.name}`}
-                    onPress={() => onEdit(product)}
-                  >
-                    <Pencil className="size-4" />
-                  </Button>
+                  {onEdit && (
+                    <Button
+                      isIconOnly
+                      variant="secondary"
+                      aria-label={`Editar ${product.name}`}
+                      onPress={() => onEdit(product)}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                  )}
                 </td>
               </tr>
             )
