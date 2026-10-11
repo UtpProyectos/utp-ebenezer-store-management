@@ -30,6 +30,7 @@ import pe.edu.utp.ebenezer.domain.repository.product.ProductRepository;
 import pe.edu.utp.ebenezer.domain.repository.purchase.PurchaseRepository;
 import pe.edu.utp.ebenezer.domain.repository.supplier.SupplierRepository;
 import pe.edu.utp.ebenezer.domain.repository.unit.UnitOfMeasureRepository;
+import pe.edu.utp.ebenezer.exception.BusinessException;
 import pe.edu.utp.ebenezer.exception.ResourceNotFoundException;
 import pe.edu.utp.ebenezer.security.CurrentUserProvider;
 import pe.edu.utp.ebenezer.service.unit.UnitConverter;
@@ -45,6 +46,18 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final UnitOfMeasureRepository unitOfMeasureRepository;
     private final SupplierRepository supplierRepository;
     private final CurrentUserProvider currentUserProvider;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PurchaseResponse> findByPeriod(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new BusinessException("The start date must not be after the end date");
+        }
+        return purchaseRepository.findByPurchaseDateGreaterThanEqualAndPurchaseDateLessThanOrderByPurchaseDateDesc(
+                        from.atStartOfDay(), to.plusDays(1).atStartOfDay()).stream()
+                .map(PurchaseMapper::toResponse)
+                .toList();
+    }
 
     @Override
     @Transactional

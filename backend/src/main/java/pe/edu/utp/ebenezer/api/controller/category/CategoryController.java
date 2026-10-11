@@ -34,9 +34,9 @@ public class CategoryController {
         return categoryService.findAll(active);
     }
 
+    // Any authenticated user can create it (a cashier may need it before the admin registers it).
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse create(@Valid @RequestBody CategoryRequest request) {
         return categoryService.create(request);
     }

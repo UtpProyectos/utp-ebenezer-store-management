@@ -3,4 +3,6 @@ import type { PurchaseRequest, PurchaseResponse } from '../types/purchase.types'
 
 export const purchaseApi = {
   create: (request: PurchaseRequest) => apiClient.post<PurchaseResponse>('/purchases', request),
+  /** Admin only. Purchases between two ISO dates (yyyy-MM-dd, both included), newest first. */
+  getByPeriod: (from: string, to: string) => apiClient.get<PurchaseResponse[]>(`/purchases?from=${from}&to=${to}`),
 }

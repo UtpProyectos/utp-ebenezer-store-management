@@ -1,6 +1,5 @@
 import { BrandMark } from '@/shared/components/ui/BrandMark'
-
-// Left side of the login screen (large screens only): brand and a short message.
+ 
 export function LoginBrandPanel() {
   return (
     <aside className="hidden flex-col justify-between bg-foreground p-12 text-background lg:flex">

@@ -3,8 +3,9 @@ import type { Supplier, SupplierType } from '../types/supplier.types'
 interface SupplierListProps {
   suppliers: Supplier[]
   busySupplierId: number | null
-  onEdit: (supplier: Supplier) => void
-  onToggleStatus: (supplier: Supplier) => void
+  /** Omitted for cashiers: they can create suppliers but not change them. */
+  onEdit?: (supplier: Supplier) => void
+  onToggleStatus?: (supplier: Supplier) => void
 }
 
 const SUPPLIER_TYPE_LABELS: Record<SupplierType, string> = {
@@ -102,32 +103,36 @@ export function SupplierList({ suppliers, busySupplierId, onEdit, onToggleStatus
               >
                 Registrar compra
               </button>
-              <button
-                type="button"
-                className="min-h-10 rounded-full bg-surface px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
-                onClick={() => onEdit(supplier)}
-              >
-                Editar
-              </button>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={supplier.active}
-                aria-label={`${supplier.active ? 'Desactivar' : 'Activar'} ${supplier.name}`}
-                className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full focus-visible:outline-2 focus-visible:outline-focus ${
-                  supplier.active ? 'bg-accent' : 'bg-default'
-                }`}
-                onClick={() => onToggleStatus(supplier)}
-                disabled={busySupplierId === supplier.id}
-                title={supplier.active ? 'Desactivar proveedor' : 'Activar proveedor'}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`absolute top-1 size-5 rounded-full bg-background transition-[left] duration-150 ease-out ${
-                    supplier.active ? 'left-6' : 'left-1'
+              {onEdit && (
+                <button
+                  type="button"
+                  className="min-h-10 rounded-full bg-surface px-4 text-sm font-semibold hover:bg-default focus-visible:outline-2 focus-visible:outline-focus"
+                  onClick={() => onEdit(supplier)}
+                >
+                  Editar
+                </button>
+              )}
+              {onToggleStatus && (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={supplier.active}
+                  aria-label={`${supplier.active ? 'Desactivar' : 'Activar'} ${supplier.name}`}
+                  className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full focus-visible:outline-2 focus-visible:outline-focus ${
+                    supplier.active ? 'bg-accent' : 'bg-default'
                   }`}
-                />
-              </button>
+                  onClick={() => onToggleStatus(supplier)}
+                  disabled={busySupplierId === supplier.id}
+                  title={supplier.active ? 'Desactivar proveedor' : 'Activar proveedor'}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-1 size-5 rounded-full bg-background transition-[left] duration-150 ease-out ${
+                      supplier.active ? 'left-6' : 'left-1'
+                    }`}
+                  />
+                </button>
+              )}
             </div>
           </div>
         </details>

@@ -1,7 +1,8 @@
 import ArrowRight from '@gravity-ui/icons/ArrowRight'
 import CircleInfo from '@gravity-ui/icons/CircleInfo'
 import { Link } from 'react-router'
-import { ADMIN_ITEMS } from '@/shared/constants/navigation'
+import { useAuth } from '@/features/auth'
+import { ADMIN_ITEMS, canSee } from '@/shared/constants/navigation'
 
 const ITEM_BADGES: Record<string, string> = {
   '/admin/products': 'Catálogo',
@@ -13,6 +14,9 @@ const ITEM_BADGES: Record<string, string> = {
 }
 
 export function AdminPage() {
+  const { user } = useAuth()
+  const items = ADMIN_ITEMS.filter((item) => canSee(item, user?.role))
+
   return (
     <div className="mx-auto flex w-full max-w-350 flex-col gap-4">
       <div className="flex items-center gap-3 rounded-3xl bg-surface px-5 py-4">
@@ -20,13 +24,13 @@ export function AdminPage() {
           <CircleInfo aria-hidden="true" className="size-5" />
         </span>
         <p className="text-sm text-muted sm:text-base">
-          Aquí se cambian los datos de la tienda. Para vender, registrar mercadería o revisar el stock no necesitas
-          entrar aquí.
+          Aquí se configuran los datos de la tienda. Para vender, registrar mercadería o revisar el stock no
+          necesitas entrar aquí.
         </p>
       </div>
 
-      <nav aria-label="Opciones de administración" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
-        {ADMIN_ITEMS.map(({ label, path, icon: Icon, description }) => (
+      <nav aria-label="Opciones de configuración" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+        {items.map(({ label, path, icon: Icon, description }) => (
           <Link
             key={path}
             to={path}

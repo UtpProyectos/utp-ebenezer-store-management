@@ -1,8 +1,10 @@
 package pe.edu.utp.ebenezer.domain.repository.inventory;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,4 +52,9 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
     // Every movement of a sale (SALE and REVERSAL), used to undo it when the sale is edited or cancelled.
     @Query("select m from InventoryMovement m where m.saleDetail.sale.id = :saleId")
     List<InventoryMovement> findBySaleId(@Param("saleId") Long saleId);
+
+    // Kardex of a period, newest first, with the product unit and the user in the same query.
+    @EntityGraph(attributePaths = {"product", "product.baseUnit", "user"})
+    List<InventoryMovement> findByMovementDateGreaterThanEqualAndMovementDateLessThanOrderByMovementDateDescIdDesc(
+            LocalDateTime from, LocalDateTime to);
 }

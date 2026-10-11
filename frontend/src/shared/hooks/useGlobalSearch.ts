@@ -16,9 +16,9 @@ export interface GlobalSearchResult {
 
 /**
  * Data of the header search. It is loaded the first time the field gets focus (not on every page) and
- * refreshed on later focuses, so stock stays current. Suppliers are only searched for admins.
+ * refreshed on later focuses, so stock stays current.
  */
-export function useGlobalSearch(includeSuppliers: boolean) {
+export function useGlobalSearch() {
   const [products, setProducts] = useState<ProductStockResponse[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const loading = useRef(false)
@@ -28,7 +28,7 @@ export function useGlobalSearch(includeSuppliers: boolean) {
     loading.current = true
     Promise.all([
       inventoryApi.getStock(),
-      includeSuppliers ? supplierApi.getAll({ active: true }) : Promise.resolve<Supplier[]>([]),
+      supplierApi.getAll({ active: true }),
     ])
       .then(([stock, supplierList]) => {
         setProducts(stock)
@@ -39,7 +39,7 @@ export function useGlobalSearch(includeSuppliers: boolean) {
       .finally(() => {
         loading.current = false
       })
-  }, [includeSuppliers])
+  }, [])
 
   const search = (query: string): GlobalSearchResult[] => {
     const normalized = query.trim().toLowerCase()

@@ -9,6 +9,7 @@ public record InventoryMovementResponse(
         Long id,
         Long productId,
         String productName,
+        String baseUnitAbbreviation,
         Long lotId,
         Long userId,
         String userName,

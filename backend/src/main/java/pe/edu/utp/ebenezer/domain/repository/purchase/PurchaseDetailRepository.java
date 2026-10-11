@@ -1,6 +1,7 @@
 package pe.edu.utp.ebenezer.domain.repository.purchase;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,7 @@ public interface PurchaseDetailRepository extends JpaRepository<PurchaseDetail, 
                 where d2.purchase.status = :status
                 group by d2.product.id)""")
     List<PurchaseDetail> findLatestByProduct(@Param("status") PurchaseStatus status);
+
+    // Most recent purchase detail of one product, to estimate the cost of buying it again.
+    Optional<PurchaseDetail> findFirstByProduct_IdAndPurchase_StatusOrderByIdDesc(Long productId, PurchaseStatus status);
 }

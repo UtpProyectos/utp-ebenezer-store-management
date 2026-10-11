@@ -52,12 +52,10 @@ export function UserMenu() {
           </span>
         </div>
         <Dropdown.Menu aria-label="Opciones de usuario" onAction={handleAction} className="p-0">
-          {user.role === 'ADMIN' ? (
-            <Dropdown.Item id="settings" textValue="Configuración" className="gap-3 px-4 py-2.5">
-              <Sliders className="size-4 text-muted" />
-              <Label>Configuración</Label>
-            </Dropdown.Item>
-          ) : null}
+          <Dropdown.Item id="settings" textValue="Preferencias" className="gap-3 px-4 py-2.5">
+            <Sliders className="size-4 text-muted" />
+            <Label>Preferencias</Label>
+          </Dropdown.Item>
           <Dropdown.Item id="logout" textValue="Cerrar sesión" variant="danger" className="gap-3 px-4 py-2.5">
             <ArrowRightFromSquare className="size-4" />
             <Label>Cerrar sesión</Label>
