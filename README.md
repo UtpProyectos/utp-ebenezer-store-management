@@ -100,8 +100,9 @@ npm run dev
 | `DB_USERNAME` / `DB_PASSWORD` | Credenciales de la BD |
 | `SERVER_PORT` | Puerto de la API (default `8080`) |
 | `CORS_ALLOWED_ORIGINS` | Orígenes permitidos (default `http://localhost:5173`) |
-| `JWT_SECRET` / `JWT_EXPIRATION_MS` | Configuración JWT (pendiente de uso) |
-| `OPENAI_API_KEY` / `OPENROUTER_API_KEY` | Proveedores de IA (pendiente de uso) |
+| `JWT_SECRET` / `JWT_EXPIRATION_MS` | Configuración JWT |
+| `OPENAI_API_KEY` / `OPENAI_MODEL` | Asistente IA, proveedor principal |
+| `OPENROUTER_API_KEY` / `OPENROUTER_MODEL` | Asistente IA, respaldo cuando OpenAI no tiene cuota o falla |
 
 ### Frontend (`frontend/.env.local`)
 
@@ -139,9 +140,9 @@ src/main/java/pe/edu/utp/ebenezer/
 ├── security/           # JWT y autenticación
 ├── exception/          # GlobalExceptionHandler y ApiError
 ├── ai/
-│   ├── provider/       # AiProvider (OpenAI / OpenRouter)
-│   ├── model/
-│   └── prompt/
+│   ├── provider/       # AiProvider (OpenAI → OpenRouter fallback)
+│   ├── model/          # Mensajes y tool calls internos
+│   └── prompt/         # System prompt del asistente
 └── EbenezerBackendApplication.java
 ```
 
@@ -236,12 +237,17 @@ Detalle completo: [`AGENTS/frontend.md`](AGENTS/frontend.md).
 El frontend **nunca** se conecta directamente con OpenAI u OpenRouter.
 
 ```text
-React  →  Spring Boot  →  AiProvider
-                            ├── OpenAI      (principal)
-                            └── OpenRouter  (fallback)
+React  →  POST /api/ai/chat  →  AssistantService  →  FallbackAiProvider
+                                     │                    ├── OpenAI      (principal)
+                                     │                    └── OpenRouter  (si OpenAI no tiene cuota o falla)
+                                     └── herramientas de solo lectura → services → PostgreSQL
 ```
 
-Las API keys permanecen exclusivamente en el backend.
+- Solo responde sobre la tienda (stock, vencimientos, ventas, reposición, proveedores, promociones). Cualquier otro tema se rechaza con amabilidad.
+- Es de solo lectura: el modelo pide datos a herramientas del backend (*tool calling*), no ejecuta SQL ni ve credenciales. No usa pgvector.
+- Las API keys permanecen exclusivamente en el backend.
+
+Reglas, prompt, herramientas y diagramas: [`AGENTS/ai.md`](AGENTS/ai.md).
 
 ---
 

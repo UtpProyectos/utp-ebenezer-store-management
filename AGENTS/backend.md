@@ -75,9 +75,9 @@ src/main/java/pe/edu/utp/ebenezer/
 ├── security/                # JwtService, JwtAuthenticationFilter, CustomUserDetailsService, CurrentUserProvider
 ├── exception/               # GlobalExceptionHandler, ApiError, excepciones
 ├── ai/
-│   ├── provider/            # AiProvider + OpenAiProvider / OpenRouterProvider
-│   ├── model/               # Modelos internos de IA
-│   └── prompt/              # Builders de prompts
+│   ├── provider/            # AiProvider, OpenAiCompatibleClient, OpenAiProvider, OpenRouterProvider, FallbackAiProvider
+│   ├── model/               # AiMessage, AiToolCall, AiToolDefinition, AiCompletion(Request), AssistantContext
+│   └── prompt/              # AssistantPrompts (textos) + AssistantPromptBuilder
 └── EbenezerBackendApplication.java
 ```
 
@@ -244,6 +244,7 @@ Endpoints:
 | PATCH | `/api/shopping-lists/details/{id}` | autenticado (`{ suggestedQuantity?, purchased? }`; recalcula costo y estado `PENDING` / `PARTIAL` / `COMPLETED`) |
 | DELETE | `/api/shopping-lists/details/{id}` | autenticado (quita el ítem; una lista vacía pasa a `CANCELLED`) |
 | GET | `/api/promotions` | autenticado (promociones activas y vigentes, la más reciente primero) |
+| POST | `/api/ai/chat` | autenticado (asistente IA de solo lectura; las herramientas de compras y consumo interno solo se ofrecen al ADMIN — ver [`ai.md`](ai.md)) |
 
 La asignación de lotes de cualquier salida (retiro, venta, consumo) se hace con `service/inventory/StockAllocator`: FEFO, luego lotes sin vencimiento y al final el stock sin lote (ajustes iniciales). Venta y consumo excluyen lotes vencidos; el retiro WASTE/RETURN los incluye. Las conversiones de unidades usan `service/unit/UnitConverter`.
 
@@ -264,7 +265,7 @@ Convenciones para las features:
 
 - `SecurityConfig` — `SecurityFilterChain`, `PasswordEncoder`, `AuthenticationManager` cuando corresponda.
 - `CorsConfig` + `CorsProperties` — orígenes desde `app.cors.allowed-origins` (`CORS_ALLOWED_ORIGINS`, separados por coma).
-- `RestClientConfig` — (futuro) clientes HTTP para servicios externos (IA).
+- `RestClientConfig` + `AiProperties` — `RestClient` con timeouts para los proveedores de IA (`app.ai.*`).
 
 Sin lógica de negocio en `config/`.
 
@@ -279,6 +280,7 @@ Existente:
 - `ResourceNotFoundException` → 404
 - `BusinessException` → 422
 - `UnauthorizedException` → 401
+- `AiUnavailableException` → 503 (`The assistant is not available right now`; el motivo solo va al log)
 
 Formato de respuesta:
 
@@ -301,13 +303,14 @@ Lanzar las excepciones de dominio desde los services, no construir respuestas de
 
 ## 13. AI module (`ai/`)
 
-Aislado de la lógica normal del negocio.
+Implementado. Reglas completas, prompt, herramientas y diagramas en [`ai.md`](ai.md).
 
-- `ai/provider/` — `AiProvider` (abstracción), `OpenAiProvider`, `OpenRouterProvider`. La aplicación depende solo de `AiProvider`. Si OpenAI falla o no tiene cuota → fallback a OpenRouter.
+- `ai/provider/` — `AiProvider` (abstracción). `OpenAiProvider` y `OpenRouterProvider` comparten `OpenAiCompatibleClient` (misma API `/chat/completions`). `FallbackAiProvider` (`@Primary`) prueba OpenAI y, si no está configurado o falla (401/402/429/5xx/timeout), usa OpenRouter. La aplicación depende solo de `AiProvider`.
 - `ai/model/` — modelos internos; no confundir con los DTOs HTTP de `api/dto/ai/`.
-- `ai/prompt/` — builders de prompts, prompts reutilizables y contexto del negocio. No dispersar prompts hardcodeados.
-
-**No implementar esta integración hasta que se solicite.**
+- `ai/prompt/` — `AssistantPrompts` guarda **todos** los textos del prompt; `AssistantPromptBuilder` inyecta usuario, rol y fecha. No dispersar prompts hardcodeados.
+- `service/ai/` — `AssistantService(Impl)`: bucle de *tool calling* (máx. 4 rondas), sin `@Transactional` para no retener conexiones mientras responde el proveedor.
+- `service/ai/tool/` — herramientas de **solo lectura** (`AssistantTool`) que llaman services existentes, nunca repositories. `AssistantToolRegistry` filtra por rol porque los services se llaman sin el `@PreAuthorize` del controller.
+- Sin tablas de IA ni pgvector (`database.md` §19). La regla de reposición se comparte con la lista de compra vía `service/shoppinglist/RestockCalculator`.
 
 ---
 
@@ -333,7 +336,9 @@ Variables de entorno (ver `backend/.env.example`):
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend (default `http://localhost:5173`) |
 | `JWT_SECRET`, `JWT_EXPIRATION_MS` | JWT. Secreto Base64 de al menos 256 bits (`openssl rand -base64 32`); sin él la app no arranca |
 | `ADMIN_NAME`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin inicial (solo si no hay usuarios) |
-| `OPENAI_API_KEY`, `OPENROUTER_API_KEY` | IA (pendiente de uso) |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | Proveedor principal del asistente (default `gpt-4.1-mini`) |
+| `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` | Fallback del asistente (default `openai/gpt-4.1-mini`) |
+| `AI_TIMEOUT_SECONDS` | Espera por proveedor antes de pasar al siguiente (default 25) |
 
 Nunca crear archivos con claves reales dentro de `resources`.
 

@@ -48,7 +48,7 @@ src/
 └── main.tsx
 ```
 
-Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/` (Inicio: accesos rápidos, resumen del día, lo que necesita atención y actividad de hoy, con datos de ventas e inventario), `features/inventory/` (stock y retiro de vencidos), `features/purchases/` (ingreso de mercadería), `features/sales/` (POS: venta y consumo interno con promociones; historial de ventas del día con editar / anular), `features/shopping-list/` (lista de compra agrupada por proveedor: cantidades, comprado, quitar), `features/history/` (Historiales, solo ADMIN: ventas, ingresos, movimientos y consumo por período), `features/consumption/` y `features/promotions/` (solo types + api), `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
+Estado actual: `app/router/`, `app/providers/`, `features/auth/`, `features/dashboard/` (Inicio: accesos rápidos, resumen del día, lo que necesita atención y actividad de hoy, con datos de ventas e inventario), `features/inventory/` (stock y retiro de vencidos), `features/purchases/` (ingreso de mercadería), `features/sales/` (POS: venta y consumo interno con promociones; historial de ventas del día con editar / anular), `features/shopping-list/` (lista de compra agrupada por proveedor: cantidades, comprado, quitar), `features/history/` (Historiales, solo ADMIN: ventas, ingresos, movimientos y consumo por período), `features/ai-assistant/` (Asistente IA: chat con bloques de datos y botones, ver [`ai.md`](ai.md)), `features/consumption/` y `features/promotions/` (solo types + api; el consumo interno se registra desde el carrito de Ventas en modo *Consumo*, y la ruta `/sales/internal-consumption` abre `SalePage` con `initialMode="consumption"`), `shared/components/layout/`, `shared/components/ui/`, `shared/services/`, `shared/types/`, `styles/`.
 
 **No crear carpetas vacías.** Crear la estructura progresivamente según se implemente cada módulo.
 
@@ -80,14 +80,17 @@ AI Assistant:
 
 ```text
 features/ai-assistant/
-├── components/   AssistantPanel.tsx, ChatMessage.tsx, ChatInput.tsx
-├── services/     aiAssistantApi.ts
-├── hooks/        useAiAssistant.ts
-├── types/        ai-assistant.types.ts
+├── components/   AssistantPanel, ChatMessage, ChatInput, AssistantBlockView, AssistantSidebar, AssistantAvatar
+├── services/     aiAssistantApi.ts            (POST /ai/chat)
+├── hooks/        useAiAssistant.ts            (mensajes en memoria, envía las últimas 10 vueltas)
+│                 useAssistantAction.ts        (botones: navegar / generar lista de compra)
+├── types/        ai-assistant.types.ts        (espejo de api/dto/ai)
+├── utils/        assistantActions.ts (target → ruta), assistantQuestions.ts (preguntas por rol)
+├── pages/        AssistantPage.tsx
 └── index.ts
 ```
 
-El frontend **nunca** llama a OpenAI/OpenRouter ni contiene sus API keys: solo habla con el backend.
+El frontend **nunca** llama a OpenAI/OpenRouter ni contiene sus API keys: solo habla con el backend. No guarda la conversación (ni `localStorage`): "Nueva conversación" o salir de la pantalla la reinicia. Los bloques y botones se pintan tal como los manda el backend; no calcular cifras en el frontend. Reglas completas en [`ai.md`](ai.md).
 
 ---
 

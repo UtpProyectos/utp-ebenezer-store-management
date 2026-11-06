@@ -18,9 +18,13 @@ export interface CartLine {
   total: number
 }
 
-export function useCart(products: ProductStockResponse[], promotionByProduct: Map<number, PromotionResponse>) {
+export function useCart(
+  products: ProductStockResponse[],
+  promotionByProduct: Map<number, PromotionResponse>,
+  initialMode: CheckoutMode = 'sale',
+) {
   const [entries, setEntries] = useState<CartEntry[]>([])
-  const [mode, setMode] = useState<CheckoutMode>('sale')
+  const [mode, setMode] = useState<CheckoutMode>(initialMode)
 
   const lines = useMemo<CartLine[]>(() => {
     const byId = new Map(products.map((item) => [item.productId, item]))

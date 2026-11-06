@@ -12,9 +12,14 @@ import { useCheckout } from '../hooks/useCheckout'
 import { useSaleCatalog } from '../hooks/useSaleCatalog'
 import { formatSellable, isWeighed } from '../utils/salePricing'
 
-export function SalePage() {
+interface SalePageProps {
+  /** The Consumo interno route opens this same screen with the cart in consumption mode. */
+  initialMode?: CheckoutMode
+}
+
+export function SalePage({ initialMode = 'sale' }: SalePageProps) {
   const catalog = useSaleCatalog()
-  const cart = useCart(catalog.products, catalog.promotionByProduct)
+  const cart = useCart(catalog.products, catalog.promotionByProduct, initialMode)
   const checkout = useCheckout(catalog.reload)
   const [paying, setPaying] = useState(false)
   const [weighing, setWeighing] = useState<ProductStockResponse | null>(null)
@@ -50,7 +55,7 @@ export function SalePage() {
   const startOver = () => {
     checkout.reset()
     cart.clear()
-    cart.setMode('sale')
+    cart.setMode(initialMode)
   }
 
   if (catalog.initialLoading) {
