@@ -35,6 +35,13 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), request);
     }
 
+    // The reason (no key, quota, outage) stays in the logs; the client only learns the assistant is unavailable.
+    @ExceptionHandler(AiUnavailableException.class)
+    public ResponseEntity<ApiError> handleAiUnavailable(AiUnavailableException ex, HttpServletRequest request) {
+        log.warn("AI assistant unavailable: {}", ex.getMessage());
+        return build(HttpStatus.SERVICE_UNAVAILABLE, "The assistant is not available right now", request);
+    }
+
     // Login failures share one message so the response does not reveal whether the user exists or is disabled.
     @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
     public ResponseEntity<ApiError> handleBadCredentials(AuthenticationException ex, HttpServletRequest request) {

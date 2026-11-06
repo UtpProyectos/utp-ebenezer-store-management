@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
 import { AdminPage } from '@/features/admin/pages/AdminPage'
+import { AssistantPage } from '@/features/ai-assistant'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { CategoryListPage } from '@/features/categories/pages/CategoryListPage'
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
@@ -42,11 +43,12 @@ const router = createBrowserRouter([
         children: [
           page(ROUTES.home, { title: 'Inicio', subtitle: 'Resumen de hoy' }, <DashboardPage />),
           page(ROUTES.sales, { title: 'Ventas', subtitle: 'Toca los productos y luego presiona Cobrar' }, <SalePage />),
+          // Same screen as Ventas with the cart in "Consumo" mode (no separate form to keep one flow).
           page(ROUTES.internalConsumption, {
             title: 'Consumo interno',
             subtitle: 'Productos que se usan en la tienda y no se venden',
             parent: SALES,
-          }),
+          }, <SalePage initialMode="consumption" />),
           page(ROUTES.inventory, { title: 'Inventario', subtitle: 'Cuánto tienes de cada producto' }, <InventoryPage />),
           page(ROUTES.purchases, {
             title: 'Ingreso de mercadería',
@@ -55,7 +57,7 @@ const router = createBrowserRouter([
           }, <PurchaseEntryPage />),
           page(ROUTES.shoppingList, { title: 'Lista de compra', subtitle: 'Productos por agotarse que debes comprar' }, <ShoppingListPage />),
           page(ROUTES.salesHistory, { title: 'Historial de ventas', subtitle: 'Corrige o anula ventas. Todo queda anotado.' }, <SalesHistoryPage />),
-          page(ROUTES.assistant, { title: 'Asistente', subtitle: 'Pregunta lo que quieras sobre tu tienda' }),
+          page(ROUTES.assistant, { title: 'Asistente', subtitle: 'Pregunta lo que quieras sobre tu tienda' }, <AssistantPage />),
           // Configuración: every role. Cashiers only create catalog records (the backend enforces it).
           page(ROUTES.admin, { title: 'Configuración', subtitle: 'Catálogo, usuarios, reportes y preferencias' }, <AdminPage />),
           page(ROUTES.products, { title: 'Productos', subtitle: 'Precios y datos de lo que vendes', parent: CONFIGURATION }, <ProductListPage />),

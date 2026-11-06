@@ -1018,18 +1018,21 @@ El LLM **NO debe recibir credenciales directas de PostgreSQL** y no debe ejecuta
 
 Debe acceder mediante herramientas controladas por el backend.
 
-Ejemplos futuros:
+Herramientas implementadas (`service/ai/tool/`, detalle en [`ai.md`](ai.md) §5):
 
 ```text
-consultarStock(producto)
-consultarVentas(fechaInicio, fechaFin)
-consultarConsumoInterno(fechaInicio, fechaFin)
-consultarProductosPorVencer(dias)
-consultarProductosMasVendidos(fechaInicio, fechaFin)
-consultarMovimientos(producto, fechaInicio, fechaFin)
-consultarUltimosProveedores(producto)
-sugerirReposicion()
+get_stock_alerts(level?)                     -> InventoryService.findStock
+get_expiring_products()                      -> InventoryService.findStock
+get_restock_suggestions()                    -> InventoryService.findStock + RestockCalculator
+search_product_stock(query)                  -> InventoryService.findStock
+get_sales_summary(from?, to?)                -> SaleService.findByPeriod
+get_top_selling_products(from?, to?, limit?) -> SaleService.findByPeriod
+get_current_promotions()                     -> PromotionService.findCurrent
+get_purchases_by_supplier(from?, to?)        -> PurchaseService.findByPeriod            (solo ADMIN)
+get_internal_consumption(from?, to?)         -> InternalConsumptionService.findByPeriod (solo ADMIN)
 ```
+
+**Sin pgvector ni embeddings:** los datos son estructurados y se consultan exactos con los services. Agregar la extensión `vector` solo si en el futuro el asistente debe buscar en documentos de texto (manuales, políticas).
 
 Para la primera versión, la IA debe ser **solo lectura**.
 

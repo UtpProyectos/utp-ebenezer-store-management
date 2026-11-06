@@ -40,7 +40,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private static final Set<ShoppingListStatus> OPEN_STATUSES =
             Set.of(ShoppingListStatus.PENDING, ShoppingListStatus.PARTIAL);
-    private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
     private final ShoppingListRepository shoppingListRepository;
     private final ShoppingListDetailRepository shoppingListDetailRepository;
@@ -93,7 +92,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ShoppingListDetail> added = new ArrayList<>();
         for (Product product : toAdd) {
             PurchaseDetail lastDetail = lastDetailByProduct.get(product.getId());
-            BigDecimal quantity = suggestedQuantity(product, stock.getOrDefault(product.getId(), BigDecimal.ZERO));
+            BigDecimal quantity = RestockCalculator.suggestedQuantity(
+                    product.getMinStock(), stock.getOrDefault(product.getId(), BigDecimal.ZERO));
 
             ShoppingListDetail detail = new ShoppingListDetail();
             detail.setShoppingList(list);
@@ -179,15 +179,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     // Products to restock: current stock at or below the minimum stock (AGENTS/database.md §18).
     private List<Product> findProductsToRestock(Map<Long, BigDecimal> stock) {
         return productRepository.findByActiveTrueOrderByNameAsc().stream()
-                .filter(product -> stock.getOrDefault(product.getId(), BigDecimal.ZERO)
-                        .compareTo(product.getMinStock()) <= 0)
+                .filter(product -> RestockCalculator.needsRestock(
+                        stock.getOrDefault(product.getId(), BigDecimal.ZERO), product.getMinStock()))
                 .toList();
-    }
-
-    // Same suggestion as the prototype: enough to reach twice the minimum stock, at least one.
-    private static BigDecimal suggestedQuantity(Product product, BigDecimal stock) {
-        BigDecimal missing = product.getMinStock().multiply(TWO).subtract(stock).setScale(0, RoundingMode.CEILING);
-        return missing.max(BigDecimal.ONE);
     }
 
     // Quantity (base unit) times the cost per base unit of the last purchase; zero when never bought.

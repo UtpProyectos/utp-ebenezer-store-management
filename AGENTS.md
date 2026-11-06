@@ -11,6 +11,7 @@ Es intencionalmente agnóstico al agente: no se usan archivos específicos como 
 | [`AGENTS/backend.md`](AGENTS/backend.md) | Cualquier cambio dentro de `backend/` |
 | [`AGENTS/frontend.md`](AGENTS/frontend.md) | Cualquier cambio dentro de `frontend/` |
 | [`AGENTS/database.md`](AGENTS/database.md) | Cualquier cambio de la base de datos |
+| [`AGENTS/ai.md`](AGENTS/ai.md) | Asistente IA: prompt, herramientas, proveedores (OpenAI → OpenRouter), contrato `/api/ai/chat` |
 
 Antes de modificar un área, **leer este archivo y el archivo específico del área**.
 
@@ -60,7 +61,7 @@ El asistente de IA responderá consultas como:
 - How much did I sell today?
 - What products should I restock?
 
-Proveedores de IA: OpenAI (principal) y OpenRouter (fallback). **Solo desde el backend.**
+Proveedores de IA: OpenAI (principal) y OpenRouter (fallback automático si OpenAI no tiene cuota o falla). **Solo desde el backend.** El asistente solo responde sobre la tienda, es de solo lectura y usa *tool calling* sobre los services (sin pgvector). Detalle en [`AGENTS/ai.md`](AGENTS/ai.md).
 
 ---
 
@@ -72,7 +73,9 @@ utp-ebenezer-store-management/
 ├── frontend/         # React + Vite SPA
 ├── AGENTS/           # Reglas específicas por área
 │   ├── backend.md
-│   └── frontend.md
+│   ├── frontend.md
+│   ├── database.md
+│   └── ai.md
 ├── AGENTS.md         # Este archivo (reglas globales)
 └── README.md         # Guía del proyecto para personas
 ```
